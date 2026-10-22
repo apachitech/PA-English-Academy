@@ -43,17 +43,25 @@ export function ModernCertificate({
 
   // Dynamically generate mathematically valid scannable QR Code
   useEffect(() => {
-    const origin =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : "https://pa-english-academy.vercel.app";
-    const verificationUrl = `${origin}/verify/${initialCert.code}?name=${encodeURIComponent(learnerName)}`;
+    let baseUrl = "https://pa-english-academy.vercel.app";
+    if (typeof window !== "undefined") {
+      const origin = window.location.origin;
+      // If deployed on Vercel or a custom domain, use current origin; if on localhost or local network, fallback to public production domain so phone cameras scanning it actually resolve
+      if (
+        !origin.includes("localhost") &&
+        !origin.includes("127.0.0.1") &&
+        !origin.includes("192.168.")
+      ) {
+        baseUrl = origin;
+      }
+    }
+    const verificationUrl = `${baseUrl}/verify/${initialCert.code}?name=${encodeURIComponent(learnerName)}`;
 
     QRCode.toDataURL(verificationUrl, {
-      width: 240,
-      margin: 1,
+      width: 280,
+      margin: 2, // Standard quiet zone for flawless phone camera scanning
       color: {
-        dark: "#0F172A",
+        dark: "#000000", // Pure black for maximum optical contrast
         light: "#FFFFFF",
       },
       errorCorrectionLevel: "M",
@@ -408,11 +416,20 @@ export function ModernCertificate({
                 <div className="p-1 print:p-0.5 rounded-xl bg-white border border-slate-300 shadow-sm inline-block">
                   {qrCodeDataUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={qrCodeDataUrl}
-                      alt={`QR Code officiel de vérification - ${initialCert.code}`}
-                      className="w-14 h-14 sm:w-16 sm:h-16 print:w-11 print:h-11 object-contain rounded-lg block"
-                    />
+                    <a
+                      href={`/verify/${initialCert.code}?name=${encodeURIComponent(learnerName)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Scanner avec un smartphone ou cliquer pour vérifier l'authenticité"
+                      className="block group"
+                    >
+                      <img
+                        src={qrCodeDataUrl}
+                        alt={`QR Code officiel de vérification - ${initialCert.code}`}
+                        className="w-14 h-14 sm:w-16 sm:h-16 print:w-11 print:h-11 object-contain rounded-lg block group-hover:scale-105 transition-transform"
+                        style={{ imageRendering: "pixelated" }}
+                      />
+                    </a>
                   ) : (
                     <div className="w-14 h-14 sm:w-16 sm:h-16 print:w-11 print:h-11 flex items-center justify-center bg-slate-100 rounded-lg">
                       <QrCode className="w-8 h-8 print:w-6 print:h-6 text-slate-400 animate-pulse" />
