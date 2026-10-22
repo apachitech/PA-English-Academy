@@ -39,7 +39,7 @@ export type ExamKind = "unit" | "level";
 export type VideoProvider = "youtube" | "mp4" | "hls" | "bunny" | "cloudflare" | "cloudinary" | "vimeo";
 export type AttemptStatus = "in_progress" | "completed" | "abandoned";
 export type PaymentStatus = "pending" | "succeeded" | "failed" | "refunded" | "cancelled";
-export type PaymentMethod = "mpesa" | "airtel_money" | "orange_money" | "card" | "mock";
+export type PaymentMethod = "mpesa" | "airtel_money" | "orange_money" | "afrimoney" | "card" | "mock";
 export type SubscriptionStatus = "active" | "past_due" | "cancelled" | "expired";
 
 export type ProfileRow = {

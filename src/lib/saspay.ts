@@ -20,6 +20,7 @@ export type SasPayNetwork =
   | 'mpesa_cd'
   | 'airtel_cd'
   | 'orange_cd'
+  | 'afrimoney_cd'
   | 'card'
   | 'wave'
   | 'mtn'

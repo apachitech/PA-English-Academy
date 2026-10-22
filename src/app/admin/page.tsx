@@ -23,6 +23,7 @@ import {
   getCloudinaryAudioUrl,
 } from '@/lib/video-helpers';
 import { VideoPlayer } from '@/components/video/VideoPlayer';
+import { PricingManagement } from '@/components/admin/PricingManagement';
 import {
   isAdminAuthenticated,
   verifyAndLoginAdmin,
@@ -301,7 +302,7 @@ const EMPTY_VOD_FORM: VodFormData = {
 
 export default function AdminDashboardPage() {
   const [isMounted, setIsMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'lessons' | 'learners' | 'questions' | 'paliers' | 'vod'>('lessons');
+  const [activeTab, setActiveTab] = useState<'overview' | 'lessons' | 'learners' | 'questions' | 'paliers' | 'vod' | 'pricing'>('lessons');
   const [lessons, setLessons] = useState<CompleteLesson[]>(Object.values(SAMPLE_LESSONS));
   const [learners, setLearners] = useState<LearnerRecord[]>(INITIAL_LEARNERS);
   const [questions, setQuestions] = useState<PlacementQuestion[]>(PLACEMENT_QUESTIONS);
@@ -391,7 +392,8 @@ export default function AdminDashboardPage() {
           requestedTab === 'learners' ||
           requestedTab === 'questions' ||
           requestedTab === 'paliers' ||
-          requestedTab === 'vod'
+          requestedTab === 'vod' ||
+          requestedTab === 'pricing'
         ) {
           setActiveTab(requestedTab);
         }
@@ -1754,6 +1756,16 @@ export default function AdminDashboardPage() {
             >
               {isMounted ? vodVideos.length : INITIAL_VOD_VIDEOS.length}
             </span>
+          </button>
+          <button
+            onClick={() => setActiveTab('pricing')}
+            className={`py-3.5 px-4 font-bold text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'pricing'
+                ? 'border-navy text-navy bg-gold/15 font-black'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <span>💳 Tarifs &amp; Afrimoney</span>
           </button>
         </div>
       </div>
@@ -3195,6 +3207,11 @@ export default function AdminDashboardPage() {
                 })}
             </div>
           </div>
+        )}
+
+        {/* TAB 7: PRICING & AFRIMONEY */}
+        {activeTab === 'pricing' && (
+          <PricingManagement />
         )}
       </main>
 

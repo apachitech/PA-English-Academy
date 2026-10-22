@@ -55,6 +55,7 @@ Une fois authentifié avec succès, le Coach David Liandja accède à l'ensemble
 - 🌱 **CRUD des Paliers & Niveaux :** Configurer les paliers CECRL (A1 Débutant, A2 Élémentaire, B1 Intermédiaire, B2 Autonome), seuils de score, XP requis et badges.
 - 🎬 **CRUD Vidéos à la Demande (VOD) :** Ajouter des masterclasses et capsules vidéo, avec support optimisé Cloudinary (transcodage 3G Éco, posters auto et flux audio ultra-léger).
 - 🧠 **CRUD Test de Niveau :** Gérer les 40 questions du test de placement adaptatif par compétence (Vocabulaire, Grammaire, Compréhension orale, Compréhension écrite).
+- 💳 **CRUD des Tarifs & Paiements (Afrimoney / SasPay) :** Modifier en direct les prix en USD ($) et Francs Congolais (CDF), créer de nouvelles formules promotionnelles, activer ou désactiver les passerelles **Afrimoney (Africell)**, **M-Pesa (Vodacom)**, **Airtel Money** et **Orange Money**, et exporter la grille tarifaire en CSV.
 - 👥 **Gestion des Apprenants :** Suivi en temps réel des élèves de Kinshasa et provinces, gestion des rôles, statuts (actif/suspendu) et export CSV complet.
 
 ### 2.4 Fermeture de Session (`Déconnexion Sécurisée`)

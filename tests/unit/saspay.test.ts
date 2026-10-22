@@ -49,6 +49,28 @@ describe('SasPay (sapay.me) Gateway Integration', () => {
     expect(res.data?.instructions).toContain('PIN');
   });
 
+  it('initiates direct Softpay push for Afrimoney (Africell RDC)', async () => {
+    const res = await initiateSasPaySoftpay({
+      amount: 10,
+      currency: 'USD',
+      country: 'CD',
+      network: 'afrimoney_cd',
+      description: 'Pass Pro PA³ - Afrimoney',
+      customer: {
+        email: 'dieudonne@pa3.cd',
+        first_name: 'Dieudonné',
+        last_name: 'Mutombo',
+        phone: '0901234567',
+      },
+    });
+
+    expect(res.success).toBe(true);
+    expect(res.data).toBeDefined();
+    expect(res.data?.status).toBe('PENDING');
+    expect(res.data?.instructions).toContain('+243901234567');
+    expect(res.data?.instructions).toContain('AFRIMONEY_CD');
+  });
+
   it('verifies payment status for transaction', async () => {
     const res = await verifySasPayPayment('test_tx_123');
     expect(res.success).toBe(true);

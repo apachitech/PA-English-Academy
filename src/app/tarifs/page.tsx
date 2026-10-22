@@ -11,92 +11,16 @@ import {
   loginLearner,
   LearnerProfile,
 } from '@/lib/auth-learner';
+import {
+  PricingPlan,
+  getStoredPricingPlans,
+  INITIAL_PRICING_PLANS,
+} from '@/lib/domain/pricing';
 
-interface PricingPlan {
-  id: string;
-  title: string;
-  levelBadge: string;
-  priceUsd: number;
-  priceCdf: string;
-  isPopular?: boolean;
-  isFree?: boolean;
-  description: string;
-  features: string[];
-  ctaLabel: string;
-}
-
-const PRICING_PLANS: PricingPlan[] = [
-  {
-    id: 'plan_a1',
-    title: 'Niveau A1 Débutant',
-    levelBadge: 'A1 Débutant',
-    priceUsd: 0,
-    priceCdf: '0 FC',
-    isFree: true,
-    description: 'Promesse du Coach David : les bases indispensables sont 100 % gratuites pour tous les Congolais.',
-    features: [
-      'Accès complet aux 4 unités A1',
-      'Exercices interactifs & écoute audio',
-      'Test diagnostique adaptatif',
-      'Mode basse consommation 3G',
-      'Certificat d’initiation A1',
-    ],
-    ctaLabel: 'Commencer gratuitement',
-  },
-  {
-    id: 'plan_a2',
-    title: 'Pass Niveau A2',
-    levelBadge: 'A2 Élémentaire',
-    priceUsd: 5,
-    priceCdf: '14 000 FC',
-    description: 'Racontez votre routine, vos voyages et échangez avec aisance au marché ou au travail.',
-    features: [
-      'Toutes les leçons A2 à vie',
-      'Vidéos avec transcriptions complètes',
-      'Exercices d’expression orale & audio',
-      'Examen final A2 avec certificat officiel vérifiable',
-      'Support par groupe WhatsApp avec Coach David',
-    ],
-    ctaLabel: 'Débloquer A2 (5 $)',
-  },
-  {
-    id: 'plan_all_access',
-    title: 'Pass Tout Accès (A2 + B1 + B2)',
-    levelBadge: 'Meilleure Offre',
-    priceUsd: 15,
-    priceCdf: '42 000 FC',
-    isPopular: true,
-    description: 'Idéal pour booster votre carrière dans les ONGs, multinationales ou préparer un voyage à l’étranger.',
-    features: [
-      'Accès illimité à tous les niveaux (A1 à B2)',
-      'Module Spécial : Anglais Professionnel & ONGs',
-      'Module Spécial : Préparation Entretiens & Ambassades',
-      'Tous les certificats officiels PA³ (A1, A2, B1, B2)',
-      'Accès prioritaire aux webinaires de Coach David',
-    ],
-    ctaLabel: 'Choisir le Pass Tout Accès (15 $)',
-  },
-  {
-    id: 'plan_vip_coaching',
-    title: 'Coaching VIP Présentiel & En Ligne',
-    levelBadge: 'Accompagnement VIP',
-    priceUsd: 35,
-    priceCdf: '98 000 FC / mois',
-    description: 'Séances privées de conversation avec Coach David Liandja à Kinshasa ou via Google Meet.',
-    features: [
-      'Tous les accès numériques illimités',
-      '2 séances de conversation en direct / semaine',
-      'Correction personnalisée de prononciation',
-      'Orientation personnalisée pour visas & bourses',
-      'Ligne WhatsApp directe avec Coach David',
-    ],
-    ctaLabel: 'Contacter Coach David',
-  },
-];
-
-type MobileProvider = 'mpesa' | 'airtel' | 'orange' | 'card';
+type MobileProvider = 'mpesa' | 'airtel' | 'orange' | 'afrimoney' | 'card';
 
 export default function TarifsPage() {
+  const [plans, setPlans] = useState<PricingPlan[]>(INITIAL_PRICING_PLANS);
   const [selectedPlan, setSelectedPlan] = useState<PricingPlan | null>(null);
   const [saspayMode, setSaspayMode] = useState<'checkout' | 'softpay'>('checkout');
   const [selectedProvider, setSelectedProvider] = useState<MobileProvider>('mpesa');
@@ -121,6 +45,12 @@ export default function TarifsPage() {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       
+      // Load stored pricing plans configured by Admin
+      const loadedPlans = getStoredPricingPlans();
+      if (loadedPlans && loadedPlans.length > 0) {
+        setPlans(loadedPlans);
+      }
+
       // Check return from SasPay checkout
       if (params.get('payment') === 'success') {
         const planId = params.get('plan_id') || 'pass';
@@ -132,7 +62,7 @@ export default function TarifsPage() {
       // Check if redirected after login with a plan requested
       const requestedPlanId = params.get('plan');
       if (requestedPlanId) {
-        const plan = PRICING_PLANS.find((p) => p.id === requestedPlanId);
+        const plan = (loadedPlans || INITIAL_PRICING_PLANS).find((p) => p.id === requestedPlanId);
         if (plan) {
           setSelectedPlan(plan);
           if (isLearnerAuthenticated()) {
@@ -241,6 +171,7 @@ export default function TarifsPage() {
       if (selectedProvider === 'mpesa') networkCode = 'mpesa_cd';
       if (selectedProvider === 'airtel') networkCode = 'airtel_cd';
       if (selectedProvider === 'orange') networkCode = 'orange_cd';
+      if (selectedProvider === 'afrimoney') networkCode = 'afrimoney_cd';
 
       const payload = {
         planId: selectedPlan.id,
@@ -329,7 +260,7 @@ export default function TarifsPage() {
             Investissez dans votre avenir professionnel
           </h1>
           <p className="mt-3 text-slate-600 text-sm sm:text-base leading-relaxed">
-            Payez facilement avec <strong>M-Pesa (Vodacom)</strong>, <strong>Airtel Money</strong>, <strong>Orange Money</strong> ou carte bancaire via la passerelle officielle <strong>SasPay (sapay.me)</strong>.
+            Payez facilement avec <strong>M-Pesa (Vodacom)</strong>, <strong>Airtel Money</strong>, <strong>Orange Money</strong>, <strong>Afrimoney (Africell)</strong> ou carte bancaire via la passerelle officielle <strong>SasPay (sapay.me)</strong>.
             Le niveau Débutant A1 reste <strong>100 % gratuit</strong>.
           </p>
 
@@ -341,13 +272,14 @@ export default function TarifsPage() {
             <span className="flex items-center gap-1 text-red-600">🔴 M-Pesa</span>
             <span className="flex items-center gap-1 text-red-500">⚪ Airtel Money</span>
             <span className="flex items-center gap-1 text-orange-500">🟠 Orange Money</span>
+            <span className="flex items-center gap-1 text-purple-600">🟣 Afrimoney</span>
             <span className="flex items-center gap-1 text-blue-600">💳 Visa / Mastercard</span>
           </div>
         </div>
 
         {/* Pricing Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
-          {PRICING_PLANS.map((plan) => (
+          {plans.filter((p) => p.active !== false).map((plan) => (
             <div
               key={plan.id}
               className={`rounded-2xl p-5 sm:p-6 flex flex-col justify-between transition-all duration-200 relative ${
@@ -684,7 +616,7 @@ export default function TarifsPage() {
                         <label className="block text-xs font-bold text-slate-700 mb-1.5">
                           Opérateur Mobile Money RDC :
                         </label>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
                           <button
                             type="button"
                             onClick={() => setSelectedProvider('mpesa')}
@@ -719,6 +651,18 @@ export default function TarifsPage() {
                             }`}
                           >
                             <span>🟠</span> Orange Money
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setSelectedProvider('afrimoney')}
+                            className={`p-2.5 rounded-xl border text-left font-bold transition flex items-center gap-2 cursor-pointer ${
+                              selectedProvider === 'afrimoney'
+                                ? 'border-purple-500 bg-purple-50 text-purple-900 ring-2 ring-purple-400'
+                                : 'border-slate-200 hover:border-slate-300'
+                            }`}
+                          >
+                            <span>🟣</span> Afrimoney
                           </button>
 
                           <button
