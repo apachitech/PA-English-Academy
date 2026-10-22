@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   PA³ English Academy — Design Tokens
+   "Parler Anglais Avec Assurance"
+   Palette inspired directly by the official PA³ logo & flyer:
+   - Deep Royal Navy (#0A1A38, #0E2856)
+   - Luminous Gold / Amber (#F5A623, #D98200)
+   - Crisp Pure White & Light Slate (#F8FAFC, #FFFFFF)
+   - DRC Flag accents (Sky Blue #0085FF, Yellow #F5C400, Red #D61B2E)
+   - High-contrast accessible text & focus states (WCAG AA compliant)
+   ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+
+  --background: #f8fafc;
+  --foreground: #091428;
+  --card: #ffffff;
+  --card-foreground: #091428;
+  --popover: #ffffff;
+  --popover-foreground: #091428;
+
+  /* PA3 Deep Navy */
+  --navy-dark: #071328;
+  --navy: #0b1f42;
+  --navy-light: #16366f;
+
+  /* Primary Interactive Blue */
+  --primary: #0b2f6b;
+  --primary-hover: #082352;
+  --primary-foreground: #ffffff;
+
+  /* PA3 Official Gold / Amber */
+  --gold: #f5a623;
+  --gold-glow: #ffc453;
+  --gold-dark: #b87504;
+  --accent: #f5a623;
+  --accent-foreground: #2a1600;
+  --accent-soft: #fff6e5;
+
+  /* Status / Feedback */
+  --success: #059669;
+  --success-dark: #047857;
+  --success-foreground: #ffffff;
+  --success-soft: #ecfdf5;
+
+  --destructive: #dc2626;
+  --destructive-dark: #b91c1c;
+  --destructive-foreground: #ffffff;
+  --destructive-soft: #fef2f2;
+
+  --secondary: #eef2f7;
+  --secondary-foreground: #0b1f42;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #f5a623;
+
+  --radius: 1rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-navy-dark: var(--navy-dark);
+  --color-navy: var(--navy);
+  --color-navy-light: var(--navy-light);
+  --color-gold: var(--gold);
+  --color-gold-glow: var(--gold-glow);
+  --color-gold-dark: var(--gold-dark);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-destructive: var(--destructive);
+  --color-destructive-dark: var(--destructive-dark);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-success: var(--success);
+  --color-success-dark: var(--success-dark);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 8px);
+
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --animate-pop: pop 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-shake: shake 400ms ease-in-out;
+  --animate-bounce-subtle: bounce-subtle 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.5s infinite;
+
+  @keyframes pop {
+    0% { transform: scale(0.92); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  @keyframes shimmer {
+    100% { transform: translateX(100%); }
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    accent-color: var(--gold);
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+  /* High contrast accessible focus indicators */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 3px;
+    border-radius: 0.5rem;
+  }
+  @media (forced-colors: active) {
+    :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+      outline-color: Highlight;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Duolingo style 3D buttons with tactile press effect */
+  .btn-3d-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: 0 4px 0 #051838;
+    transition: all 120ms ease;
+  }
+  .btn-3d-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 0 #051838;
+  }
+  .btn-3d-primary:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #051838;
+  }
+
+  .btn-3d-gold {
+    background-color: var(--gold);
+    color: var(--accent-foreground);
+    box-shadow: 0 4px 0 var(--gold-dark);
+    font-weight: 700;
+    transition: all 120ms ease;
+  }
+  .btn-3d-gold:hover {
+    background-color: var(--gold-glow);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 0 var(--gold-dark);
+  }
+  .btn-3d-gold:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--gold-dark);
+  }
+
+  .btn-3d-success {
+    background-color: var(--success);
+    color: var(--success-foreground);
+    box-shadow: 0 4px 0 var(--success-dark);
+    font-weight: 700;
+    transition: all 120ms ease;
+  }
+  .btn-3d-success:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--success-dark);
+  }
+
+  /* DRC Flag subtle decorative stripe */
+  .flag-badge {
+    background: linear-gradient(
+      135deg,
+      #0085FF 0% 46%,
+      #F5C400 46% 50%,
+      #D61B2E 50% 54%,
+      #F5C400 54% 58%,
+      #0085FF 58% 100%
+    );
+  }
+
+  /* Dark Navy gradient background matching the PA3 logo */
+  .bg-pa3-navy {
+    background: radial-gradient(circle at 50% 20%, #16366f 0%, #0b1f42 50%, #071328 100%);
+  }
+
+  /* Gold metallic text effect */
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #FFE494 0%, #F5A623 50%, #D48000 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+  .min-tap {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}

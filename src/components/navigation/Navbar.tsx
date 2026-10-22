@@ -1,0 +1,94 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Menu, Zap, ArrowRight, Shield } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
+import { SideMenu } from "./SideMenu";
+import { isAdminAuthenticated } from "@/lib/auth-admin";
+
+interface NavbarProps {
+  variant?: "home" | "app" | "minimal";
+  showTestCta?: boolean;
+  showAdminBadge?: boolean;
+  customRightElement?: React.ReactNode;
+}
+
+export function Navbar({
+  variant = "home",
+  showTestCta = true,
+  showAdminBadge = true,
+  customRightElement,
+}: NavbarProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    setIsAdmin(isAdminAuthenticated());
+  }, []);
+
+  return (
+    <>
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
+        <div className="max-w-6xl mx-auto px-4 h-16 sm:h-18 flex items-center justify-between gap-4">
+          {/* Brand Logo - Left */}
+          <div className="shrink-0 flex items-center">
+            <Logo
+              size={variant === "minimal" ? "sm" : "md"}
+              withSlogan={variant === "home"}
+            />
+          </div>
+
+          {/* Clean, spacious middle area (links moved to Side Menu to free up space) */}
+          <div className="flex-1 hidden lg:flex items-center justify-center">
+            {/* Kept uncluttered as requested to give clean breathing room */}
+          </div>
+
+          {/* Right Action Elements */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Custom injected element (e.g. stats, streaks, etc.) */}
+            {customRightElement}
+
+            {/* Admin Portal quick pill - only visible if an admin session is verified */}
+            {showAdminBadge && isAdmin && (
+              <Link
+                href="/admin"
+                className="hidden md:inline-flex items-center gap-1.5 text-xs font-black bg-amber-400/90 text-slate-950 hover:bg-amber-400 px-3 py-2 rounded-xl transition-all shadow-2xs border border-amber-500/30 active:scale-95"
+                title="Portail Administration & Gestion des cours"
+              >
+                <Shield className="w-3.5 h-3.5" />
+                <span>Admin</span>
+              </Link>
+            )}
+
+            {/* Quick Test Level CTA */}
+            {showTestCta && (
+              <Link
+                href="/test-de-niveau"
+                className="btn-3d-gold px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold inline-flex items-center gap-1.5 shadow-2xs"
+              >
+                <Zap className="w-4 h-4 fill-amber-950 text-amber-950 hidden xs:inline" />
+                <span>Test Gratuit</span>
+                <ArrowRight className="w-3.5 h-3.5 hidden sm:inline" />
+              </Link>
+            )}
+
+            {/* Elegant Side Menu Trigger Button */}
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              aria-label="Ouvrir le menu de navigation"
+              aria-expanded={isMenuOpen}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm transition-all border border-slate-200 active:scale-95 cursor-pointer shadow-2xs"
+            >
+              <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-slate-800" />
+              <span className="hidden xs:inline font-extrabold">Menu</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Side Menu Navigation Drawer */}
+      <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+    </>
+  );
+}
