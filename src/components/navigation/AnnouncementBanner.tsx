@@ -23,7 +23,7 @@ export function AnnouncementBanner() {
   return (
     <aside
       aria-label="Annonce officielle"
-      className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-slate-950 font-bold text-xs py-2 px-3 sm:px-4 shadow-sm relative z-50 flex items-center justify-between gap-2 border-b border-amber-400/40"
+      className="print:hidden bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-slate-950 font-bold text-xs py-2 px-3 sm:px-4 shadow-sm relative z-50 flex items-center justify-between gap-2 border-b border-amber-400/40"
     >
       <div className="flex-1 flex flex-wrap items-center justify-center gap-2 text-center">
         {badge && (

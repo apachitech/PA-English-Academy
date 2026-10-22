@@ -274,3 +274,91 @@
   }
 }
 
+/* ------------------------------------------------------------------
+   PA³ English Academy — Print Styles
+   Strict 1-Page A4 Landscape Output (Zero overflow, zero 2nd page)
+   ------------------------------------------------------------------ */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    text-shadow: none !important;
+  }
+
+  html, body {
+    width: 297mm !important;
+    height: 210mm !important;
+    max-width: 297mm !important;
+    max-height: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    overflow: hidden !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Completely suppress all navigation, chrome, banners, footers and toasts */
+  header,
+  footer,
+  nav,
+  aside,
+  .print\:hidden,
+  [data-sonner-toaster],
+  .flag-badge {
+    display: none !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  /* Reset layout wrappers to fill single sheet cleanly */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 297mm !important;
+    height: 210mm !important;
+    max-width: 297mm !important;
+    max-height: 210mm !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Official Certificate Frame: Perfectly sized for 1 A4 Landscape page */
+  #official-certificate {
+    width: 285mm !important;
+    max-width: 285mm !important;
+    height: 198mm !important;
+    max-height: 198mm !important;
+    margin: 6mm auto !important;
+    padding: 6mm 10mm !important;
+    border: 5px solid #d97706 !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-before: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    background: #ffffff !important;
+  }
+}
+
+

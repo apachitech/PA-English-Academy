@@ -131,7 +131,7 @@ export function ModernCertificate({
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 print:space-y-0 print:m-0 print:p-0">
       {/* Top Verification Status Bar (Hidden on print) */}
       <div className="print:hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white p-4 sm:p-5 rounded-3xl shadow-lg border border-emerald-400/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-pop">
         <div className="flex items-start sm:items-center gap-3.5">
@@ -212,36 +212,36 @@ export function ModernCertificate({
       {/* ========================================================================= */}
       <div
         id="official-certificate"
-        className="relative bg-white text-slate-900 rounded-3xl p-6 sm:p-12 md:p-16 border-4 sm:border-8 border-amber-500/80 shadow-2xl overflow-hidden print:p-8 print:border-8 print:shadow-none print:rounded-none print:w-full print:m-0"
+        className="relative bg-white text-slate-900 rounded-3xl p-6 sm:p-12 md:p-16 border-4 sm:border-8 border-amber-500/80 shadow-2xl overflow-hidden print:p-5 print:border-4 print:shadow-none print:rounded-2xl print:w-full print:h-[198mm] print:max-h-[198mm] print:m-0 print:flex print:flex-col print:justify-between"
         style={{
           boxShadow:
             "0 25px 50px -12px rgba(11, 31, 66, 0.25), 0 0 0 1px rgba(217, 119, 6, 0.15)",
         }}
       >
         {/* Ornate Multi-Layered Border System */}
-        <div className="absolute inset-2 sm:inset-3 border-2 border-amber-400/60 rounded-2xl pointer-events-none" />
-        <div className="absolute inset-3 sm:inset-4 border border-dashed border-slate-300 rounded-xl pointer-events-none" />
+        <div className="absolute inset-2 sm:inset-3 border-2 border-amber-400/60 rounded-2xl pointer-events-none print:inset-2" />
+        <div className="absolute inset-3 sm:inset-4 border border-dashed border-slate-300 rounded-xl pointer-events-none print:inset-3" />
 
         {/* Corner Guilloché Ornaments */}
-        <div className="absolute top-4 left-4 sm:top-6 sm:left-6 w-12 h-12 text-amber-500/70 pointer-events-none select-none">
+        <div className="absolute top-4 left-4 sm:top-6 sm:left-6 print:top-4 print:left-4 w-12 h-12 print:w-9 print:h-9 text-amber-500/70 pointer-events-none select-none">
           <svg viewBox="0 0 100 100" className="w-full h-full fill-current">
             <path d="M0,0 L40,0 C20,10 10,20 0,40 Z M10,10 L30,10 C20,15 15,20 10,30 Z" />
             <circle cx="20" cy="20" r="4" />
           </svg>
         </div>
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 w-12 h-12 text-amber-500/70 pointer-events-none select-none rotate-90">
+        <div className="absolute top-4 right-4 sm:top-6 sm:right-6 print:top-4 print:right-4 w-12 h-12 print:w-9 print:h-9 text-amber-500/70 pointer-events-none select-none rotate-90">
           <svg viewBox="0 0 100 100" className="w-full h-full fill-current">
             <path d="M0,0 L40,0 C20,10 10,20 0,40 Z M10,10 L30,10 C20,15 15,20 10,30 Z" />
             <circle cx="20" cy="20" r="4" />
           </svg>
         </div>
-        <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 w-12 h-12 text-amber-500/70 pointer-events-none select-none -rotate-90">
+        <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 print:bottom-4 print:left-4 w-12 h-12 print:w-9 print:h-9 text-amber-500/70 pointer-events-none select-none -rotate-90">
           <svg viewBox="0 0 100 100" className="w-full h-full fill-current">
             <path d="M0,0 L40,0 C20,10 10,20 0,40 Z M10,10 L30,10 C20,15 15,20 10,30 Z" />
             <circle cx="20" cy="20" r="4" />
           </svg>
         </div>
-        <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 text-amber-500/70 pointer-events-none select-none rotate-180">
+        <div className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 print:bottom-4 print:right-4 w-12 h-12 print:w-9 print:h-9 text-amber-500/70 pointer-events-none select-none rotate-180">
           <svg viewBox="0 0 100 100" className="w-full h-full fill-current">
             <path d="M0,0 L40,0 C20,10 10,20 0,40 Z M10,10 L30,10 C20,15 15,20 10,30 Z" />
             <circle cx="20" cy="20" r="4" />
@@ -250,92 +250,92 @@ export function ModernCertificate({
 
         {/* Faint Center Watermark */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none opacity-[0.035] flex flex-col items-center justify-center">
-          <span className="text-[140px] sm:text-[220px] font-black tracking-widest text-navy">
+          <span className="text-[140px] sm:text-[220px] print:text-[160px] font-black tracking-widest text-navy">
             PA³
           </span>
-          <span className="text-xl sm:text-3xl font-black uppercase tracking-widest text-slate-800 -mt-10">
+          <span className="text-xl sm:text-3xl print:text-2xl font-black uppercase tracking-widest text-slate-800 -mt-10 print:-mt-6">
             ENGLISH ACADEMY
           </span>
         </div>
 
-        {/* Certificate Inner Body */}
-        <div className="relative z-10 space-y-6 sm:space-y-8 text-center max-w-2xl mx-auto">
+        {/* Certificate Inner Body (Proportionately distributed in print) */}
+        <div className="relative z-10 space-y-6 sm:space-y-8 print:space-y-0 print:h-full print:flex print:flex-col print:justify-between text-center max-w-2xl print:max-w-none mx-auto w-full">
           {/* Header & Badges */}
-          <div className="space-y-3">
+          <div className="space-y-3 print:space-y-1">
             {/* National Roundel & Crest */}
-            <div className="flex items-center justify-center gap-3">
-              <span className="text-base sm:text-lg">🇨🇩</span>
-              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.25em] text-slate-600">
+            <div className="flex items-center justify-center gap-3 print:gap-2">
+              <span className="text-base sm:text-lg print:text-sm">🇨🇩</span>
+              <span className="text-[10px] sm:text-xs print:text-[9px] font-black uppercase tracking-[0.25em] text-slate-600">
                 RÉPUBLIQUE DÉMOCRATIQUE DU CONGO
               </span>
-              <span className="text-base sm:text-lg">🇨🇩</span>
+              <span className="text-base sm:text-lg print:text-sm">🇨🇩</span>
             </div>
 
             {/* Academy Branding */}
-            <div className="flex flex-col items-center justify-center pt-1">
+            <div className="flex flex-col items-center justify-center pt-1 print:pt-0">
               <div className="inline-flex items-center gap-2 select-none">
-                <span className="text-2xl sm:text-3xl font-black tracking-tight text-[#0B1F42]">
-                  PA<sup className="text-amber-500 font-extrabold text-sm">3</sup>
+                <span className="text-2xl sm:text-3xl print:text-2xl font-black tracking-tight text-[#0B1F42]">
+                  PA<sup className="text-amber-500 font-extrabold text-sm print:text-xs">3</sup>
                 </span>
-                <span className="text-2xl sm:text-3xl font-black tracking-wide text-amber-500">
+                <span className="text-2xl sm:text-3xl print:text-2xl font-black tracking-wide text-amber-500">
                   ENGLISH
                 </span>
-                <span className="text-2xl sm:text-3xl font-black tracking-tight text-slate-800">
+                <span className="text-2xl sm:text-3xl print:text-2xl font-black tracking-tight text-slate-800">
                   ACADEMY
                 </span>
               </div>
-              <p className="text-[10px] sm:text-xs font-bold text-amber-700 uppercase tracking-widest mt-1">
+              <p className="text-[10px] sm:text-xs print:text-[8px] font-bold text-amber-700 uppercase tracking-widest mt-1 print:mt-0.5">
                 {BRAND.slogan} • SUCCEED IN ENGLISH!
               </p>
             </div>
 
             {/* Certificate Grand Title */}
-            <div className="pt-3">
+            <div className="pt-3 print:pt-1">
               <div className="inline-block relative">
-                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight uppercase font-serif">
+                <h2 className="text-2xl sm:text-4xl md:text-5xl print:text-2xl font-black text-slate-900 tracking-tight uppercase font-serif">
                   CERTIFICAT D&apos;ACCOMPLISSEMENT
                 </h2>
-                <div className="h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent w-full mt-2 rounded-full" />
+                <div className="h-1 print:h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent w-full mt-2 print:mt-1 rounded-full" />
               </div>
-              <p className="text-xs sm:text-sm font-semibold text-slate-500 tracking-wide mt-2">
+              <p className="text-xs sm:text-sm print:text-[10px] font-semibold text-slate-500 tracking-wide mt-2 print:mt-0.5">
                 Cadre Européen Commun de Référence pour les Langues (CECRL)
               </p>
             </div>
           </div>
 
           {/* Recipient Section */}
-          <div className="space-y-3 py-2 sm:py-4">
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">
+          <div className="space-y-3 py-2 sm:py-4 print:space-y-1 print:py-1">
+            <p className="text-xs print:text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400">
               DÉCERNÉ AVEC HONNEUR ET LES FÉLICITATIONS DU JURY À
             </p>
 
             {/* Recipient Full Name */}
-            <div className="relative inline-block py-2">
-              <h3 className="text-3xl sm:text-5xl md:text-6xl font-black text-[#0B1F42] tracking-tight font-serif capitalize">
+            <div className="relative inline-block py-2 print:py-0.5">
+              <h3 className="text-3xl sm:text-5xl md:text-6xl print:text-3xl font-black text-[#0B1F42] tracking-tight font-serif capitalize">
                 {learnerName}
               </h3>
-              <div className="flex items-center justify-center gap-2 mt-2">
-                <div className="h-0.5 w-12 sm:w-20 bg-amber-400 rounded-full" />
-                <span className="text-amber-500 text-xs sm:text-sm">★ ★ ★</span>
-                <div className="h-0.5 w-12 sm:w-20 bg-amber-400 rounded-full" />
+              <div className="flex items-center justify-center gap-2 mt-2 print:mt-0.5">
+                <div className="h-0.5 w-12 sm:w-20 print:w-16 bg-amber-400 rounded-full" />
+                <span className="text-amber-500 text-xs sm:text-sm print:text-xs">★ ★ ★</span>
+                <div className="h-0.5 w-12 sm:w-20 print:w-16 bg-amber-400 rounded-full" />
               </div>
             </div>
 
             {/* Level & Distinction Statement */}
-            <p className="text-sm sm:text-base md:text-lg text-slate-700 leading-relaxed max-w-xl mx-auto font-normal">
+            <p className="text-sm sm:text-base md:text-lg print:text-xs text-slate-700 leading-relaxed print:leading-tight max-w-xl mx-auto font-normal">
               Pour avoir validé avec succès l&apos;examen d&apos;évaluation officiel
               et démontré une maîtrise active et fluide du{" "}
-              <strong className="text-slate-950 font-black font-serif text-base sm:text-xl block sm:inline mt-1 sm:mt-0">
+              <strong className="text-slate-950 font-black font-serif text-base sm:text-xl print:text-sm block sm:inline mt-1 sm:mt-0 print:inline">
                 {initialCert.levelTitleFr}
               </strong>{" "}
               avec la distinction :
             </p>
 
             {/* Honors Mention Badge */}
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border border-amber-500/40 px-4 py-1.5 rounded-full text-amber-950 font-black text-xs sm:text-sm shadow-xs">
-              <Sparkles className="w-4 h-4 text-amber-600 fill-amber-500 shrink-0" />
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 via-amber-500/20 to-amber-500/10 border border-amber-500/40 px-4 py-1.5 print:px-3 print:py-1 rounded-full text-amber-950 font-black text-xs sm:text-sm print:text-xs shadow-xs">
+              <Sparkles className="w-4 h-4 print:w-3.5 print:h-3.5 text-amber-600 fill-amber-500 shrink-0" />
               <span>{initialCert.mention}</span>
-              <span className="bg-amber-400 text-slate-950 text-xs px-2 py-0.5 rounded-full font-black">
+              <span className="bg-amber-400 text-slate-950 text-xs print:text-[10px] px-2 py-0.5 rounded-full font-black">
                 {initialCert.score}%
               </span>
             </div>
@@ -343,17 +343,17 @@ export function ModernCertificate({
 
           {/* Competences Matrix / Skills Breakdown */}
           {initialCert.competences && initialCert.competences.length > 0 && (
-            <div className="pt-2">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-lg mx-auto">
+            <div className="pt-2 print:pt-1">
+              <div className="grid grid-cols-2 sm:grid-cols-4 print:grid-cols-4 gap-2 sm:gap-3 print:gap-2 max-w-lg print:max-w-xl mx-auto">
                 {initialCert.competences.map((comp) => (
                   <div
                     key={comp.skill}
-                    className="bg-slate-50 border border-slate-200/90 rounded-2xl p-2.5 text-center shadow-xs"
+                    className="bg-slate-50 border border-slate-200/90 rounded-2xl print:rounded-xl p-2.5 print:py-1.5 print:px-2 text-center shadow-xs"
                   >
-                    <p className="text-[10px] uppercase font-bold text-slate-500 truncate">
+                    <p className="text-[10px] print:text-[9px] uppercase font-bold text-slate-500 truncate">
                       {comp.skillFr}
                     </p>
-                    <p className="text-xs sm:text-sm font-black text-slate-900 mt-0.5">
+                    <p className="text-xs sm:text-sm print:text-xs font-black text-slate-900 mt-0.5 print:mt-0">
                       {comp.score}%
                     </p>
                   </div>
@@ -363,74 +363,74 @@ export function ModernCertificate({
           )}
 
           {/* Signatures, Golden Embossed Seal & Verification Block */}
-          <div className="pt-6 sm:pt-10 border-t border-slate-200 grid grid-cols-3 gap-4 items-end">
+          <div className="pt-6 sm:pt-10 print:pt-2 border-t border-slate-200 grid grid-cols-3 gap-4 print:gap-3 items-end">
             {/* Signature 1: Coach David Liandja */}
-            <div className="text-center sm:text-left space-y-1.5">
-              <div className="h-14 flex items-end justify-center sm:justify-start">
+            <div className="text-center sm:text-left print:text-left space-y-1.5 print:space-y-0.5">
+              <div className="h-14 print:h-10 flex items-end justify-center sm:justify-start print:justify-start">
                 {/* Elegant Handwritten Calligraphic Signature */}
                 <div className="relative text-left">
-                  <span className="font-serif italic font-bold text-xl sm:text-2xl text-slate-900 tracking-wider">
+                  <span className="font-serif italic font-bold text-xl sm:text-2xl print:text-lg text-slate-900 tracking-wider">
                     David Liandja
                   </span>
-                  <div className="w-28 sm:w-36 h-0.5 bg-slate-400 mt-1" />
+                  <div className="w-28 sm:w-36 print:w-28 h-0.5 bg-slate-400 mt-1 print:mt-0.5" />
                 </div>
               </div>
-              <p className="text-xs sm:text-sm font-black text-slate-950">
+              <p className="text-xs sm:text-sm print:text-xs font-black text-slate-950">
                 {initialCert.coachName}
               </p>
-              <p className="text-[10px] sm:text-xs text-slate-500 leading-tight">
+              <p className="text-[10px] sm:text-xs print:text-[9px] text-slate-500 leading-tight">
                 {initialCert.coachTitle}
               </p>
             </div>
 
             {/* Center: Official 3D Golden Seal */}
             <div className="flex flex-col items-center justify-center">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-200 text-slate-950 p-1 shadow-xl flex items-center justify-center relative group">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 print:w-16 print:h-16 rounded-full bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-200 text-slate-950 p-1 shadow-xl flex items-center justify-center relative group">
                 {/* Starburst rays */}
                 <div className="w-full h-full rounded-full border-2 border-dashed border-amber-900/40 flex flex-col items-center justify-center p-1 text-center bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500">
-                  <Award className="w-6 h-6 sm:w-8 sm:h-8 text-slate-950 fill-amber-950/20" />
-                  <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-tighter leading-none mt-0.5">
+                  <Award className="w-6 h-6 sm:w-8 sm:h-8 print:w-5 print:h-5 text-slate-950 fill-amber-950/20" />
+                  <span className="text-[8px] sm:text-[9px] print:text-[7px] font-black uppercase tracking-tighter leading-none mt-0.5 print:mt-0">
                     SCEAU OFFICIEL
                   </span>
-                  <span className="text-[7px] sm:text-[8px] font-extrabold text-slate-900">
+                  <span className="text-[7px] sm:text-[8px] print:text-[6px] font-extrabold text-slate-900">
                     EXCELLENCE
                   </span>
                 </div>
               </div>
-              <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest mt-1.5">
+              <span className="text-[10px] print:text-[8px] font-black text-slate-700 uppercase tracking-widest mt-1.5 print:mt-0.5">
                 KINSHASA • RDC
               </span>
             </div>
 
             {/* Signature 2: Academic Board & Dynamic Scannable QR Code */}
-            <div className="text-center sm:text-right space-y-1.5">
-              <div className="h-16 flex items-end justify-center sm:justify-end">
-                <div className="p-1 rounded-xl bg-white border border-slate-300 shadow-sm inline-block">
+            <div className="text-center sm:text-right print:text-right space-y-1.5 print:space-y-0.5">
+              <div className="h-16 print:h-12 flex items-end justify-center sm:justify-end print:justify-end">
+                <div className="p-1 print:p-0.5 rounded-xl bg-white border border-slate-300 shadow-sm inline-block">
                   {qrCodeDataUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={qrCodeDataUrl}
                       alt={`QR Code officiel de vérification - ${initialCert.code}`}
-                      className="w-14 h-14 sm:w-16 sm:h-16 object-contain rounded-lg block"
+                      className="w-14 h-14 sm:w-16 sm:h-16 print:w-11 print:h-11 object-contain rounded-lg block"
                     />
                   ) : (
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-slate-100 rounded-lg">
-                      <QrCode className="w-8 h-8 text-slate-400 animate-pulse" />
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 print:w-11 print:h-11 flex items-center justify-center bg-slate-100 rounded-lg">
+                      <QrCode className="w-8 h-8 print:w-6 print:h-6 text-slate-400 animate-pulse" />
                     </div>
                   )}
                 </div>
               </div>
-              <p className="text-[10px] sm:text-xs font-mono font-bold text-slate-800">
+              <p className="text-[10px] sm:text-xs print:text-[9px] font-mono font-bold text-slate-800">
                 Délivré le : {initialCert.issuedAt}
               </p>
-              <p className="text-[9px] sm:text-[10px] text-slate-400 font-mono">
+              <p className="text-[9px] sm:text-[10px] print:text-[8px] text-slate-400 font-mono">
                 S/N: {initialCert.serialNumber || `CD-PA3-2026-${initialCert.code}`}
               </p>
             </div>
           </div>
 
           {/* Certificate Security Microprint Footer */}
-          <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-[9px] sm:text-[10px] text-slate-400 font-mono gap-2">
+          <div className="pt-4 print:pt-1 border-t border-slate-100 flex flex-col sm:flex-row print:flex-row items-center justify-between text-[9px] sm:text-[10px] print:text-[8px] text-slate-400 font-mono gap-2 print:gap-1">
             <span>PA³ ENGLISH ACADEMY • REGISTRE OFFICIEL NUMÉRIQUE</span>
             <span>IDENTIFIANT CERTIFIÉ : {initialCert.code}</span>
             <span>VÉRIFICATION : PA-ENGLISH-ACADEMY.VERCEL.APP</span>

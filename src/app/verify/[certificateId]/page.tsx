@@ -20,7 +20,7 @@ export default async function VerifyCertificatePage({
   const cert = resolveCertificate(certificateId);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100 text-foreground selection:bg-amber-400 selection:text-navy print:bg-white print:p-0">
+    <div className="min-h-screen flex flex-col bg-slate-100 text-foreground selection:bg-amber-400 selection:text-navy print:bg-white print:p-0 print:m-0 print:min-h-0 print:h-auto">
       {/* Top flag bar (Hidden on print) */}
       <div className="flag-badge h-1.5 w-full print:hidden" />
 
@@ -48,7 +48,7 @@ export default async function VerifyCertificatePage({
       </header>
 
       {/* Main Verification Container */}
-      <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6 print:p-0 print:m-0 print:max-w-none">
+      <main className="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6 print:p-0 print:m-0 print:max-w-none print:w-full print:h-full print:space-y-0">
         <ModernCertificate initialCert={cert} />
       </main>
 
