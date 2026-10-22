@@ -206,7 +206,7 @@ export default function PlacementTestPage() {
               </p>
             </div>
 
-            <div className="grid gap-4 pt-4">
+            <div className="grid gap-3 sm:gap-4 pt-2 sm:pt-4">
               {/* Option A: Complete Beginner */}
               <button
                 onClick={() => {
@@ -215,53 +215,53 @@ export default function PlacementTestPage() {
                   }
                   router.push("/tableau-de-bord");
                 }}
-                className="w-full text-left p-5 rounded-2xl border-2 border-slate-200 hover:border-primary/60 hover:bg-slate-50/80 transition-all flex items-start gap-4 group"
+                className="w-full text-left p-4 sm:p-5 rounded-2xl border-2 border-slate-200 hover:border-primary/60 hover:bg-slate-50/80 transition-all flex items-start gap-3 sm:gap-4 group cursor-pointer active:scale-95"
               >
-                <div className="w-12 h-12 rounded-xl bg-blue-50 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <GraduationCap className="w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-extrabold text-slate-900">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
                       Je débute complètement
                     </h3>
                     <span className="text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
                       Recommandé
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
                     Commencez directement au <strong>Niveau A1 (Débutant)</strong>.
                     Idéal si vous n&apos;avez jamais étudié l&apos;anglais ou si
                     vous souhaitez reprendre depuis zéro.
                   </p>
                 </div>
-                <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-primary shrink-0 self-center" />
+                <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-primary shrink-0 self-center hidden 2xs:block" />
               </button>
 
               {/* Option B: Take Placement Test */}
               <button
                 onClick={startTest}
-                className="w-full text-left p-5 rounded-2xl border-2 border-amber-400 bg-amber-50/40 hover:bg-amber-50 hover:border-amber-500 transition-all flex items-start gap-4 group shadow-sm"
+                className="w-full text-left p-4 sm:p-5 rounded-2xl border-2 border-amber-400 bg-amber-50/40 hover:bg-amber-50 hover:border-amber-500 transition-all flex items-start gap-3 sm:gap-4 group shadow-sm cursor-pointer active:scale-95"
               >
-                <div className="w-12 h-12 rounded-xl bg-amber-400 text-amber-950 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                  <Zap className="w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-400 text-amber-950 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-extrabold text-slate-900">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
                       Passer le test de niveau adaptatif
                     </h3>
                     <span className="text-[10px] font-black uppercase bg-amber-400 text-amber-950 px-2 py-0.5 rounded-full">
                       10–15 min
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
                     Test intelligent de ~16 questions qui s&apos;ajuste à vos
                     réponses (Vocabulaire, Grammaire, Écoute, Lecture) pour situer
                     votre niveau CECRL (A1, A2, B1 ou B2).
                   </p>
                 </div>
-                <ArrowRight className="w-5 h-5 text-amber-700 shrink-0 self-center" />
+                <ArrowRight className="w-5 h-5 text-amber-700 shrink-0 self-center hidden 2xs:block" />
               </button>
             </div>
 
@@ -414,8 +414,8 @@ export default function PlacementTestPage() {
             </div>
 
             {/* Bottom Actions Bar */}
-            <div className="flex justify-between items-center gap-4">
-              <span className="text-xs text-slate-500 font-medium">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-1">
+              <span className="text-xs text-slate-500 font-medium text-center sm:text-left">
                 {isAnswered
                   ? selectedIndex === currentQuestion.correct_index
                     ? "✨ Bien joué !"
@@ -428,10 +428,10 @@ export default function PlacementTestPage() {
                   type="button"
                   disabled={selectedIndex === null}
                   onClick={handleValidate}
-                  className={`px-8 py-3.5 rounded-xl text-sm font-bold ${
+                  className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-sm font-bold min-h-[44px] flex items-center justify-center ${
                     selectedIndex === null
                       ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                      : "btn-3d-gold"
+                      : "btn-3d-gold cursor-pointer"
                   }`}
                 >
                   Valider
@@ -440,7 +440,7 @@ export default function PlacementTestPage() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="btn-3d-primary px-8 py-3.5 rounded-xl text-sm font-bold inline-flex items-center gap-2"
+                  className="w-full sm:w-auto btn-3d-primary px-8 py-3.5 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2 min-h-[44px] cursor-pointer"
                 >
                   <span>Question suivante</span>
                   <ArrowRight className="w-4 h-4" />

@@ -127,7 +127,7 @@ export default function DashboardPage() {
             {/* Data Saver Toggle */}
             <button
               onClick={toggleDataSaver}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold transition-all border ${
+              className={`hidden xs:flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold transition-all border ${
                 stats.dataSaver
                   ? "bg-emerald-600 text-white border-emerald-700"
                   : "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
@@ -151,9 +151,9 @@ export default function DashboardPage() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+      <main className="flex-1 max-w-6xl w-full mx-auto p-3.5 sm:p-6 lg:p-8 space-y-6">
         {/* Welcome Banner with Next Lesson CTA */}
-        <section className="bg-gradient-to-r from-navy via-slate-900 to-navy-dark text-white rounded-3xl p-6 sm:p-8 border border-amber-400/30 shadow-md relative overflow-hidden">
+        <section className="bg-gradient-to-r from-navy via-slate-900 to-navy-dark text-white rounded-3xl p-5 sm:p-8 border border-amber-400/30 shadow-md relative overflow-hidden">
           {/* Subtle glow */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -164,11 +164,11 @@ export default function DashboardPage() {
                 <span>Niveau {stats.level} • {stats.level === "A1" ? "Débutant" : "En progression"}</span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-black">
+              <h1 className="clamp-title font-black">
                 Mbote ! Prêt(e) pour votre leçon du jour ?
               </h1>
 
-              <p className="text-slate-300 text-xs sm:text-sm max-w-xl">
+              <p className="text-slate-300 text-xs sm:text-sm max-w-xl leading-relaxed">
                 Prochaine étape :{" "}
                 <strong className="text-white">
                   {nextLesson.titleFr} ({nextLesson.titleEn})
@@ -176,10 +176,10 @@ export default function DashboardPage() {
                 . Apprenez à dire d&apos;où vous venez et votre âge en anglais.
               </p>
 
-              <div className="flex flex-wrap items-center gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
                 <Link
                   href={`/lecon/${nextLesson.slug}`}
-                  className="btn-3d-gold px-6 py-3.5 rounded-xl text-sm font-extrabold inline-flex items-center gap-2 shadow-lg"
+                  className="btn-3d-gold w-full sm:w-auto px-6 py-3.5 rounded-xl text-sm font-extrabold inline-flex items-center justify-center gap-2 shadow-lg text-center"
                 >
                   <Play className="w-4 h-4 fill-amber-950 text-amber-950" />
                   <span>Continuer ({nextLesson.durationMin} min)</span>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
 
                 <Link
                   href="/parcours"
-                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-5 py-3.5 rounded-xl text-sm font-bold inline-flex items-center gap-1.5 transition-colors"
+                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20 w-full sm:w-auto px-5 py-3.5 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-1.5 transition-colors text-center"
                 >
                   <BookOpen className="w-4 h-4 text-amber-400" />
                   <span>Voir le parcours complet</span>

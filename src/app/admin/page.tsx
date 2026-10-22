@@ -1664,7 +1664,7 @@ export default function AdminDashboardPage() {
 
       {/* Admin Nav Tabs */}
       <div className="bg-white border-b border-slate-200 shadow-2xs" suppressHydrationWarning>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-2 overflow-x-auto no-scrollbar">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 flex items-center gap-2 overflow-x-auto touch-scroll no-scrollbar py-1">
           <button
             onClick={() => setActiveTab('lessons')}
             className={`py-3.5 px-4 font-black text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${

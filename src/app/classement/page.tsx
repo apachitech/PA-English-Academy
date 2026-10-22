@@ -53,7 +53,7 @@ export default function ClassementPage() {
         </div>
 
         {/* League Selector Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 touch-scroll no-scrollbar">
           {(Object.keys(LEAGUE_TIERS) as LeagueTier[]).map((tierKey) => {
             const t = LEAGUE_TIERS[tierKey];
             const isSelected = selectedLeague === tierKey;

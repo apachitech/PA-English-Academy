@@ -155,13 +155,13 @@ export function ExerciseRenderer({
                 type="button"
                 disabled={isAnswered || disabled}
                 onClick={() => setSelectedOptionId(opt.id)}
-                className={`w-full text-left p-3.5 rounded-xl text-sm transition-all flex items-center justify-between gap-3 ${style}`}
+                className={`w-full text-left p-3.5 sm:p-4 rounded-xl text-xs sm:text-sm transition-all flex items-center justify-between gap-3 min-h-[44px] cursor-pointer active:scale-[0.99] ${style}`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <span className="w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-bold shrink-0">
                     {String.fromCharCode(65 + idx)}
                   </span>
-                  <span>{opt.label}</span>
+                  <span className="truncate">{opt.label}</span>
                 </div>
                 {isAnswered && opt.is_correct && (
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -343,7 +343,7 @@ export function ExerciseRenderer({
                   type="button"
                   disabled={isMatched || isAnswered}
                   onClick={() => handleSelectOptionItem(opt)}
-                  className={`w-full p-3 rounded-xl text-xs sm:text-sm font-bold text-center border-2 transition-all ${
+                  className={`w-full p-2.5 sm:p-3 rounded-xl text-xs sm:text-sm font-bold text-center border-2 transition-all min-h-[44px] flex items-center justify-center ${
                     isMatched
                       ? "border-emerald-500 bg-emerald-50 text-emerald-800 opacity-60 line-through"
                       : isSelected
@@ -368,7 +368,7 @@ export function ExerciseRenderer({
                   type="button"
                   disabled={isMatched || isAnswered}
                   onClick={() => handleSelectOptionItem(opt)}
-                  className={`w-full p-3 rounded-xl text-xs sm:text-sm font-bold text-center border-2 transition-all ${
+                  className={`w-full p-2.5 sm:p-3 rounded-xl text-xs sm:text-sm font-bold text-center border-2 transition-all min-h-[44px] flex items-center justify-center ${
                     isMatched
                       ? "border-emerald-500 bg-emerald-50 text-emerald-800 opacity-60 line-through"
                       : "border-slate-200 bg-white hover:border-slate-400 text-slate-800"

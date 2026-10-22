@@ -43,14 +43,14 @@ export default function HomePage() {
                 <span>🇨🇩 RDC • Évaluation de niveau + 1ère séance offertes !</span>
               </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1]">
+              <h1 className="clamp-hero font-black tracking-tight">
                 RÉUSSISSEZ EN ANGLAIS !
                 <span className="block text-gold-gradient mt-1">
                   Succeed in English!
                 </span>
               </h1>
 
-              <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
+              <p className="text-sm sm:text-base md:text-lg text-slate-300 leading-relaxed max-w-xl">
                 {BRAND.subtitle} Une plateforme d&apos;apprentissage interactive
                 style <strong className="text-white">Duolingo</strong>, adaptée
                 aux réalités de la RDC : connexions lentes, faible consommation
@@ -58,26 +58,26 @@ export default function HomePage() {
               </p>
 
               {/* Action Buttons: The 2 Core Onboarding Choices */}
-              <div className="pt-2 flex flex-col sm:flex-row gap-3.5">
+              <div className="pt-2 flex flex-col sm:flex-row gap-3">
                 <Link
                   href="/test-de-niveau"
-                  className="btn-3d-gold px-6 py-4 rounded-2xl text-base font-extrabold inline-flex items-center justify-center gap-3 text-center shadow-lg"
+                  className="btn-3d-gold w-full sm:w-auto px-5 py-3.5 sm:px-6 sm:py-4 rounded-2xl text-sm sm:text-base font-extrabold inline-flex items-center justify-center gap-2.5 text-center shadow-lg active:scale-95 transition-transform"
                 >
-                  <Compass className="w-5 h-5 text-amber-950" />
+                  <Compass className="w-5 h-5 text-amber-950 shrink-0" />
                   <span>Passer le test de niveau</span>
                 </Link>
 
                 <Link
                   href="/parcours"
-                  className="bg-white/10 hover:bg-white/15 text-white border border-white/20 px-6 py-4 rounded-2xl text-base font-bold inline-flex items-center justify-center gap-3 text-center transition-all"
+                  className="bg-white/10 hover:bg-white/15 text-white border border-white/20 w-full sm:w-auto px-5 py-3.5 sm:px-6 sm:py-4 rounded-2xl text-sm sm:text-base font-bold inline-flex items-center justify-center gap-2.5 text-center transition-all active:scale-95"
                 >
-                  <GraduationCap className="w-5 h-5 text-amber-400" />
+                  <GraduationCap className="w-5 h-5 text-amber-400 shrink-0" />
                   <span>Je débute complètement (A1)</span>
                 </Link>
               </div>
 
-              {/* Trust Indicators */}
-              <div className="pt-4 grid grid-cols-3 gap-3 border-t border-slate-700/60 text-xs text-slate-300">
+              {/* Trust Indicators: fluid stack on mobile */}
+              <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 border-t border-slate-700/60 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>Niveau A1 100% gratuit</span>
@@ -407,10 +407,10 @@ export default function HomePage() {
         </section>
 
         {/* Coach David Liandja Section */}
-        <section id="coach" className="py-16 px-4 max-w-6xl mx-auto">
-          <div className="bg-gradient-to-br from-navy via-slate-900 to-navy-dark text-white rounded-3xl p-8 sm:p-12 border border-amber-400/30 shadow-xl grid md:grid-cols-12 gap-8 items-center">
+        <section id="coach" className="py-12 sm:py-16 px-4 max-w-6xl mx-auto">
+          <div className="bg-gradient-to-br from-navy via-slate-900 to-navy-dark text-white rounded-3xl p-5 sm:p-8 md:p-12 border border-amber-400/30 shadow-xl grid md:grid-cols-12 gap-6 sm:gap-8 items-center">
             <div className="md:col-span-4 flex justify-center">
-              <div className="relative w-64 rounded-3xl overflow-hidden border-4 border-gold shadow-2xl bg-slate-900 group">
+              <div className="relative w-56 sm:w-64 rounded-3xl overflow-hidden border-4 border-gold shadow-2xl bg-slate-900 group">
                 <Image
                   src="/images/coach-david.jpg?v=1"
                   alt="Coach David Liandja — Fondateur & Head Coach PA³ English Academy"
@@ -431,7 +431,7 @@ export default function HomePage() {
               <div className="inline-block bg-amber-400 text-amber-950 font-black text-xs uppercase px-3 py-1 rounded-full">
                 Votre Formateur
               </div>
-              <h2 className="text-2xl sm:text-4xl font-black">
+              <h2 className="clamp-title font-black">
                 {BRAND.coach.name}
               </h2>
               <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
@@ -442,13 +442,13 @@ export default function HomePage() {
                 blocages et transformer votre anglais en atout professionnel.
               </p>
 
-              <div className="flex flex-wrap gap-4 text-xs font-medium text-slate-200 pt-1">
+              <div className="flex flex-wrap gap-2.5 sm:gap-4 text-xs font-medium text-slate-200 pt-1">
                 <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15">
-                  <MessageCircle className="w-4 h-4 text-emerald-400" />
+                  <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>WhatsApp : {BRAND.coach.whatsapp}</span>
                 </span>
                 <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15">
-                  <Phone className="w-4 h-4 text-amber-400" />
+                  <Phone className="w-4 h-4 text-amber-400 shrink-0" />
                   <span>Appel direct : {BRAND.coach.phone}</span>
                 </span>
                 <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15">
@@ -461,9 +461,9 @@ export default function HomePage() {
                   href={BRAND.coach.whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-3d-gold px-5 py-3 rounded-xl text-sm font-bold inline-flex items-center gap-2"
+                  className="btn-3d-gold w-full sm:w-auto px-5 py-3 rounded-xl text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-2 text-center"
                 >
-                  <MessageCircle className="w-4 h-4" />
+                  <MessageCircle className="w-4 h-4 shrink-0" />
                   <span>Contacter directement Coach David</span>
                 </a>
               </div>

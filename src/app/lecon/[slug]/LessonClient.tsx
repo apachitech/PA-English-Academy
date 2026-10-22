@@ -327,8 +327,8 @@ export function LessonClient({ data }: LessonClientProps) {
 
             {/* Next button after answer */}
             {lastCorrect !== null && (
-              <div className="flex justify-between items-center gap-4 animate-pop">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 animate-pop">
+                <div className="flex items-center justify-center sm:justify-start gap-2">
                   {lastCorrect ? (
                     <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -345,7 +345,7 @@ export function LessonClient({ data }: LessonClientProps) {
                 <button
                   type="button"
                   onClick={handleNextExercise}
-                  className="btn-3d-primary px-8 py-3.5 rounded-xl text-sm font-bold inline-flex items-center gap-2"
+                  className="w-full sm:w-auto btn-3d-primary px-8 py-3.5 rounded-xl text-sm font-bold inline-flex items-center justify-center gap-2 min-h-[44px] cursor-pointer"
                 >
                   <span>
                     {currentExIndex < exercises.length - 1

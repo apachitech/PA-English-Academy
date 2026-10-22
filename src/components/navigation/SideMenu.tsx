@@ -201,17 +201,17 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
       />
 
       {/* Slide-over Container */}
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <aside className="w-screen max-w-md bg-[#0B1F42] text-white shadow-2xl flex flex-col border-l border-amber-400/20 animate-in slide-in-from-right duration-300">
-          {/* Header */}
-          <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-navy-dark/60 shrink-0">
-            <div className="flex items-center gap-3">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
+        <aside className="w-screen max-w-[88vw] sm:max-w-md h-dvh bg-[#0B1F42] text-white shadow-2xl flex flex-col border-l border-amber-400/20 animate-in slide-in-from-right duration-300">
+          {/* Header with safe-area support */}
+          <div className="p-3.5 sm:p-5 pt-[max(env(safe-area-inset-top),0.875rem)] border-b border-white/10 flex items-center justify-between bg-navy-dark/60 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <Logo size="sm" variant="dark" withSlogan={false} />
             </div>
 
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border border-white/10"
+              className="min-tap flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border border-white/10 shrink-0 active:scale-95"
               aria-label="Fermer le menu"
             >
               <X className="w-5 h-5" />
@@ -335,8 +335,8 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
             </div>
           </div>
 
-          {/* Sticky Footer */}
-          <div className="p-4 border-t border-white/10 bg-navy-dark/90 shrink-0 text-center text-xs text-slate-400 space-y-1">
+          {/* Sticky Footer with safe-area padding for mobile home indicator */}
+          <div className="p-4 pb-[max(env(safe-area-inset-bottom),1rem)] border-t border-white/10 bg-navy-dark/95 shrink-0 text-center text-xs text-slate-400 space-y-1">
             <p className="font-semibold text-slate-300">
               PA³ English Academy • {BRAND.slogan}
             </p>

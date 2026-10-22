@@ -158,7 +158,7 @@ export default function ParcoursPage() {
       {/* Main Container */}
       <main className="flex-1 max-w-3xl w-full mx-auto p-4 sm:p-6 space-y-6">
         {/* Dynamic CEFR Level / Palier Selector Tabs */}
-        <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
+        <div className="bg-white p-1.5 sm:p-2 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between gap-1 overflow-x-auto touch-scroll no-scrollbar">
           {paliers
             .filter((p) => p.status === "published")
             .sort((a, b) => a.position - b.position)
@@ -171,7 +171,7 @@ export default function ParcoursPage() {
                   key={p.id}
                   type="button"
                   onClick={() => setSelectedLevel(p.code)}
-                  className={`flex-1 py-3 px-3 rounded-xl text-xs sm:text-sm font-black transition-all flex flex-col items-center gap-0.5 min-w-[105px] ${
+                  className={`flex-1 py-2.5 sm:py-3 px-2.5 sm:px-3 rounded-xl text-xs sm:text-sm font-black transition-all flex flex-col items-center justify-center gap-0.5 min-w-[95px] sm:min-w-[105px] min-h-[44px] cursor-pointer active:scale-95 ${
                     isSelected
                       ? "btn-3d-gold text-amber-950"
                       : "text-slate-600 hover:bg-slate-50"

@@ -134,8 +134,8 @@ export default function VodPage() {
         </div>
 
         {/* Filters and Search Bar */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3 sm:space-y-4">
+          <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
             {/* Search Input */}
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -156,62 +156,64 @@ export default function VodPage() {
               )}
             </div>
 
-            {/* Level Selector */}
-            <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto pb-1 sm:pb-0">
-              <span className="text-xs font-bold text-slate-500 mr-1">Niveau :</span>
-              {["all", "A1", "A2", "B1", "B2"].map((lvl) => (
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              {/* Level Selector */}
+              <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto touch-scroll no-scrollbar py-0.5">
+                <span className="text-xs font-bold text-slate-500 mr-1">Niveau :</span>
+                {["all", "A1", "A2", "B1", "B2"].map((lvl) => (
+                  <button
+                    key={lvl}
+                    onClick={() => setSelectedLevel(lvl)}
+                    className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all min-tap sm:min-w-0 ${
+                      selectedLevel === lvl
+                        ? "bg-navy text-white shadow-2xs"
+                        : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    }`}
+                  >
+                    {lvl === "all" ? "Tous" : lvl}
+                  </button>
+                ))}
+              </div>
+
+              {/* Access Selector */}
+              <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto touch-scroll no-scrollbar py-0.5">
+                <span className="text-xs font-bold text-slate-500 mr-1">Accès :</span>
                 <button
-                  key={lvl}
-                  onClick={() => setSelectedLevel(lvl)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    selectedLevel === lvl
-                      ? "bg-navy text-white shadow-2xs"
+                  onClick={() => setFilterAccess("all")}
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all min-tap sm:min-w-0 ${
+                    filterAccess === "all"
+                      ? "bg-amber-400 text-slate-950 font-black"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                   }`}
                 >
-                  {lvl === "all" ? "Tous" : lvl}
+                  Tous
                 </button>
-              ))}
-            </div>
-
-            {/* Access Selector */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              <span className="text-xs font-bold text-slate-500 mr-1">Accès :</span>
-              <button
-                onClick={() => setFilterAccess("all")}
-                className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  filterAccess === "all"
-                    ? "bg-amber-400 text-slate-950 font-black"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                Tous
-              </button>
-              <button
-                onClick={() => setFilterAccess("free")}
-                className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  filterAccess === "free"
-                    ? "bg-emerald-600 text-white font-black"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                Gratuit
-              </button>
-              <button
-                onClick={() => setFilterAccess("member")}
-                className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  filterAccess === "member"
-                    ? "bg-purple-600 text-white font-black"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-              >
-                Pass Membre
-              </button>
+                <button
+                  onClick={() => setFilterAccess("free")}
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all min-tap sm:min-w-0 ${
+                    filterAccess === "free"
+                      ? "bg-emerald-600 text-white font-black"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  Gratuit
+                </button>
+                <button
+                  onClick={() => setFilterAccess("member")}
+                  className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all min-tap sm:min-w-0 ${
+                    filterAccess === "member"
+                      ? "bg-purple-600 text-white font-black"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  Pass Membre
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-2 border-t border-slate-100">
+          <div className="flex items-center gap-2 overflow-x-auto touch-scroll no-scrollbar pt-2 border-t border-slate-100 pb-0.5">
             <button
               onClick={() => setSelectedCategory("all")}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${
@@ -412,13 +414,13 @@ export default function VodPage() {
       {/* Interactive Theater Video Modal (Strictly Viewport-Bounded) */}
       {activeVideo && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-xs animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-xs animate-in fade-in"
           role="dialog"
           aria-modal="true"
         >
-          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[92vh] sm:max-h-[88vh] flex flex-col overflow-hidden animate-in zoom-in-95">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[95dvh] sm:max-h-[88vh] flex flex-col overflow-hidden animate-in zoom-in-95">
             {/* Pinned Header with Close */}
-            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+            <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
               <div className="flex items-center gap-2.5 min-w-0 pr-2">
                 <div className="p-2 rounded-xl bg-amber-400 text-slate-950 shrink-0">
                   <Video className="w-4 h-4" />
@@ -497,22 +499,22 @@ export default function VodPage() {
             </div>
 
             {/* Pinned Footer with Actions */}
-            <div className="px-5 py-3.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between shrink-0 gap-3">
+            <div className="px-4 sm:px-5 py-3 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-stretch sm:items-center justify-between shrink-0 gap-2.5 sm:gap-3">
               <a
                 href={BRAND.coach.whatsappLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 hover:text-emerald-800"
+                className="inline-flex items-center justify-center gap-2 text-xs font-bold text-emerald-700 hover:text-emerald-800 py-1"
               >
-                <MessageCircle className="w-4 h-4 text-emerald-600" />
-                <span className="hidden sm:inline">Poser une question au Coach</span>
+                <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Poser une question au Coach</span>
               </a>
 
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setActiveVideo(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors"
+                  className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors min-h-[40px] text-center"
                 >
                   Fermer
                 </button>
@@ -520,17 +522,17 @@ export default function VodPage() {
                 <button
                   type="button"
                   onClick={() => handleMarkWatched(activeVideo.id, activeVideo.xpReward)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 shadow-xs transition ${
+                  className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 shadow-xs transition min-h-[40px] ${
                     watchedVideoIds.includes(activeVideo.id)
                       ? "bg-emerald-600 text-white"
                       : "btn-3d-gold"
                   }`}
                 >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span className="truncate">
                     {watchedVideoIds.includes(activeVideo.id)
-                      ? "Visionné (+XP acquis)"
-                      : "Marquer comme visionné (+XP)"}
+                      ? "Visionné (+XP)"
+                      : "Valider (+XP)"}
                   </span>
                 </button>
               </div>

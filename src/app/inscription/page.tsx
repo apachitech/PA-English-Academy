@@ -105,7 +105,7 @@ export default function RegisterPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Ex : Patrick Ilunga"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-sm font-medium outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-base sm:text-sm font-medium outline-none"
                 />
               </div>
             </div>
@@ -120,7 +120,7 @@ export default function RegisterPage() {
                 <select
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-sm font-medium outline-none bg-white"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-base sm:text-sm font-medium outline-none bg-white"
                 >
                   {DRC_CITIES.map((c) => (
                     <option key={c} value={c}>
@@ -144,7 +144,7 @@ export default function RegisterPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="exemple@unikin.ac.cd"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-sm font-medium outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-base sm:text-sm font-medium outline-none"
                 />
               </div>
             </div>
@@ -163,7 +163,7 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Au moins 6 caractères"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-sm font-medium outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-base sm:text-sm font-medium outline-none"
                 />
               </div>
             </div>

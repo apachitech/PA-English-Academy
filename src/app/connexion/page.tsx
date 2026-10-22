@@ -115,7 +115,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="exemple@unikin.ac.cd"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-sm font-medium outline-none"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-base sm:text-sm font-medium outline-none"
                     />
                   </div>
                 </div>
@@ -140,7 +140,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-sm font-medium outline-none"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-base sm:text-sm font-medium outline-none"
                     />
                   </div>
                 </div>
@@ -158,7 +158,7 @@ export default function LoginPage() {
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="+243 81 234 5678"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-sm font-medium outline-none"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-primary text-base sm:text-sm font-medium outline-none"
                   />
                 </div>
               </div>

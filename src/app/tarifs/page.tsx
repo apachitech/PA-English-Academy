@@ -346,13 +346,13 @@ export default function TarifsPage() {
         </div>
 
         {/* Pricing Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
           {PRICING_PLANS.map((plan) => (
             <div
               key={plan.id}
-              className={`rounded-2xl p-6 flex flex-col justify-between transition-all duration-200 relative ${
+              className={`rounded-2xl p-5 sm:p-6 flex flex-col justify-between transition-all duration-200 relative ${
                 plan.isPopular
-                  ? 'bg-navy text-white shadow-xl border-2 border-gold -translate-y-2'
+                  ? 'bg-navy text-white shadow-xl border-2 border-gold lg:-translate-y-2'
                   : 'bg-white text-slate-900 border border-slate-200 shadow-sm hover:border-slate-300'
               }`}
             >
@@ -463,24 +463,25 @@ export default function TarifsPage() {
 
       {/* Payment & Auth Modal */}
       {selectedPlan && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-hidden">
-          <div className="relative bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 flex flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+          <div className="relative bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 flex flex-col max-h-[94dvh] sm:max-h-[88vh] overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 pb-4 border-b border-slate-100 shrink-0 bg-white">
-              <div>
-                <div className="flex items-center gap-1.5">
+            <div className="flex items-center justify-between p-4 sm:p-5 pb-3 sm:pb-4 border-b border-slate-100 shrink-0 bg-white">
+              <div className="min-w-0 pr-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-[10px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full">
                     ⚡ SasPay (sapay.me)
                   </span>
                   <span className="text-[10px] text-slate-400 font-semibold">Paiement RDC</span>
                 </div>
-                <h3 className="font-black text-slate-900 text-lg mt-1">
+                <h3 className="font-black text-slate-900 text-base sm:text-lg mt-1 truncate">
                   {selectedPlan.title}
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedPlan(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 font-bold transition shrink-0 ml-3 cursor-pointer"
+                className="min-tap w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 font-bold transition shrink-0 cursor-pointer"
+                aria-label="Fermer la fenêtre"
               >
                 ✕
               </button>
