@@ -44,6 +44,7 @@ import {
   LearnerProfile,
   LearnerProgressStats,
 } from "@/lib/auth-learner";
+import { isAdminAuthenticated, isValidAdminEmail, logoutAdmin } from "@/lib/auth-admin";
 
 // Preset illustrated avatars for Congolese learners
 const PRESET_AVATARS = [
@@ -74,6 +75,7 @@ export default function ProfilePage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [profile, setProfile] = useState<LearnerProfile | null>(null);
   const [stats, setStats] = useState<LearnerProgressStats | null>(null);
 
@@ -114,8 +116,14 @@ export default function ProfilePage() {
         setBio(p.bio || "");
         setDailyGoalMin(p.dailyGoalMin || 15);
         setDataSaver(p.dataSaver || false);
+
+        // Check if the current user profile is an Admin
+        const userIsAdmin = isValidAdminEmail(p.email) || isAdminAuthenticated();
+        setIsAdmin(userIsAdmin);
       }
       setStats(s);
+    } else {
+      setIsAdmin(isAdminAuthenticated());
     }
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -148,6 +156,7 @@ export default function ProfilePage() {
     localStorage.setItem("pa3_user_plan", "Pass Découverte A1 (Actif)");
     
     setIsLoggedIn(true);
+    setIsAdmin(false);
     const p = getLearnerProfile();
     const s = getLearnerProgressStats();
     if (p) {
@@ -157,7 +166,45 @@ export default function ProfilePage() {
       setBio(p.bio || "");
     }
     setStats(s);
-    toast.success("Connecté en mode apprenant !");
+    toast.success("Connecté en mode apprenant (Grace Mwamba) !");
+  };
+
+  // Quick Demo Login as Administrator (Coach David Liandja)
+  const handleAdminDemoLogin = () => {
+    localStorage.setItem("pa3_admin_authenticated", "true");
+    localStorage.setItem(
+      "pa3_admin_user",
+      JSON.stringify({
+        name: "Coach David Liandja",
+        email: "liandjadavid@gmail.com",
+        role: "admin",
+        avatar: "CD",
+        authenticatedAt: new Date().toISOString(),
+      })
+    );
+    localStorage.setItem("pa3_user_logged_in", "true");
+    localStorage.setItem("pa3_user_email", "liandjadavid@gmail.com");
+    localStorage.setItem("pa3_user_name", "Coach David Liandja");
+    localStorage.setItem("pa3_user_city", "Kinshasa (Gombe)");
+    localStorage.setItem(
+      "pa3_user_bio",
+      "Fondateur & Head Coach PA³ English Academy. Parler anglais avec assurance !"
+    );
+    localStorage.setItem("pa3_daily_goal", "20");
+    localStorage.setItem("pa3_user_plan", "Direction Pédagogique (Accès Total)");
+
+    setIsLoggedIn(true);
+    setIsAdmin(true);
+    const p = getLearnerProfile();
+    const s = getLearnerProgressStats();
+    if (p) {
+      setProfile(p);
+      setName(p.name);
+      setCity(p.city || "Kinshasa (Gombe)");
+      setBio(p.bio || "");
+    }
+    setStats(s);
+    toast.success("Connecté au profil Administrateur (Coach David Liandja) !");
   };
 
   // Save Settings
@@ -250,7 +297,9 @@ export default function ProfilePage() {
   // Logout
   const handleLogout = () => {
     logoutLearner();
+    logoutAdmin();
     setIsLoggedIn(false);
+    setIsAdmin(false);
     setProfile(null);
     toast.info("Vous avez été déconnecté.");
     router.push("/connexion");
@@ -303,7 +352,14 @@ export default function ProfilePage() {
               type="button"
               className="w-full py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 underline transition"
             >
-              Ou tester en mode démo (Grace Mwamba)
+              Tester profil apprenant (Grace Mwamba)
+            </button>
+            <button
+              onClick={handleAdminDemoLogin}
+              type="button"
+              className="w-full py-2 text-xs font-bold text-amber-700 hover:text-amber-900 underline transition flex items-center justify-center gap-1.5"
+            >
+              <span>👑 Tester profil administrateur (Coach David Liandja)</span>
             </button>
           </div>
         </main>
@@ -340,7 +396,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar variant="app" showTestCta={false} showAdminBadge={false} />
+      <Navbar variant="app" showTestCta={false} showAdminBadge={isAdmin} />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-6 sm:py-8 space-y-6">
         {/* Top Header Card */}
@@ -368,9 +424,16 @@ export default function ProfilePage() {
                 <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
                   {profile?.name}
                 </h1>
-                <span className="bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                  Niveau {stats?.level || "A1"}
-                </span>
+                {isAdmin ? (
+                  <span className="bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1">
+                    <span>👑</span>
+                    <span>Admin • Coach David</span>
+                  </span>
+                ) : (
+                  <span className="bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    Niveau {stats?.level || "A1"}
+                  </span>
+                )}
                 <span className="text-base" title="République Démocratique du Congo">
                   🇨🇩
                 </span>
@@ -398,8 +461,18 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            {/* Quick Actions (Dashboard & Logout) */}
+            {/* Quick Actions (Dashboard, Admin & Logout) */}
             <div className="flex flex-wrap sm:flex-col gap-2 shrink-0">
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black px-3.5 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5 shadow-md border border-amber-500/30 active:scale-95 animate-pop"
+                  title="Accéder au panneau de contrôle administrateur"
+                >
+                  <Shield className="w-3.5 h-3.5 fill-slate-950" />
+                  <span>Portail Admin</span>
+                </Link>
+              )}
               <Link
                 href="/tableau-de-bord"
                 className="btn-3d-gold !py-2 !px-4 text-xs font-bold inline-flex items-center gap-1.5"

@@ -158,12 +158,24 @@ export function loginLearner(
   setItem(LEARNER_NAME_KEY, cleanName);
   setItem(LEARNER_CITY_KEY, cleanCity);
 
-  // If this is a regular learner (not Coach David or admin), ensure admin token is revoked
+  // If this is a dedicated administrator (Coach David Liandja or admin), grant admin privileges
   const isDedicatedAdmin =
     cleanEmail === 'liandjadavid@gmail.com' ||
-    cleanEmail.startsWith('admin@') ||
-    cleanEmail.includes('david');
-  if (!isDedicatedAdmin) {
+    cleanEmail === 'admin@pa3academy.cd' ||
+    cleanEmail === 'coach@pa3academy.cd' ||
+    cleanEmail === 'david.liandja@pa3.cd' ||
+    cleanEmail.endsWith('@pa3academy.cd');
+
+  if (isDedicatedAdmin) {
+    setItem('pa3_admin_authenticated', 'true');
+    setItem('pa3_admin_user', JSON.stringify({
+      name: cleanName.includes('David') || cleanEmail.includes('david') ? 'Coach David Liandja' : 'Administrateur PA³',
+      email: cleanEmail,
+      role: 'admin',
+      avatar: 'CD',
+      authenticatedAt: new Date().toISOString(),
+    }));
+  } else {
     removeItem('pa3_admin_authenticated');
     removeItem('pa3_admin_user');
   }
