@@ -416,7 +416,7 @@ export default function HomePage() {
                   alt="Coach David Liandja — Fondateur & Head Coach PA³ English Academy"
                   width={320}
                   height={420}
-                  priority
+                  loading="lazy"
                   unoptimized
                   className="w-full h-auto object-cover object-top group-hover:scale-105 transition-transform duration-500 block"
                 />
