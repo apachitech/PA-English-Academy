@@ -44,7 +44,6 @@ import {
   LearnerProfile,
   LearnerProgressStats,
 } from "@/lib/auth-learner";
-import { isAdminAuthenticated } from "@/lib/auth-admin";
 
 // Preset illustrated avatars for Congolese learners
 const PRESET_AVATARS = [
@@ -75,7 +74,6 @@ export default function ProfilePage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [profile, setProfile] = useState<LearnerProfile | null>(null);
   const [stats, setStats] = useState<LearnerProgressStats | null>(null);
 
@@ -102,7 +100,6 @@ export default function ProfilePage() {
 
   // Load profile & stats on mount
   useEffect(() => {
-    setIsAdmin(isAdminAuthenticated());
     const auth = isLearnerAuthenticated();
     setIsLoggedIn(auth);
 
@@ -140,6 +137,8 @@ export default function ProfilePage() {
 
   // Quick Demo Login for testing
   const handleQuickDemoLogin = () => {
+    localStorage.removeItem("pa3_admin_authenticated");
+    localStorage.removeItem("pa3_admin_user");
     localStorage.setItem("pa3_user_logged_in", "true");
     localStorage.setItem("pa3_user_email", "grace.mwamba@pa3.cd");
     localStorage.setItem("pa3_user_name", "Grace Mwamba");
@@ -341,7 +340,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar variant="app" showTestCta={false} />
+      <Navbar variant="app" showTestCta={false} showAdminBadge={false} />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-6 sm:py-8 space-y-6">
         {/* Top Header Card */}
@@ -399,18 +398,8 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            {/* Quick Actions (Dashboard, Admin & Logout) */}
+            {/* Quick Actions (Dashboard & Logout) */}
             <div className="flex flex-wrap sm:flex-col gap-2 shrink-0">
-              {isAdmin && (
-                <Link
-                  href="/admin"
-                  className="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black px-3.5 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5 shadow-sm border border-amber-500/30"
-                  title="Accéder au panneau de contrôle administrateur"
-                >
-                  <Shield className="w-3.5 h-3.5 fill-slate-950" />
-                  <span>Portail Admin</span>
-                </Link>
-              )}
               <Link
                 href="/tableau-de-bord"
                 className="btn-3d-gold !py-2 !px-4 text-xs font-bold inline-flex items-center gap-1.5"

@@ -18,7 +18,7 @@ interface NavbarProps {
 export function Navbar({
   variant = "home",
   showTestCta = true,
-  showAdminBadge = true,
+  showAdminBadge = false,
   customRightElement,
 }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

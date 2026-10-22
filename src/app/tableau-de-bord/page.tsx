@@ -248,31 +248,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* Coach David Admin & CRUD Quick Access (Only rendered when Admin is authenticated) */}
-        {isAdmin && (
-          <section className="bg-gradient-to-r from-navy via-slate-900 to-navy text-white rounded-3xl p-5 sm:p-6 border border-amber-400/40 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-                  👑 Coach David Liandja • Admin
-                </span>
-                <span className="font-bold text-xs sm:text-sm text-amber-200">
-                  Gestion &amp; CRUD des Leçons
-                </span>
-              </div>
-              <p className="text-xs text-slate-300">
-                Créez, modifiez, dupliquez et contrôlez le statut (publié / brouillon) de toutes les leçons de l&apos;Académie.
-              </p>
-            </div>
-            <Link
-              href="/admin"
-              className="btn-3d-gold !py-2.5 !px-5 text-xs font-black inline-flex items-center gap-2 shrink-0 shadow-lg"
-            >
-              <span>Ouvrir l&apos;Espace CRUD Admin</span>
-              <span>→</span>
-            </Link>
-          </section>
-        )}
 
         {/* 3-Column Stats & Skills Overview */}
         <section className="grid md:grid-cols-12 gap-6">
@@ -549,15 +524,7 @@ export default function DashboardPage() {
           <Zap className="w-5 h-5" />
           <span>Test</span>
         </Link>
-        {isAdmin && (
-          <Link
-            href="/admin"
-            className="flex flex-col items-center gap-1 text-amber-700 hover:text-amber-900 text-[10px] font-bold"
-          >
-            <Award className="w-5 h-5 text-amber-600" />
-            <span>Admin</span>
-          </Link>
-        )}
+
         <Link
           href="/profil"
           className="flex flex-col items-center gap-1 text-slate-500 hover:text-primary text-[10px] font-bold"

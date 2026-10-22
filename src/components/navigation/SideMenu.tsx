@@ -186,23 +186,6 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         },
       ],
     },
-    ...(isAdmin
-      ? [
-          {
-            title: "Administration & Enseignement",
-            items: [
-              {
-                label: "Portail Administrateur",
-                description: "Tableau de bord de gestion & contrôle complet",
-                href: "/admin",
-                icon: Shield,
-                badge: "👑 En Ligne",
-                badgeColor: "bg-amber-400 text-slate-950 font-black",
-              },
-            ],
-          },
-        ]
-      : []),
   ];
 
   if (!isOpen) return null;
