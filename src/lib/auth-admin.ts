@@ -76,10 +76,27 @@ function removeStorageItem(key: string): void {
 
 /**
  * Checks if the current client session has a verified administrator token.
+ * Regular learners who are logged in will never pass as admin.
  */
 export function isAdminAuthenticated(): boolean {
   try {
-    return getStorageItem(ADMIN_STORAGE_KEY) === "true";
+    const isAuth = getStorageItem(ADMIN_STORAGE_KEY) === "true";
+    if (!isAuth) return false;
+
+    // Security check: if a non-admin learner is logged in, do not grant admin visibility
+    const learnerEmail = getStorageItem("pa3_user_email");
+    if (learnerEmail) {
+      const clean = learnerEmail.trim().toLowerCase();
+      const isAdminEmail =
+        VALID_ADMIN_EMAILS.includes(clean) ||
+        clean.startsWith("admin@") ||
+        clean.includes("david");
+      if (!isAdminEmail) {
+        return false;
+      }
+    }
+
+    return true;
   } catch {
     return false;
   }

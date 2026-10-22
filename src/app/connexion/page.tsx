@@ -223,17 +223,6 @@ export default function LoginPage() {
               Créer un compte gratuit
             </Link>
           </div>
-
-          {/* Admin Portal link */}
-          <div className="text-center text-[11px] text-slate-400 pt-1">
-            <Link
-              href="/admin"
-              className="text-slate-500 hover:text-amber-700 font-semibold hover:underline inline-flex items-center gap-1"
-            >
-              <span>🔒 Espace Administrateur (Coach David)</span>
-              <span>→</span>
-            </Link>
-          </div>
         </div>
       </main>
     </div>

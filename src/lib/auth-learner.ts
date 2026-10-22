@@ -141,6 +141,16 @@ export function loginLearner(
   setItem(LEARNER_NAME_KEY, cleanName);
   setItem(LEARNER_CITY_KEY, cleanCity);
 
+  // If this is a regular learner (not Coach David or admin), ensure admin token is revoked
+  const isDedicatedAdmin =
+    cleanEmail === 'liandjadavid@gmail.com' ||
+    cleanEmail.startsWith('admin@') ||
+    cleanEmail.includes('david');
+  if (!isDedicatedAdmin) {
+    removeItem('pa3_admin_authenticated');
+    removeItem('pa3_admin_user');
+  }
+
   if (avatarUrl) {
     setItem(LEARNER_AVATAR_KEY, avatarUrl);
   }

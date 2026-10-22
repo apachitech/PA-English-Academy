@@ -5,10 +5,12 @@ import {
   logoutAdmin,
   getAdminUser,
 } from '../../src/lib/auth-admin';
+import { loginLearner, logoutLearner } from '../../src/lib/auth-learner';
 
 describe('Admin Authentication Guard', () => {
   beforeEach(() => {
     logoutAdmin();
+    logoutLearner();
   });
 
   it('initially reports unauthenticated session', () => {
@@ -48,5 +50,13 @@ describe('Admin Authentication Guard', () => {
     logoutAdmin();
     expect(isAdminAuthenticated()).toBe(false);
     expect(getAdminUser()).toBeNull();
+  });
+
+  it('ensures regular logged-in learners never pass as admin and do not see admin access', () => {
+    // Normal learner logs in
+    loginLearner('etudiant.kinshasa@gmail.com', 'Felly Makiese', 'Kinshasa');
+    
+    // Admin check must strictly return false
+    expect(isAdminAuthenticated()).toBe(false);
   });
 });
