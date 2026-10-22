@@ -56,6 +56,7 @@ Une fois authentifié avec succès, le Coach David Liandja accède à l'ensemble
 - 🎬 **CRUD Vidéos à la Demande (VOD) :** Ajouter des masterclasses et capsules vidéo, avec support optimisé Cloudinary (transcodage 3G Éco, posters auto et flux audio ultra-léger).
 - 🧠 **CRUD Test de Niveau :** Gérer les 40 questions du test de placement adaptatif par compétence (Vocabulaire, Grammaire, Compréhension orale, Compréhension écrite).
 - 💳 **CRUD des Tarifs & Paiements (Afrimoney / SasPay) :** Modifier en direct les prix en USD ($) et Francs Congolais (CDF), créer de nouvelles formules promotionnelles, activer ou désactiver les passerelles **Afrimoney (Africell)**, **M-Pesa (Vodacom)**, **Airtel Money** et **Orange Money**, et exporter la grille tarifaire en CSV.
+- 🎟️ **Générateur de Tokens & Niveaux :** Générer des passes de niveaux numériques (codes personnalisés ou aléatoires `PA3-A2-XXXX`, `PA3-LEVEL-UP`), définir le palier accordé (A1, A2, B1, B2, C1), les XP bonus, le nombre maximum d’utilisations, partager en 1-clic sur WhatsApp avec un étudiant, et suivre en temps réel les apprenants ayant réclamé leurs vouchers.
 - 👥 **Gestion des Apprenants :** Suivi en temps réel des élèves de Kinshasa et provinces, gestion des rôles, statuts (actif/suspendu) et export CSV complet.
 
 ### 2.4 Fermeture de Session (`Déconnexion Sécurisée`)

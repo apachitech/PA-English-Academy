@@ -28,9 +28,11 @@ import {
   Upload,
   RefreshCw,
   BookOpen,
+  Ticket,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/navigation/Navbar";
+import { TokenSection } from "@/components/profile/TokenSection";
 import { BRAND } from "@/lib/brand";
 import {
   isLearnerAuthenticated,
@@ -77,7 +79,7 @@ export default function ProfilePage() {
 
   // Active tab
   const [activeTab, setActiveTab] = useState<
-    "overview" | "settings" | "security" | "subscription" | "avatar"
+    "overview" | "settings" | "security" | "subscription" | "avatar" | "tokens"
   >("overview");
 
   // Editable settings state
@@ -115,6 +117,21 @@ export default function ProfilePage() {
       }
       setStats(s);
     }
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const requestedTab = params.get("tab");
+      if (
+        requestedTab === "overview" ||
+        requestedTab === "settings" ||
+        requestedTab === "security" ||
+        requestedTab === "subscription" ||
+        requestedTab === "avatar" ||
+        requestedTab === "tokens"
+      ) {
+        setActiveTab(requestedTab);
+      }
+    }
+
     setIsLoading(false);
   }, []);
 
@@ -438,6 +455,18 @@ export default function ProfilePage() {
           </button>
 
           <button
+            onClick={() => setActiveTab("tokens")}
+            className={`px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
+              activeTab === "tokens"
+                ? "bg-navy text-white shadow-sm"
+                : "text-slate-600 hover:text-navy hover:bg-slate-100"
+            }`}
+          >
+            <Ticket className="w-4 h-4 text-amber-500" />
+            <span>Tokens &amp; Niveaux</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab("avatar")}
             className={`px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center gap-2 whitespace-nowrap shrink-0 ${
               activeTab === "avatar"
@@ -553,13 +582,21 @@ export default function ProfilePage() {
                 <span className="text-slate-500">
                   Formule actuelle : <strong className="text-navy">{profile?.activePlan || "Accès Gratuit A1"}</strong>
                 </span>
-                <Link
-                  href="/tarifs"
-                  className="text-amber-600 font-bold hover:underline inline-flex items-center gap-1"
-                >
-                  <span>Mettre à niveau avec Mobile Money SasPay</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => setActiveTab("tokens")}
+                    className="text-amber-700 font-bold hover:underline inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>🎟️ Réclamer un Token de Niveau</span>
+                  </button>
+                  <Link
+                    href="/tarifs"
+                    className="text-amber-600 font-bold hover:underline inline-flex items-center gap-1"
+                  >
+                    <span>SasPay Mobile Money</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -886,6 +923,15 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* TAB: LEVEL TOKENS SECTION */}
+        {activeTab === "tokens" && (
+          <TokenSection
+            initialProfile={profile}
+            initialStats={stats}
+            onStatsUpdate={(newStats) => setStats(newStats)}
+          />
         )}
 
         {/* TAB 4: AVATAR / PHOTO UPLOAD */}

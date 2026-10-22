@@ -356,6 +356,28 @@ export default function TarifsPage() {
           ))}
         </div>
 
+        {/* Level Tokens & Passes Callout */}
+        <div className="mb-12 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 text-white rounded-3xl p-6 sm:p-8 shadow-lg max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="space-y-1.5 text-center sm:text-left">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/20 text-white text-[11px] font-bold">
+              <span>🎟️ Passes Numériques &amp; Tokens de Niveau</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-black">
+              Vous avez un code ou souhaitez acheter un Passe direct ?
+            </h3>
+            <p className="text-white/90 text-xs sm:text-sm max-w-xl">
+              Débloquez directement le Palier A2, B1 ou B2 sans abonnement, ou réclamez un voucher de niveau offert par le Coach David Liandja.
+            </p>
+          </div>
+          <Link
+            href="/profil?tab=tokens"
+            className="px-6 py-3 rounded-2xl bg-white text-amber-950 font-black text-xs sm:text-sm shadow-md hover:bg-amber-50 transition active:scale-98 whitespace-nowrap shrink-0 flex items-center gap-2"
+          >
+            <span>Ouvrir l&apos;Espace Tokens</span>
+            <span>→</span>
+          </Link>
+        </div>
+
         {/* FAQ Section */}
         <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm max-w-4xl mx-auto">
           <h2 className="text-xl font-bold text-slate-900 mb-6 text-center">
