@@ -26,6 +26,8 @@ import { VideoPlayer } from '@/components/video/VideoPlayer';
 import { PricingManagement } from '@/components/admin/PricingManagement';
 import { TokenManagement } from '@/components/admin/TokenManagement';
 import { PlatformSettingsControl } from '@/components/admin/PlatformSettingsControl';
+import { AdminSidebar, AdminTabType } from '@/components/admin/AdminSidebar';
+import { getStoredPlatformSettings } from '@/lib/domain/platform-settings';
 import { grantLevelUpgradeDirectly, CefrTargetLevel } from '@/lib/domain/tokens';
 import {
   isAdminAuthenticated,
@@ -35,6 +37,18 @@ import {
   AdminUser,
 } from '@/lib/auth-admin';
 import { toast } from 'sonner';
+
+const TAB_TITLES: Record<AdminTabType, { label: string; sub: string; icon: string }> = {
+  overview: { label: 'Vue d’ensemble', sub: 'Chiffres clés & Inscriptions', icon: '📊' },
+  lessons: { label: 'Gestion des Leçons', sub: 'Création & Publication de cours', icon: '📚' },
+  learners: { label: 'Gestion des Apprenants', sub: 'Suivi des comptes, XP & Promotions', icon: '👥' },
+  questions: { label: 'Test de Niveau', sub: 'Banque de questions d’évaluation', icon: '🧭' },
+  paliers: { label: 'Paliers CECRL', sub: 'Niveaux A1 à B2 & Seuils de validation', icon: '🎯' },
+  vod: { label: 'Vidéothèque VOD', sub: 'Streaming Cloudinary & Mode Éco 3G', icon: '🎥' },
+  pricing: { label: 'Tarifs & Afrimoney', sub: 'Packs, Abonnements & Mobile Money', icon: '💳' },
+  tokens: { label: 'Tokens & Vouchers', sub: 'Génération en lot & Déverrouillage', icon: '🎟️' },
+  settings: { label: 'Paramètres Plateforme', sub: 'Taux USD/CDF & Bannière en direct', icon: '⚙️' },
+};
 
 interface LearnerRecord {
   id: string;
@@ -305,7 +319,9 @@ const EMPTY_VOD_FORM: VodFormData = {
 
 export default function AdminDashboardPage() {
   const [isMounted, setIsMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'lessons' | 'learners' | 'questions' | 'paliers' | 'vod' | 'pricing' | 'tokens' | 'settings'>('lessons');
+  const [activeTab, setActiveTab] = useState<AdminTabType>('lessons');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [exchangeRate, setExchangeRate] = useState(2800);
   const [lessons, setLessons] = useState<CompleteLesson[]>(Object.values(SAMPLE_LESSONS));
   const [learners, setLearners] = useState<LearnerRecord[]>(INITIAL_LEARNERS);
   const [questions, setQuestions] = useState<PlacementQuestion[]>(PLACEMENT_QUESTIONS);
@@ -442,6 +458,11 @@ export default function AdminDashboardPage() {
         if (Array.isArray(parsedQuestions) && parsedQuestions.length > 0) {
           setQuestions(parsedQuestions);
         }
+      }
+
+      const currentSettings = getStoredPlatformSettings();
+      if (currentSettings?.usdToCdfRate) {
+        setExchangeRate(currentSettings.usdToCdfRate);
       }
     } catch {
       // ignore
@@ -1648,175 +1669,83 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col text-slate-800" suppressHydrationWarning>
-      {/* Admin Header */}
-      <header className="bg-navy text-white sticky top-0 z-30 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Logo variant="dark" size="sm" />
-            <div className="hidden sm:flex items-center gap-2 pl-4 border-l border-white/20">
-              <span className="text-xs uppercase tracking-wider font-bold bg-gold/20 text-gold px-2.5 py-0.5 rounded-full border border-gold/30">
-                Administration
-              </span>
-              <span className="text-xs text-slate-300">Portail Pédagogique</span>
+    <div className="min-h-screen bg-slate-100 flex flex-col lg:flex-row text-slate-800" suppressHydrationWarning>
+      {/* Side Menu Navigation: Visible & accessible at all times */}
+      <AdminSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isOpenMobile={isMobileMenuOpen}
+        setIsOpenMobile={setIsMobileMenuOpen}
+        counts={{
+          lessons: isMounted ? lessons.length : 3,
+          learners: isMounted ? learners.length : INITIAL_LEARNERS.length,
+          questions: isMounted ? questions.length : 40,
+          paliers: isMounted ? paliers.length : INITIAL_PALIERS.length,
+          vod: isMounted ? vodVideos.length : INITIAL_VOD_VIDEOS.length,
+          rate: exchangeRate,
+        }}
+        adminUser={adminUser}
+        onLogout={handleAdminLogout}
+      />
+
+      {/* Main Content Area */}
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen">
+        {/* Admin Top Header Bar */}
+        <header className="bg-navy text-white sticky top-0 z-30 shadow-md">
+          <div className="px-4 sm:px-6 h-16 flex items-center justify-between">
+            {/* Left: Mobile Drawer Trigger & Active Tab Breadcrumb */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="lg:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition flex items-center gap-2 cursor-pointer active:scale-95"
+                aria-label="Ouvrir le menu latéral"
+              >
+                <span className="text-lg">☰</span>
+                <span className="text-xs font-bold uppercase tracking-wider">Menu Admin</span>
+              </button>
+
+              <div className="flex items-center gap-2.5">
+                <span className="text-xs font-black uppercase tracking-wider text-gold bg-gold/15 px-2.5 py-1 rounded-lg border border-gold/30 flex items-center gap-1.5 shadow-xs">
+                  <span>{TAB_TITLES[activeTab]?.icon}</span>
+                  <span>{TAB_TITLES[activeTab]?.label}</span>
+                </span>
+                <span className="hidden sm:inline text-xs text-slate-300">
+                  {TAB_TITLES[activeTab]?.sub}
+                </span>
+              </div>
+            </div>
+
+            {/* Right: Quick actions and admin profile */}
+            <div className="flex items-center gap-3">
+              <div className="text-right hidden md:block">
+                <div className="text-xs font-bold text-white">{adminUser?.name || 'Coach David Liandja'}</div>
+                <div className="text-[11px] text-slate-400">Directeur Pédagogique • Admin</div>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold flex items-center justify-center font-black text-gold text-sm shadow">
+                {adminUser?.avatar || 'CD'}
+              </div>
+              <button
+                onClick={handleAdminLogout}
+                className="text-xs font-bold text-rose-300 hover:text-white px-3 py-1.5 rounded-lg border border-rose-500/40 hover:bg-rose-500/20 transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                title="Fermer la session administrateur"
+              >
+                <span>🔒</span>
+                <span className="hidden sm:inline">Déconnexion</span>
+              </button>
+              <Link
+                href="/tableau-de-bord"
+                className="text-xs text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-white/20 hover:bg-white/10 transition"
+                title="Aller sur l'espace apprenant"
+              >
+                Quitter
+              </Link>
             </div>
           </div>
+        </header>
 
-          <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block">
-              <div className="text-xs font-bold text-white">{adminUser?.name || 'Coach David Liandja'}</div>
-              <div className="text-[11px] text-slate-400">Directeur Pédagogique • Admin</div>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold flex items-center justify-center font-black text-gold text-sm shadow">
-              {adminUser?.avatar || 'CD'}
-            </div>
-            <button
-              onClick={handleAdminLogout}
-              className="text-xs font-bold text-rose-300 hover:text-white px-3 py-1.5 rounded-lg border border-rose-500/40 hover:bg-rose-500/20 transition flex items-center gap-1.5 active:scale-95 cursor-pointer"
-              title="Fermer la session administrateur"
-            >
-              <span>🔒</span>
-              <span className="hidden sm:inline">Déconnexion</span>
-            </button>
-            <Link
-              href="/tableau-de-bord"
-              className="text-xs text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-white/20 hover:bg-white/10 transition"
-              title="Aller sur l'espace apprenant"
-            >
-              Quitter
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Admin Nav Tabs */}
-      <div className="bg-white border-b border-slate-200 shadow-2xs" suppressHydrationWarning>
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 flex items-center gap-2 overflow-x-auto touch-scroll no-scrollbar py-1">
-          <button
-            onClick={() => setActiveTab('lessons')}
-            className={`py-3.5 px-4 font-black text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${
-              activeTab === 'lessons'
-                ? 'border-navy text-navy bg-gold/15'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>📚 Gestion &amp; CRUD des Leçons</span>
-            <span
-              className="bg-navy text-gold text-[10px] font-black px-2 py-0.5 rounded-full"
-              suppressHydrationWarning
-            >
-              {isMounted ? lessons.length : 3}
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`py-3.5 px-4 font-bold text-xs sm:text-sm border-b-2 transition whitespace-nowrap ${
-              activeTab === 'overview'
-                ? 'border-navy text-navy bg-slate-50'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            📊 Vue d’ensemble &amp; Chiffres
-          </button>
-          <button
-            onClick={() => setActiveTab('learners')}
-            className={`py-3.5 px-4 font-bold text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${
-              activeTab === 'learners'
-                ? 'border-navy text-navy bg-gold/15 font-black'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>👥 Gestion des Apprenants</span>
-            <span
-              className="bg-navy text-gold text-[10px] font-black px-2 py-0.5 rounded-full"
-              suppressHydrationWarning
-            >
-              {isMounted ? learners.length : INITIAL_LEARNERS.length}
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab('questions')}
-            className={`py-3.5 px-4 font-bold text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${
-              activeTab === 'questions'
-                ? 'border-navy text-navy bg-gold/15 font-black'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>🧭 Test de Niveau &amp; Questions</span>
-            <span
-              className="bg-navy text-gold text-[10px] font-black px-2 py-0.5 rounded-full"
-              suppressHydrationWarning
-            >
-              {isMounted ? questions.length : 40}
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab('paliers')}
-            className={`py-3.5 px-4 font-bold text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${
-              activeTab === 'paliers'
-                ? 'border-navy text-navy bg-gold/15 font-black'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>🎯 Paliers &amp; Niveaux CECRL</span>
-            <span
-              className="bg-navy text-gold text-[10px] font-black px-2 py-0.5 rounded-full"
-              suppressHydrationWarning
-            >
-              {isMounted ? paliers.length : INITIAL_PALIERS.length}
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab('vod')}
-            className={`py-3.5 px-4 font-bold text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${
-              activeTab === 'vod'
-                ? 'border-navy text-navy bg-gold/15 font-black'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>🎥 Vidéos VOD &amp; Cloudinary</span>
-            <span
-              className="bg-navy text-gold text-[10px] font-black px-2 py-0.5 rounded-full"
-              suppressHydrationWarning
-            >
-              {isMounted ? vodVideos.length : INITIAL_VOD_VIDEOS.length}
-            </span>
-          </button>
-          <button
-            onClick={() => setActiveTab('pricing')}
-            className={`py-3.5 px-4 font-bold text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${
-              activeTab === 'pricing'
-                ? 'border-navy text-navy bg-gold/15 font-black'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>💳 Tarifs &amp; Afrimoney</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('tokens')}
-            className={`py-3.5 px-4 font-bold text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${
-              activeTab === 'tokens'
-                ? 'border-navy text-navy bg-gold/15 font-black'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>🎟️ Tokens &amp; Niveaux</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`py-3.5 px-4 font-bold text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${
-              activeTab === 'settings'
-                ? 'border-navy text-navy bg-gold/15 font-black'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>⚙️ Paramètres &amp; Taux CDF</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Body */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8">
+        {/* Main Body */}
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* TAB 1: OVERVIEW */}
         {activeTab === 'overview' && (
           <div className="space-y-8">
@@ -3288,6 +3217,7 @@ export default function AdminDashboardPage() {
           <PlatformSettingsControl />
         )}
       </main>
+    </div>
 
       {/* ================================================================= */}
       {/* MODAL 1: CREATE LESSON */}
