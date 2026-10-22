@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { BRAND } from "@/lib/brand";
+import { isAdminAuthenticated } from "@/lib/auth-admin";
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -47,6 +48,13 @@ interface NavSection {
 
 export function SideMenu({ isOpen, onClose }: SideMenuProps) {
   const pathname = usePathname();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsAdmin(isAdminAuthenticated());
+    }
+  }, [isOpen]);
 
   // Close on Escape key press
   useEffect(() => {
@@ -169,19 +177,23 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         },
       ],
     },
-    {
-      title: "Administration & Enseignement",
-      items: [
-        {
-          label: "Portail Administrateur",
-          description: "Réservé Coach David Liandja & Équipe de gestion",
-          href: "/admin",
-          icon: Shield,
-          badge: "🔒 Réservé",
-          badgeColor: "bg-amber-400 text-slate-950 font-black",
-        },
-      ],
-    },
+    ...(isAdmin
+      ? [
+          {
+            title: "Administration & Enseignement",
+            items: [
+              {
+                label: "Portail Administrateur",
+                description: "Réservé Coach David Liandja & Équipe de gestion",
+                href: "/admin",
+                icon: Shield,
+                badge: "🔒 Réservé",
+                badgeColor: "bg-amber-400 text-slate-950 font-black",
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 
   if (!isOpen) return null;

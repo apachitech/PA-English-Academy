@@ -223,26 +223,6 @@ export default function LoginPage() {
               Créer un compte gratuit
             </Link>
           </div>
-
-          {/* Coach David / Admin Direct Link */}
-          <div className="pt-2 border-t border-slate-100">
-            <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-center space-y-1.5">
-              <div className="text-xs font-black text-amber-950 flex items-center justify-center gap-1.5">
-                <span>👑</span>
-                <span>Espace Coach David &amp; Administration</span>
-              </div>
-              <p className="text-[11px] text-amber-800">
-                Gérez le catalogue des leçons (créer, modifier, dupliquer, publier).
-              </p>
-              <Link
-                href="/admin"
-                className="inline-flex items-center gap-1.5 text-xs font-black text-slate-950 bg-amber-400 hover:bg-amber-300 px-3.5 py-1.5 rounded-xl transition shadow-xs"
-              >
-                <span>Accéder au CRUD des Leçons</span>
-                <span>→</span>
-              </Link>
-            </div>
-          </div>
         </div>
       </main>
     </div>

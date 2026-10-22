@@ -525,15 +525,6 @@ export default function HomePage() {
                 {BRAND.coach.email}
               </a>
             </p>
-            <p className="pt-2">
-              <Link
-                href="/admin"
-                className="text-amber-400 hover:underline font-bold inline-flex items-center gap-1 text-xs"
-              >
-                <span>👑 Accès Espace Admin &amp; CRUD des Leçons</span>
-                <span>→</span>
-              </Link>
-            </p>
           </div>
         </div>
       </footer>

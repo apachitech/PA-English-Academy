@@ -22,7 +22,10 @@
 
 L'accès au panneau d'administration est **strictement protégé** par une barrière d'authentification dédiée. Les visiteurs non accrédités ne peuvent ni voir ni modifier les données pédagogiques et apprenants.
 
-### 2.1 Écran de Verrouillage (`Admin Security Lock Screen`)
+### 2.1 Confidentialité du Lien d'Accès & Écran de Verrouillage
+> 🔒 **Mesure de sécurité & discrétion :** Le lien vers le portail admin est masqué sur l'ensemble des pages publiques (pied de page, écran de connexion apprenant, menu latéral non-connecté). Seuls les administrateurs avec une session active validée voient le bouton d'accès rapide « Admin » dans la barre de navigation et le menu latéral.  
+> Pour vous connecter pour la première fois en tant qu'administrateur, tapez directement `/admin` dans la barre d'adresse de votre navigateur (`http://localhost:3000/admin`).
+
 Lorsque vous naviguez vers `http://localhost:3000/admin` sans être connecté en tant qu'administrateur :
 1. Un écran de haute sécurité sombre et or s'affiche : **« Portail Administration PA³ — Accès Restreint & Sécurisé »**.
 2. Aucun contenu pédagogique ni liste d'apprenants n'est envoyé dans le code source HTML (protection anti-fuite SSR).
