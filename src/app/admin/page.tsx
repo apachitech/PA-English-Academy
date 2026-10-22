@@ -25,6 +25,8 @@ import {
 import { VideoPlayer } from '@/components/video/VideoPlayer';
 import { PricingManagement } from '@/components/admin/PricingManagement';
 import { TokenManagement } from '@/components/admin/TokenManagement';
+import { PlatformSettingsControl } from '@/components/admin/PlatformSettingsControl';
+import { grantLevelUpgradeDirectly, CefrTargetLevel } from '@/lib/domain/tokens';
 import {
   isAdminAuthenticated,
   verifyAndLoginAdmin,
@@ -303,7 +305,7 @@ const EMPTY_VOD_FORM: VodFormData = {
 
 export default function AdminDashboardPage() {
   const [isMounted, setIsMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'lessons' | 'learners' | 'questions' | 'paliers' | 'vod' | 'pricing' | 'tokens'>('lessons');
+  const [activeTab, setActiveTab] = useState<'overview' | 'lessons' | 'learners' | 'questions' | 'paliers' | 'vod' | 'pricing' | 'tokens' | 'settings'>('lessons');
   const [lessons, setLessons] = useState<CompleteLesson[]>(Object.values(SAMPLE_LESSONS));
   const [learners, setLearners] = useState<LearnerRecord[]>(INITIAL_LEARNERS);
   const [questions, setQuestions] = useState<PlacementQuestion[]>(PLACEMENT_QUESTIONS);
@@ -325,11 +327,15 @@ export default function AdminDashboardPage() {
   const [roleFilter, setRoleFilter] = useState<'ALL' | 'learner' | 'teacher' | 'admin'>('ALL');
   const [userStatusFilter, setUserStatusFilter] = useState<'ALL' | 'active' | 'suspended'>('ALL');
 
-  // Modal states for Learner CRUD
+  // Modal states for Learner CRUD & Direct Upgrade
   const [isLearnerCreateOpen, setIsLearnerCreateOpen] = useState(false);
   const [editingLearnerId, setEditingLearnerId] = useState<string | null>(null);
   const [learnerFormData, setLearnerFormData] = useState<LearnerFormData>(EMPTY_LEARNER_FORM);
   const [deletingLearnerId, setDeletingLearnerId] = useState<string | null>(null);
+  const [selectedLearnerForUpgrade, setSelectedLearnerForUpgrade] = useState<LearnerRecord | null>(null);
+  const [upgradeTargetLevel, setUpgradeTargetLevel] = useState<CefrTargetLevel>('A2');
+  const [upgradeBonusXp, setUpgradeBonusXp] = useState(500);
+  const [upgradeReason, setUpgradeReason] = useState('Attribution directe par la direction pédagogique');
 
   // Search & filters for lessons
   const [lessonSearch, setLessonSearch] = useState('');
@@ -395,7 +401,8 @@ export default function AdminDashboardPage() {
           requestedTab === 'paliers' ||
           requestedTab === 'vod' ||
           requestedTab === 'pricing' ||
-          requestedTab === 'tokens'
+          requestedTab === 'tokens' ||
+          requestedTab === 'settings'
         ) {
           setActiveTab(requestedTab);
         }
@@ -1795,6 +1802,16 @@ export default function AdminDashboardPage() {
           >
             <span>🎟️ Tokens &amp; Niveaux</span>
           </button>
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`py-3.5 px-4 font-bold text-xs sm:text-sm border-b-2 transition whitespace-nowrap flex items-center gap-2 ${
+              activeTab === 'settings'
+                ? 'border-navy text-navy bg-gold/15 font-black'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <span>⚙️ Paramètres &amp; Taux CDF</span>
+          </button>
         </div>
       </div>
 
@@ -2348,6 +2365,25 @@ export default function AdminDashboardPage() {
                                   title="Accorder +50 XP bonus"
                                 >
                                   +50 XP
+                                </button>
+
+                                {/* DIRECT LEVEL UPGRADE / TOKEN PROMOTION */}
+                                <button
+                                  onClick={() => {
+                                    setSelectedLearnerForUpgrade(lrn);
+                                    const nextMap: Record<string, CefrTargetLevel> = {
+                                      A1: 'A2',
+                                      A2: 'B1',
+                                      B1: 'B2',
+                                      B2: 'C1',
+                                    };
+                                    setUpgradeTargetLevel(nextMap[lrn.level.toUpperCase()] || 'B1');
+                                  }}
+                                  className="px-2 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 border border-amber-300 font-extrabold text-[11px] transition flex items-center gap-1"
+                                  title="Promouvoir le niveau CECRL et accorder un token"
+                                >
+                                  <span>🎟️</span>
+                                  <span>Niveau</span>
                                 </button>
 
                                 {/* WHATSAPP */}
@@ -3246,6 +3282,11 @@ export default function AdminDashboardPage() {
         {activeTab === 'tokens' && (
           <TokenManagement />
         )}
+
+        {/* TAB 9: PLATFORM SETTINGS & EXCHANGE RATE */}
+        {activeTab === 'settings' && (
+          <PlatformSettingsControl />
+        )}
       </main>
 
       {/* ================================================================= */}
@@ -4088,6 +4129,130 @@ export default function AdminDashboardPage() {
                   className="btn-duo !py-2.5 !px-6 font-black shadow-md flex items-center gap-2"
                 >
                   <span>💾</span> Sauvegarder les Modifications
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================= */}
+      {/* MODAL 5B: DIRECT LEVEL PROMOTION & TOKEN GRANT */}
+      {/* ================================================================= */}
+      {selectedLearnerForUpgrade && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="relative bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150">
+            {/* Header */}
+            <div className="p-5 border-b border-slate-100 bg-amber-500 text-white flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-100">
+                  Direction Pédagogique
+                </span>
+                <h3 className="text-base font-black">
+                  Promouvoir le Niveau de {selectedLearnerForUpgrade.name}
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedLearnerForUpgrade(null)}
+                className="w-8 h-8 rounded-full bg-black/20 hover:bg-black/30 flex items-center justify-center text-white font-bold transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!selectedLearnerForUpgrade) return;
+                grantLevelUpgradeDirectly({
+                  learnerEmail: selectedLearnerForUpgrade.email,
+                  learnerName: selectedLearnerForUpgrade.name,
+                  targetLevel: upgradeTargetLevel,
+                  bonusXp: upgradeBonusXp,
+                  reason: upgradeReason,
+                });
+                const updated = learners.map((l) => {
+                  if (l.id === selectedLearnerForUpgrade.id) {
+                    return {
+                      ...l,
+                      level: upgradeTargetLevel,
+                      totalXp: l.totalXp + upgradeBonusXp,
+                    };
+                  }
+                  return l;
+                });
+                saveLearners(updated);
+                const name = selectedLearnerForUpgrade.name;
+                setSelectedLearnerForUpgrade(null);
+                toast.success(`🎉 ${name} promu au niveau ${upgradeTargetLevel} avec succès ! (+${upgradeBonusXp} XP)`);
+              }}
+              className="p-5 sm:p-6 space-y-4"
+            >
+              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1">
+                <div>Apprenant : <strong className="text-slate-900">{selectedLearnerForUpgrade.name}</strong> ({selectedLearnerForUpgrade.email})</div>
+                <div>Niveau actuel : <span className="font-bold text-navy px-1.5 py-0.5 rounded bg-slate-200">{selectedLearnerForUpgrade.level}</span> • Total XP : <strong className="text-gold-dark">{selectedLearnerForUpgrade.totalXp} XP</strong></div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Nouveau Palier CECRL Attribué
+                </label>
+                <select
+                  value={upgradeTargetLevel}
+                  onChange={(e) => setUpgradeTargetLevel(e.target.value as CefrTargetLevel)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-navy outline-none"
+                >
+                  <option value="A1">Palier A1 - Débutant Fondamental</option>
+                  <option value="A2">Palier A2 - Élémentaire Quotidien</option>
+                  <option value="B1">Palier B1 - Intermédiaire Professionnel</option>
+                  <option value="B2">Palier B2 - Avancé &amp; Affaires</option>
+                  <option value="C1">Palier C1 - Expert &amp; Bilinguisme</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Bonus d’Expérience (XP)
+                </label>
+                <select
+                  value={upgradeBonusXp}
+                  onChange={(e) => setUpgradeBonusXp(Number(e.target.value))}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                >
+                  <option value={100}>+100 XP (Encouragement)</option>
+                  <option value={300}>+300 XP (Progression normale)</option>
+                  <option value={500}>+500 XP (Recommandé - Validation de palier)</option>
+                  <option value={1000}>+1000 XP (Super promotion / Bourse)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Motif ou Note Pédagogique
+                </label>
+                <input
+                  type="text"
+                  value={upgradeReason}
+                  onChange={(e) => setUpgradeReason(e.target.value)}
+                  placeholder="Ex: Examen de passage validé en direct avec Coach David"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedLearnerForUpgrade(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-md transition active:scale-98 cursor-pointer flex items-center gap-1.5"
+                >
+                  <span>🚀</span>
+                  <span>Confirmer la Promotion</span>
                 </button>
               </div>
             </form>

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { PwaManager } from "@/components/pwa/PwaManager";
+import { AnnouncementBanner } from "@/components/navigation/AnnouncementBanner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -76,6 +77,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <PwaManager />
+        <AnnouncementBanner />
         {children}
         <Toaster
           position="top-center"

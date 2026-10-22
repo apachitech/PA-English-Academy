@@ -9,11 +9,15 @@ import {
   getStoredTokens,
   saveStoredTokens,
   createToken,
+  updateToken,
+  bulkGenerateTokens,
+  resetTokenRedemptions,
   toggleTokenStatus,
   deleteToken,
   generateRandomTokenCode,
   INITIAL_LEVEL_TOKENS,
 } from '@/lib/domain/tokens';
+import { convertUsdToCdf } from '@/lib/domain/platform-settings';
 import { toast } from 'sonner';
 
 export function TokenManagement() {
@@ -27,7 +31,49 @@ export function TokenManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-  // Form State
+  // Edit Token Modal State (Full CRUD Update)
+  const [editingToken, setEditingToken] = useState<LevelToken | null>(null);
+  const [editFormData, setEditFormData] = useState<{
+    code: string;
+    title: string;
+    description: string;
+    type: TokenType;
+    targetLevel: CefrTargetLevel;
+    bonusXp: number;
+    priceUsd: number;
+    priceCdf: number;
+    isPurchasable: boolean;
+    maxRedemptions: number;
+    status: TokenStatus;
+    note: string;
+    expiresAt: string;
+  }>({
+    code: '',
+    title: '',
+    description: '',
+    type: 'level_grant',
+    targetLevel: 'A2',
+    bonusXp: 500,
+    priceUsd: 15,
+    priceCdf: 42000,
+    isPurchasable: true,
+    maxRedemptions: 1,
+    status: 'active',
+    note: '',
+    expiresAt: '',
+  });
+
+  // Bulk Generation Modal State
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [bulkCount, setBulkCount] = useState(5);
+  const [bulkPrefix, setBulkPrefix] = useState('PA3-A2');
+  const [bulkTitle, setBulkTitle] = useState('Bourse Étudiant A2');
+  const [bulkTargetLevel, setBulkTargetLevel] = useState<CefrTargetLevel>('A2');
+  const [bulkBonusXp, setBulkBonusXp] = useState(500);
+  const [bulkNote, setBulkNote] = useState('Lot attribué par la direction');
+  const [bulkGeneratedCodes, setBulkGeneratedCodes] = useState<string[]>([]);
+
+  // Create Form State
   const [formData, setFormData] = useState<{
     code: string;
     useRandomCode: boolean;
@@ -82,6 +128,7 @@ export function TokenManagement() {
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
+  // CREATE TOKEN SUBMIT
   const handleCreateSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -102,7 +149,7 @@ export function TokenManagement() {
         targetLevel: formData.type === 'xp_boost' ? undefined : formData.targetLevel,
         bonusXp: Number(formData.bonusXp) || 0,
         priceUsd: Number(formData.priceUsd) || 0,
-        priceCdf: Number(formData.priceCdf) || 0,
+        priceCdf: Number(formData.priceCdf) || convertUsdToCdf(Number(formData.priceUsd) || 0),
         isPurchasable: formData.isPurchasable,
         maxRedemptions: Number(formData.maxRedemptions) || 1,
         note: formData.note,
@@ -113,7 +160,7 @@ export function TokenManagement() {
       handleCopyCode(created.code);
       toast.success(`🎉 Token "${created.code}" généré avec succès !`);
 
-      // Reset form
+      // Reset create form
       setFormData({
         code: '',
         useRandomCode: true,
@@ -131,6 +178,91 @@ export function TokenManagement() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Erreur lors de la création.';
       toast.error(msg);
+    }
+  };
+
+  // OPEN EDIT TOKEN MODAL
+  const handleOpenEdit = (token: LevelToken) => {
+    setEditingToken(token);
+    setEditFormData({
+      code: token.code,
+      title: token.title,
+      description: token.description,
+      type: token.type,
+      targetLevel: token.targetLevel || 'A2',
+      bonusXp: token.bonusXp,
+      priceUsd: token.priceUsd,
+      priceCdf: token.priceCdf,
+      isPurchasable: token.isPurchasable,
+      maxRedemptions: token.maxRedemptions,
+      status: token.status,
+      note: token.note || '',
+      expiresAt: token.expiresAt ? token.expiresAt.slice(0, 10) : '',
+    });
+  };
+
+  // SAVE EDITED TOKEN (CRUD UPDATE)
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingToken) return;
+
+    try {
+      updateToken(editingToken.id, {
+        code: editFormData.code.trim().toUpperCase(),
+        title: editFormData.title.trim(),
+        description: editFormData.description.trim(),
+        type: editFormData.type,
+        targetLevel: editFormData.type === 'xp_boost' ? undefined : editFormData.targetLevel,
+        bonusXp: Number(editFormData.bonusXp),
+        priceUsd: Number(editFormData.priceUsd),
+        priceCdf: Number(editFormData.priceCdf),
+        isPurchasable: editFormData.isPurchasable,
+        maxRedemptions: Number(editFormData.maxRedemptions),
+        status: editFormData.status,
+        note: editFormData.note,
+        expiresAt: editFormData.expiresAt ? new Date(editFormData.expiresAt).toISOString() : null,
+      });
+
+      setTokens(getStoredTokens());
+      setEditingToken(null);
+      toast.success(`✏️ Token "${editFormData.code}" mis à jour avec succès !`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erreur lors de la mise à jour.';
+      toast.error(msg);
+    }
+  };
+
+  // BULK GENERATE HANDLER
+  const handleBulkGenerateSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const generated = bulkGenerateTokens({
+        count: bulkCount,
+        prefix: bulkPrefix,
+        title: bulkTitle,
+        type: 'level_grant',
+        targetLevel: bulkTargetLevel,
+        bonusXp: bulkBonusXp,
+        maxRedemptions: 1,
+        note: bulkNote,
+      });
+
+      const codes = generated.map((t) => t.code);
+      setBulkGeneratedCodes(codes);
+      setTokens(getStoredTokens());
+      toast.success(`📦 Lot de ${generated.length} tokens généré avec succès !`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Erreur génération en lot.';
+      toast.error(msg);
+    }
+  };
+
+  // RESET REDEMPTIONS COUNTER
+  const handleResetRedemptions = (token: LevelToken) => {
+    if (confirm(`Voulez-vous réinitialiser le compteur d’utilisations du token "${token.code}" à 0 ?`)) {
+      resetTokenRedemptions(token.id);
+      setTokens(getStoredTokens());
+      toast.success(`Compteur du token "${token.code}" remis à zéro.`);
     }
   };
 
@@ -171,6 +303,7 @@ export function TokenManagement() {
       'Max Utilisations',
       'Statut',
       'Créé Le',
+      'Expire Le',
       'Note/Bénéficiaire',
     ];
     const rows = tokens.map((t) => [
@@ -186,6 +319,7 @@ export function TokenManagement() {
       t.maxRedemptions,
       `"${t.status}"`,
       `"${t.createdAt}"`,
+      `"${t.expiresAt || 'Permanent'}"`,
       `"${(t.note || '').replace(/"/g, '""')}"`,
     ]);
     const csvContent =
@@ -236,10 +370,10 @@ export function TokenManagement() {
             <span>⚡ Gamification &amp; Progression Accélérée</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
-            Générateur de Tokens &amp; Passes de Niveaux
+            CRUD &amp; Générateur de Tokens / Vouchers de Niveau
           </h2>
           <p className="text-white/90 text-sm leading-relaxed">
-            Créez et gérez des tokens numériques pour faire monter de niveau vos apprenants (A1 ➔ A2, B1, B2) ou octroyer des bonus d’expérience XP. Les étudiants peuvent aussi acheter ces passes directement via <strong>Afrimoney</strong>, <strong>M-Pesa</strong>, ou carte bancaire.
+            Créez, modifiez (CRUD complet), générez en lot et distribuez des tokens de niveau (A1 ➔ A2, B1, B2) pour vos apprenants. Permet également d&apos;ajuster les prix de vente en <strong>Francs Congolais (CDF)</strong> et <strong>USD</strong> avec paiement Mobile Money (<strong>Afrimoney</strong>, <strong>M-Pesa</strong>).
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">
@@ -248,7 +382,17 @@ export function TokenManagement() {
               className="py-2.5 px-5 rounded-2xl bg-white text-amber-950 font-black text-sm shadow-md hover:bg-amber-50 active:scale-98 transition flex items-center gap-2 cursor-pointer"
             >
               <span>✨</span>
-              <span>Générer un Nouveau Token</span>
+              <span>Créer un Nouveau Token</span>
+            </button>
+            <button
+              onClick={() => {
+                setBulkGeneratedCodes([]);
+                setIsBulkModalOpen(true);
+              }}
+              className="py-2.5 px-4 rounded-2xl bg-black/20 hover:bg-black/30 text-white font-black text-xs backdrop-blur-sm border border-white/20 transition flex items-center gap-2 cursor-pointer"
+            >
+              <span>📦</span>
+              <span>Générer un Lot en Masse (Bulk)</span>
             </button>
             <button
               onClick={handleExportCsv}
@@ -436,15 +580,47 @@ export function TokenManagement() {
                     <h4 className="text-base font-bold text-slate-900">{token.title}</h4>
                     <p className="text-xs text-slate-500">{token.description}</p>
 
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 pt-0.5">
+                      <span className="font-semibold text-slate-700">
+                        Utilisations : <strong>{token.redemptionCount}</strong> sur <strong>{token.maxRedemptions}</strong>
+                      </span>
+                      {token.expiresAt && (
+                        <span className="text-amber-800">
+                          Expire le : {new Date(token.expiresAt).toLocaleDateString('fr-FR')}
+                        </span>
+                      )}
+                    </div>
+
                     {token.note && (
-                      <div className="text-[11px] text-amber-900/80 bg-amber-50/80 px-2.5 py-1 rounded-lg inline-block border border-amber-200/60">
+                      <div className="text-[11px] text-amber-900/80 bg-amber-50/80 px-2.5 py-1 rounded-lg inline-block border border-amber-200/60 mt-1">
                         <strong>Note :</strong> {token.note}
                       </div>
                     )}
                   </div>
 
-                  {/* Right Actions & Redemptions */}
+                  {/* Right Actions Toolbar (Full CRUD Controls) */}
                   <div className="flex flex-wrap items-center gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+                    {/* EDIT BUTTON (CRUD UPDATE) */}
+                    <button
+                      onClick={() => handleOpenEdit(token)}
+                      className="px-3 py-1.5 rounded-xl bg-navy/10 hover:bg-navy/15 text-navy font-bold text-xs flex items-center gap-1 transition active:scale-95 cursor-pointer"
+                      title="Modifier ce token (titre, niveau, code, quotas, prix)"
+                    >
+                      <span>✏️</span>
+                      <span>Modifier</span>
+                    </button>
+
+                    {/* RESET USES BUTTON */}
+                    {token.redemptionCount > 0 && (
+                      <button
+                        onClick={() => handleResetRedemptions(token)}
+                        className="px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold transition cursor-pointer"
+                        title="Remettre le quota à zéro"
+                      >
+                        🔄 Réinitialiser
+                      </button>
+                    )}
+
                     {/* Share WhatsApp */}
                     <button
                       onClick={() => handleShareWhatsApp(token)}
@@ -452,7 +628,7 @@ export function TokenManagement() {
                       title="Envoyer ce code à un élève sur WhatsApp"
                     >
                       <span>💬</span>
-                      <span>Partager WhatsApp</span>
+                      <span>WhatsApp</span>
                     </button>
 
                     {/* Toggle Status */}
@@ -471,14 +647,14 @@ export function TokenManagement() {
                     <button
                       onClick={() => handleDelete(token.id, token.code)}
                       className="p-1.5 rounded-xl bg-white hover:bg-red-50 text-red-600 hover:text-red-700 border border-slate-200 text-xs transition cursor-pointer"
-                      title="Supprimer ce token"
+                      title="Supprimer définitivement ce token"
                     >
                       🗑️
                     </button>
                   </div>
                 </div>
 
-                {/* Redemptions Drawer if any */}
+                {/* Redemptions Drawer */}
                 {token.redemptions && token.redemptions.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-slate-100">
                     <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
@@ -507,7 +683,7 @@ export function TokenManagement() {
       </div>
 
       {/* ================================================================= */}
-      {/* MODAL: GENERATE NEW TOKEN */}
+      {/* MODAL 1: CREATE NEW TOKEN */}
       {/* ================================================================= */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
@@ -530,7 +706,6 @@ export function TokenManagement() {
 
             {/* Form */}
             <form onSubmit={handleCreateSubmit} className="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-              {/* Type of Token */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Type d’Action</label>
                 <div className="grid grid-cols-3 gap-2">
@@ -591,7 +766,6 @@ export function TokenManagement() {
                 </div>
               </div>
 
-              {/* Target Level if level_grant */}
               {formData.type === 'level_grant' && (
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -618,7 +792,6 @@ export function TokenManagement() {
                 </div>
               )}
 
-              {/* Code Mode */}
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="text-xs font-bold text-slate-700">Code du Token</label>
@@ -647,7 +820,6 @@ export function TokenManagement() {
                 )}
               </div>
 
-              {/* Title & Description */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Titre Public</label>
                 <input
@@ -681,11 +853,9 @@ export function TokenManagement() {
                     onChange={(e) => setFormData((p) => ({ ...p, maxRedemptions: Number(e.target.value) }))}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
                   />
-                  <span className="text-[10px] text-slate-400">1 = code à usage unique</span>
                 </div>
               </div>
 
-              {/* Price if purchasable */}
               <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -709,7 +879,7 @@ export function TokenManagement() {
                         value={formData.priceUsd}
                         onChange={(e) => {
                           const usd = Number(e.target.value);
-                          setFormData((p) => ({ ...p, priceUsd: usd, priceCdf: usd * 2800 }));
+                          setFormData((p) => ({ ...p, priceUsd: usd, priceCdf: convertUsdToCdf(usd) }));
                         }}
                         className="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
                       />
@@ -729,7 +899,6 @@ export function TokenManagement() {
                 )}
               </div>
 
-              {/* Note / Recipient */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
                   Note Interne ou Nom de l’Élève Bénéficiaire
@@ -757,6 +926,325 @@ export function TokenManagement() {
                 >
                   <span>🎟️</span>
                   <span>Générer &amp; Activer le Token</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================= */}
+      {/* MODAL 2: EDIT TOKEN (FULL CRUD UPDATE) */}
+      {/* ================================================================= */}
+      {editingToken && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="relative bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-navy text-white">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-gold">
+                  Modification de Token (CRUD)
+                </span>
+                <h3 className="text-lg font-black">Modifier le Token {editingToken.code}</h3>
+              </div>
+              <button
+                onClick={() => setEditingToken(null)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white font-bold transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Code du Token</label>
+                  <input
+                    type="text"
+                    required
+                    value={editFormData.code}
+                    onChange={(e) => setEditFormData((p) => ({ ...p, code: e.target.value.toUpperCase() }))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-900 outline-none uppercase"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Statut Actuel</label>
+                  <select
+                    value={editFormData.status}
+                    onChange={(e) => setEditFormData((p) => ({ ...p, status: e.target.value as TokenStatus }))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                  >
+                    <option value="active">Actif (Utilisable)</option>
+                    <option value="redeemed">Épuisé (Quota atteint)</option>
+                    <option value="revoked">Révoqué (Bloqué)</option>
+                    <option value="expired">Expiré</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Titre</label>
+                <input
+                  type="text"
+                  required
+                  value={editFormData.title}
+                  onChange={(e) => setEditFormData((p) => ({ ...p, title: e.target.value }))}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none focus:border-navy"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Description</label>
+                <textarea
+                  rows={2}
+                  value={editFormData.description}
+                  onChange={(e) => setEditFormData((p) => ({ ...p, description: e.target.value }))}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none focus:border-navy"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Palier</label>
+                  <select
+                    value={editFormData.targetLevel}
+                    onChange={(e) => setEditFormData((p) => ({ ...p, targetLevel: e.target.value as CefrTargetLevel }))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                  >
+                    <option value="A1">A1</option>
+                    <option value="A2">A2</option>
+                    <option value="B1">B1</option>
+                    <option value="B2">B2</option>
+                    <option value="C1">C1</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Bonus XP</label>
+                  <input
+                    type="number"
+                    step="50"
+                    value={editFormData.bonusXp}
+                    onChange={(e) => setEditFormData((p) => ({ ...p, bonusXp: Number(e.target.value) }))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Quota Max</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editFormData.maxRedemptions}
+                    onChange={(e) => setEditFormData((p) => ({ ...p, maxRedemptions: Number(e.target.value) }))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Prix USD ($)</label>
+                  <input
+                    type="number"
+                    value={editFormData.priceUsd}
+                    onChange={(e) => {
+                      const usd = Number(e.target.value);
+                      setEditFormData((p) => ({ ...p, priceUsd: usd, priceCdf: convertUsdToCdf(usd) }));
+                    }}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Prix CDF (Francs)</label>
+                  <input
+                    type="number"
+                    step="1000"
+                    value={editFormData.priceCdf}
+                    onChange={(e) => setEditFormData((p) => ({ ...p, priceCdf: Number(e.target.value) }))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Date d’Expiration (Optionnel)</label>
+                <input
+                  type="date"
+                  value={editFormData.expiresAt}
+                  onChange={(e) => setEditFormData((p) => ({ ...p, expiresAt: e.target.value }))}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Note / Bénéficiaire</label>
+                <input
+                  type="text"
+                  value={editFormData.note}
+                  onChange={(e) => setEditFormData((p) => ({ ...p, note: e.target.value }))}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingToken(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-navy hover:bg-slate-800 text-gold font-black text-xs shadow-md transition active:scale-98 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>💾 Enregistrer les Modifications</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================= */}
+      {/* MODAL 3: BULK GENERATOR (LOT EN MASSE) */}
+      {/* ================================================================= */}
+      {isBulkModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="relative bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-900 text-white">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                  Générateur Multiple en Lot
+                </span>
+                <h3 className="text-lg font-black">Générer un Lot de Tokens</h3>
+              </div>
+              <button
+                onClick={() => setIsBulkModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white font-bold transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleBulkGenerateSubmit} className="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Nombre de Tokens</label>
+                  <select
+                    value={bulkCount}
+                    onChange={(e) => setBulkCount(Number(e.target.value))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                  >
+                    <option value={5}>5 Tokens</option>
+                    <option value={10}>10 Tokens</option>
+                    <option value={20}>20 Tokens</option>
+                    <option value={50}>50 Tokens</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Préfixe du Code</label>
+                  <input
+                    type="text"
+                    required
+                    value={bulkPrefix}
+                    onChange={(e) => setBulkPrefix(e.target.value.toUpperCase())}
+                    placeholder="Ex: UPC-A2, GOMA-B1"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono font-bold text-slate-900 outline-none uppercase"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Niveau Accordé</label>
+                  <select
+                    value={bulkTargetLevel}
+                    onChange={(e) => setBulkTargetLevel(e.target.value as CefrTargetLevel)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                  >
+                    <option value="A1">Palier A1</option>
+                    <option value="A2">Palier A2</option>
+                    <option value="B1">Palier B1</option>
+                    <option value="B2">Palier B2</option>
+                    <option value="C1">Palier C1</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Bonus XP</label>
+                  <input
+                    type="number"
+                    step="50"
+                    value={bulkBonusXp}
+                    onChange={(e) => setBulkBonusXp(Number(e.target.value))}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Titre du Lot</label>
+                <input
+                  type="text"
+                  required
+                  value={bulkTitle}
+                  onChange={(e) => setBulkTitle(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Note pour ce groupe</label>
+                <input
+                  type="text"
+                  value={bulkNote}
+                  onChange={(e) => setBulkNote(e.target.value)}
+                  placeholder="Ex: Bourses pour étudiants UPC Kinshasa"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 outline-none"
+                />
+              </div>
+
+              {/* Display generated batch if available */}
+              {bulkGeneratedCodes.length > 0 && (
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-emerald-900">
+                    <span>✨ {bulkGeneratedCodes.length} codes générés :</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(bulkGeneratedCodes.join('\n'));
+                        toast.success('Tous les codes copiés dans le presse-papier !');
+                      }}
+                      className="text-[11px] underline text-emerald-800 font-extrabold cursor-pointer"
+                    >
+                      Copier tous les codes
+                    </button>
+                  </div>
+                  <div className="max-h-32 overflow-y-auto p-2 bg-white rounded-xl border border-emerald-200 text-xs font-mono text-emerald-950 space-y-1">
+                    {bulkGeneratedCodes.map((c, i) => (
+                      <div key={i} className="flex justify-between">
+                        <span>{c}</span>
+                        <span className="text-[10px] text-slate-400">Palier {bulkTargetLevel}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-2 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsBulkModalOpen(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
+                >
+                  Fermer
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-md transition active:scale-98 cursor-pointer flex items-center gap-1.5"
+                >
+                  <span>📦</span>
+                  <span>Lancer la Génération ({bulkCount} Tokens)</span>
                 </button>
               </div>
             </form>

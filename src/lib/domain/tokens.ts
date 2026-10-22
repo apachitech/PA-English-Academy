@@ -301,6 +301,54 @@ export function toggleTokenStatus(tokenId: string, status: TokenStatus): LevelTo
 }
 
 /**
+ * Admin Action: Update an existing token (Full CRUD Update)
+ */
+export function updateToken(
+  tokenId: string,
+  updates: Partial<Omit<LevelToken, 'id' | 'createdAt' | 'redemptions'>>
+): LevelToken {
+  const tokens = getStoredTokens();
+  const idx = tokens.findIndex((t) => t.id === tokenId);
+  if (idx === -1) {
+    throw new Error(`Token #${tokenId} introuvable.`);
+  }
+
+  const existing = tokens[idx];
+
+  // If code is changing, check uniqueness
+  if (updates.code && updates.code.trim().toUpperCase() !== existing.code.toUpperCase()) {
+    const codeUpper = updates.code.trim().toUpperCase();
+    const collision = tokens.find((t) => t.id !== tokenId && t.code.toUpperCase() === codeUpper);
+    if (collision) {
+      throw new Error(`Le code de token "${codeUpper}" est déjà utilisé par un autre token.`);
+    }
+    existing.code = codeUpper;
+  }
+
+  if (updates.title !== undefined) existing.title = updates.title.trim();
+  if (updates.description !== undefined) existing.description = updates.description.trim();
+  if (updates.type !== undefined) existing.type = updates.type;
+  if (updates.targetLevel !== undefined) existing.targetLevel = updates.targetLevel;
+  if (updates.bonusXp !== undefined) existing.bonusXp = Number(updates.bonusXp);
+  if (updates.priceUsd !== undefined) existing.priceUsd = Number(updates.priceUsd);
+  if (updates.priceCdf !== undefined) existing.priceCdf = Number(updates.priceCdf);
+  if (updates.isPurchasable !== undefined) existing.isPurchasable = updates.isPurchasable;
+  if (updates.maxRedemptions !== undefined) {
+    existing.maxRedemptions = Number(updates.maxRedemptions);
+    // If max is increased above redemptions, reactivate if was redeemed
+    if (existing.status === 'redeemed' && existing.redemptionCount < existing.maxRedemptions) {
+      existing.status = 'active';
+    }
+  }
+  if (updates.status !== undefined) existing.status = updates.status;
+  if (updates.expiresAt !== undefined) existing.expiresAt = updates.expiresAt;
+  if (updates.note !== undefined) existing.note = updates.note?.trim();
+
+  saveStoredTokens(tokens);
+  return existing;
+}
+
+/**
  * Admin Action: Delete a token
  */
 export function deleteToken(tokenId: string): boolean {
@@ -309,6 +357,89 @@ export function deleteToken(tokenId: string): boolean {
   if (filtered.length === tokens.length) return false;
   saveStoredTokens(filtered);
   return true;
+}
+
+/**
+ * Admin Action: Bulk generate multiple tokens at once
+ */
+export function bulkGenerateTokens(options: {
+  count: number;
+  prefix?: string;
+  title: string;
+  type: TokenType;
+  targetLevel?: CefrTargetLevel;
+  bonusXp?: number;
+  maxRedemptions?: number;
+  note?: string;
+}): LevelToken[] {
+  const count = Math.min(100, Math.max(1, options.count));
+  const generated: LevelToken[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const code = generateRandomTokenCode(options.prefix || `PA3-${options.targetLevel || 'PRO'}`);
+    const token = createToken({
+      code,
+      title: `${options.title} #${i + 1}`,
+      type: options.type,
+      targetLevel: options.targetLevel,
+      bonusXp: options.bonusXp,
+      maxRedemptions: options.maxRedemptions || 1,
+      isPurchasable: false,
+      note: options.note || `Lot généré en masse (${i + 1}/${count})`,
+    });
+    generated.push(token);
+  }
+
+  return generated;
+}
+
+/**
+ * Admin Action: Reset redemptions / claim counter for a token
+ */
+export function resetTokenRedemptions(tokenId: string): LevelToken | null {
+  const tokens = getStoredTokens();
+  const idx = tokens.findIndex((t) => t.id === tokenId);
+  if (idx === -1) return null;
+
+  tokens[idx].redemptionCount = 0;
+  tokens[idx].redemptions = [];
+  tokens[idx].status = 'active';
+  saveStoredTokens(tokens);
+  return tokens[idx];
+}
+
+/**
+ * Admin Action: Directly promote a learner or award a token
+ */
+export function grantLevelUpgradeDirectly(options: {
+  learnerEmail: string;
+  learnerName?: string;
+  targetLevel: CefrTargetLevel;
+  bonusXp?: number;
+  reason?: string;
+}): { success: boolean; message: string; token: LevelToken } {
+  // Generate dedicated voucher
+  const token = createToken({
+    code: generateRandomTokenCode(`VIP-${options.targetLevel}`),
+    title: `Attribution Directe Palier ${options.targetLevel}`,
+    type: 'level_grant',
+    targetLevel: options.targetLevel,
+    bonusXp: options.bonusXp ?? 500,
+    maxRedemptions: 1,
+    isPurchasable: false,
+    note: options.reason || `Octroyé directement par Coach David Liandja à ${options.learnerName || options.learnerEmail}`,
+  });
+
+  const claimRes = claimToken(token.code, {
+    email: options.learnerEmail,
+    name: options.learnerName,
+  });
+
+  return {
+    success: claimRes.success,
+    message: claimRes.message,
+    token: claimRes.token || token,
+  };
 }
 
 export interface ClaimResult {
