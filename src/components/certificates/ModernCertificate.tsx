@@ -154,8 +154,19 @@ export function ModernCertificate({
               <span className="text-xs">🇨🇩</span>
             </div>
             <h1 className="text-base sm:text-lg font-black tracking-tight leading-tight mt-0.5">
-              Certificat Officiel Authentifié & Vérifié
+              Certificat Officiel Authentifié &amp; Vérifié
             </h1>
+            <p className="text-[11px] text-emerald-100 font-mono mt-0.5">
+              Portail officiel :{" "}
+              <a
+                href="https://pa-english-academy.vercel.app/verify"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline font-bold text-white hover:text-amber-200"
+              >
+                https://pa-english-academy.vercel.app/verify
+              </a>
+            </p>
           </div>
         </div>
 
@@ -440,17 +451,30 @@ export function ModernCertificate({
               <p className="text-[10px] sm:text-xs print:text-[9px] font-mono font-bold text-slate-800">
                 Délivré le : {initialCert.issuedAt}
               </p>
-              <p className="text-[9px] sm:text-[10px] print:text-[8px] text-slate-400 font-mono">
+              <p className="text-[9px] sm:text-[10px] print:text-[8px] text-slate-500 font-mono">
                 S/N: {initialCert.serialNumber || `CD-PA3-2026-${initialCert.code}`}
+              </p>
+              <p className="text-[9px] sm:text-[10px] print:text-[7.5px] font-mono font-bold text-amber-700 truncate">
+                https://pa-english-academy.vercel.app/verify
               </p>
             </div>
           </div>
 
           {/* Certificate Security Microprint Footer */}
-          <div className="pt-4 print:pt-1 border-t border-slate-100 flex flex-col sm:flex-row print:flex-row items-center justify-between text-[9px] sm:text-[10px] print:text-[8px] text-slate-400 font-mono gap-2 print:gap-1">
+          <div className="pt-3 print:pt-1 border-t border-slate-100 flex flex-col sm:flex-row print:flex-row items-center justify-between text-[9px] sm:text-[10px] print:text-[8px] text-slate-500 font-mono gap-1.5 print:gap-1">
             <span>PA³ ENGLISH ACADEMY • REGISTRE OFFICIEL NUMÉRIQUE</span>
-            <span>IDENTIFIANT CERTIFIÉ : {initialCert.code}</span>
-            <span>VÉRIFICATION : PA-ENGLISH-ACADEMY.VERCEL.APP</span>
+            <span>IDENTIFIANT CERTIFIÉ : <strong className="text-slate-800">{initialCert.code}</strong></span>
+            <span>
+              VÉRIFICATION :{" "}
+              <a
+                href="https://pa-english-academy.vercel.app/verify"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-700 font-bold hover:underline"
+              >
+                https://pa-english-academy.vercel.app/verify
+              </a>
+            </span>
           </div>
         </div>
       </div>
