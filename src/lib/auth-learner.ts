@@ -16,6 +16,23 @@ const LEARNER_DATA_SAVER_KEY = 'pa3_data_saver';
 const LEARNER_PLAN_KEY = 'pa3_user_plan';
 const LEARNER_PLAN_EXPIRY_KEY = 'pa3_user_plan_expires';
 const LEARNER_JOINED_AT_KEY = 'pa3_user_joined_at';
+const REGISTERED_USERS_KEY = 'pa3_registered_users';
+
+/**
+ * Pre-existing accounts already registered in the PA³ English Academy system
+ */
+export const DEFAULT_REGISTERED_EMAILS: string[] = [
+  'liandjadavid@gmail.com',
+  'admin@pa3academy.cd',
+  'coach@pa3academy.cd',
+  'grace.mwamba@pa3.cd',
+  'patrick.kalonji@pa3.cd',
+  'naomi.k@gmail.com',
+  'gloire.m@yahoo.fr',
+  'junior.ilunga@gmail.com',
+  'dorcas.m@gmail.com',
+  'prince.mulumba@gmail.com',
+];
 
 const memoryStore = new Map<string, string>();
 
@@ -274,3 +291,119 @@ export function logoutLearner(): void {
   removeItem(LEARNER_BIO_KEY);
   removeItem(LEARNER_PASSWORD_KEY);
 }
+
+export interface RegisteredUserRecord {
+  email: string;
+  name: string;
+  city?: string;
+  registeredAt: string;
+}
+
+/**
+ * Returns all dynamically registered users stored in localStorage/session
+ */
+export function getRegisteredUsers(): RegisteredUserRecord[] {
+  try {
+    const raw = getItem(REGISTERED_USERS_KEY);
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Checks whether an email address already exists in the PA³ Academy system
+ * (either as a default account or a registered account).
+ */
+export function isEmailRegistered(email: string): boolean {
+  if (!email) return false;
+  const clean = email.trim().toLowerCase();
+
+  // 1. Check in default pre-seeded accounts
+  if (DEFAULT_REGISTERED_EMAILS.some((e) => e.toLowerCase() === clean)) {
+    return true;
+  }
+
+  // 2. Check current active user email if set
+  const currentEmail = getItem(LEARNER_EMAIL_KEY);
+  if (currentEmail && currentEmail.trim().toLowerCase() === clean) {
+    return true;
+  }
+
+  // 3. Check registered users list in storage
+  const registered = getRegisteredUsers();
+  return registered.some((u) => u.email.trim().toLowerCase() === clean);
+}
+
+/**
+ * Registers a new learner account.
+ * CRITICAL RULE: If the email already exists in the system, it strictly restricts the process
+ * and returns a clear error with notification for the user.
+ */
+export function registerNewLearner(data: {
+  email: string;
+  name?: string;
+  city?: string;
+  password?: string;
+  dailyGoal?: number;
+}): { success: boolean; error?: string; profile?: LearnerProfile } {
+  if (!data.email || !data.email.trim()) {
+    return {
+      success: false,
+      error: 'Veuillez saisir une adresse e-mail valide.',
+    };
+  }
+
+  const cleanEmail = data.email.trim().toLowerCase();
+
+  // Basic email syntax check
+  if (!cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+    return {
+      success: false,
+      error: 'Format d\'adresse e-mail invalide. Exemple : nom@domaine.cd',
+    };
+  }
+
+  // 🚨 RESTRICTION: Check if email already exists in the system
+  if (isEmailRegistered(cleanEmail)) {
+    return {
+      success: false,
+      error: `L'adresse e-mail « ${cleanEmail} » est déjà enregistrée dans le système de la PA³ English Academy. Veuillez vous connecter avec ce compte ou utiliser une autre adresse e-mail.`,
+    };
+  }
+
+  // Append new user to registered registry
+  const users = getRegisteredUsers();
+  users.push({
+    email: cleanEmail,
+    name: data.name?.trim() || cleanEmail.split('@')[0] || 'Apprenant',
+    city: data.city || 'Kinshasa',
+    registeredAt: new Date().toISOString(),
+  });
+  setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+
+  // Log in user and establish session
+  const profile = loginLearner(cleanEmail, data.name, data.city);
+
+  if (data.password) {
+    setItem(LEARNER_PASSWORD_KEY, data.password.trim());
+  }
+  if (data.dailyGoal) {
+    setItem(LEARNER_DAILY_GOAL_KEY, String(data.dailyGoal));
+  }
+
+  return {
+    success: true,
+    profile,
+  };
+}
+
+/**
+ * Helper to clear registered users (useful for test isolation)
+ */
+export function clearRegisteredUsersForTesting(): void {
+  removeItem(REGISTERED_USERS_KEY);
+}
+

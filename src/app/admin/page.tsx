@@ -34,6 +34,7 @@ import {
   verifyAndLoginAdmin,
   logoutAdmin,
   getAdminUser,
+  isValidAdminEmail,
   AdminUser,
 } from '@/lib/auth-admin';
 import { toast } from 'sonner';
@@ -391,8 +392,9 @@ export default function AdminDashboardPage() {
   // Admin Authentication Guard States
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
-  const [adminEmail, setAdminEmail] = useState('liandjadavid@gmail.com');
+  const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
+  const [learnerEmail, setLearnerEmail] = useState<string | null>(null);
   const [authError, setAuthError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -404,6 +406,13 @@ export default function AdminDashboardPage() {
       setIsAdmin(authenticated);
       if (authenticated) {
         setAdminUser(getAdminUser());
+      }
+
+      if (typeof window !== 'undefined') {
+        const curEmail = localStorage.getItem('pa3_user_email');
+        if (curEmail && !isValidAdminEmail(curEmail)) {
+          setLearnerEmail(curEmail);
+        }
       }
 
       if (typeof window !== 'undefined') {
@@ -1568,6 +1577,19 @@ export default function AdminDashboardPage() {
               </p>
             </div>
 
+            {/* Unauthorized Learner Alert if currently logged in */}
+            {learnerEmail && (
+              <div className="mb-4 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/40 text-xs text-amber-200 space-y-1.5">
+                <div className="flex items-center gap-2 font-bold text-amber-300">
+                  <span>⛔</span>
+                  <span>Compte Apprenant Détecté ({learnerEmail})</span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Votre compte apprenant n&apos;a pas les privilèges administrateur. Seuls les administrateurs accrédités (Coach David Liandja) peuvent déverrouiller ce portail.
+                </p>
+              </div>
+            )}
+
             {/* Error Message if any */}
             {authError && (
               <div className="mb-4 p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2">
@@ -1606,7 +1628,7 @@ export default function AdminDashboardPage() {
                   required
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
-                  placeholder="Entrez le mot de passe admin..."
+                  placeholder="Entrez votre clé de sécurité..."
                   className="w-full bg-slate-950/80 border border-slate-700 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 text-white rounded-xl px-3.5 py-2.5 text-sm outline-none transition"
                 />
               </div>
@@ -1619,7 +1641,7 @@ export default function AdminDashboardPage() {
                 {isLoggingIn ? (
                   <>
                     <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></div>
-                    <span>Vérification...</span>
+                    <span>Vérification sécurisée...</span>
                   </>
                 ) : (
                   <>
@@ -1629,33 +1651,10 @@ export default function AdminDashboardPage() {
               </button>
             </form>
 
-            {/* Quick Demo Credentials & 1-Click Unlock */}
-            <div className="mt-5 pt-4 border-t border-white/10 space-y-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setAdminEmail('liandjadavid@gmail.com');
-                  setAdminPassword('CoachDavid2026!');
-                  const res = verifyAndLoginAdmin('liandjadavid@gmail.com', 'CoachDavid2026!');
-                  if (res.success && res.user) {
-                    setIsAdmin(true);
-                    setAdminUser(res.user);
-                    toast.success('👑 Bienvenue Coach David Liandja, portail administrateur déverrouillé !');
-                  }
-                }}
-                className="w-full py-2.5 px-3 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/40 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer active:scale-98 shadow-sm"
-              >
-                <span>⚡ Déverrouillage Immédiat (Coach David Liandja)</span>
-              </button>
-
-              <div className="text-[11px] text-slate-400 text-center">
-                <p className="font-semibold text-slate-300 mb-0.5">
-                  Identifiants Direction Pédagogique :
-                </p>
-                <p className="font-mono text-amber-400/90 text-[10px]">
-                  liandjadavid@gmail.com • <code className="bg-slate-800 px-1 py-0.5 rounded text-slate-200">CoachDavid2026!</code>
-                </p>
-              </div>
+            <div className="mt-4 pt-3 border-t border-white/10 text-center">
+              <p className="text-[10px] text-slate-400">
+                Accès journalisé et sécurisé sous chiffrement HTTPS.
+              </p>
             </div>
           </div>
         </main>

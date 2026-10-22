@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -15,6 +15,7 @@ import {
 import { Logo } from "@/components/brand/Logo";
 import { BRAND } from "@/lib/brand";
 import { features } from "@/lib/env";
+import { loginLearner } from "@/lib/auth-learner";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,22 +25,31 @@ export default function LoginPage() {
   const [authMode, setAuthMode] = useState<"email" | "phone">("email");
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const emailParam = params.get("email");
+      if (emailParam) {
+        setEmail(emailParam);
+      }
+    }
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     setTimeout(() => {
       setIsLoading(false);
+      const cleanEmail = email.trim().toLowerCase();
+      loginLearner(cleanEmail);
+
       if (typeof window !== "undefined") {
-        localStorage.setItem("pa3_user_logged_in", "true");
-        localStorage.setItem("pa3_user_email", email.trim().toLowerCase());
-        localStorage.setItem("pa3_user_name", email.split("@")[0] || "Apprenant");
-        
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get("redirect") || "/tableau-de-bord";
         router.push(redirect);
       }
-    }, 500);
+    }, 400);
   };
 
   return (

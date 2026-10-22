@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { BRAND } from "@/lib/brand";
+import { isEmailRegistered, registerNewLearner } from "@/lib/auth-learner";
 
 const DRC_CITIES = [
   "Kinshasa",
@@ -37,25 +39,53 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [dailyGoal, setDailyGoal] = useState<number>(10);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [duplicateEmail, setDuplicateEmail] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+    setDuplicateEmail(null);
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    // 🚨 RESTRICTION: Verify if email already exists in the system
+    if (isEmailRegistered(cleanEmail)) {
+      setErrorMessage(
+        `L'adresse e-mail « ${cleanEmail} » existe déjà dans notre système. Un compte apprenant est déjà actif avec cette adresse.`
+      );
+      setDuplicateEmail(cleanEmail);
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
 
     setTimeout(() => {
-      setIsLoading(false);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("pa3_user_logged_in", "true");
-        localStorage.setItem("pa3_user_email", email.trim().toLowerCase());
-        localStorage.setItem("pa3_user_name", fullName || "Apprenant");
-        localStorage.setItem("pa3_user_city", city);
-        localStorage.setItem("pa3_daily_goal", String(dailyGoal));
+      const reg = registerNewLearner({
+        email: cleanEmail,
+        name: fullName || "Apprenant",
+        city,
+        password,
+        dailyGoal,
+      });
 
+      setIsLoading(false);
+
+      if (!reg.success) {
+        setErrorMessage(reg.error || "Impossible de créer le compte.");
+        if (reg.error && reg.error.includes("déjà enregistrée")) {
+          setDuplicateEmail(cleanEmail);
+        }
+        return;
+      }
+
+      if (typeof window !== "undefined") {
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get("redirect") || "/test-de-niveau";
         router.push(redirect);
       }
-    }, 500);
+    }, 400);
   };
 
   return (
@@ -90,6 +120,38 @@ export default function RegisterPage() {
               Rejoignez les apprenants de la PA³ English Academy en RDC.
             </p>
           </div>
+
+          {/* Duplicate Email Restriction Notification Banner */}
+          {errorMessage && (
+            <div className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-400 text-slate-900 space-y-3 shadow-sm animate-pop">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="text-xs font-black uppercase tracking-wider text-amber-900">
+                    ⚠️ Compte Déjà Existant
+                  </p>
+                  <p className="text-xs text-slate-700 leading-relaxed font-medium">
+                    {errorMessage}
+                  </p>
+                </div>
+              </div>
+
+              {duplicateEmail && (
+                <div className="pt-2.5 border-t border-amber-300 flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-slate-600">
+                    C&apos;est votre adresse ?
+                  </span>
+                  <Link
+                    href={`/connexion?email=${encodeURIComponent(duplicateEmail)}`}
+                    className="btn-3d-gold !py-1.5 !px-3 text-xs font-black inline-flex items-center gap-1.5 shadow-sm"
+                  >
+                    <span>Se connecter maintenant</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Full Name */}
