@@ -82,15 +82,15 @@ export function Navbar({
               </Link>
             )}
 
-            {/* Admin Portal quick pill - only visible if an admin session is verified */}
+            {/* Admin Portal quick pill - visible when admin session is active */}
             {showAdminBadge && isAdmin && (
               <Link
                 href="/admin"
-                className="hidden md:inline-flex items-center gap-1.5 text-xs font-black bg-amber-400/90 text-slate-950 hover:bg-amber-400 px-3 py-2 rounded-xl transition-all shadow-2xs border border-amber-500/30 active:scale-95"
+                className="inline-flex items-center gap-1.5 text-xs font-black bg-amber-400 text-slate-950 hover:bg-amber-300 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl transition-all shadow-2xs border border-amber-500/40 active:scale-95 shrink-0"
                 title="Portail Administration & Gestion des cours"
               >
-                <Shield className="w-3.5 h-3.5" />
-                <span>Admin</span>
+                <Shield className="w-3.5 h-3.5 fill-slate-950" />
+                <span className="hidden xs:inline">Admin</span>
               </Link>
             )}
 

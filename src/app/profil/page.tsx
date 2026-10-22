@@ -396,8 +396,16 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            {/* Quick Actions (Dashboard & Logout) */}
-            <div className="flex sm:flex-col gap-2 shrink-0">
+            {/* Quick Actions (Dashboard, Admin & Logout) */}
+            <div className="flex flex-wrap sm:flex-col gap-2 shrink-0">
+              <Link
+                href="/admin"
+                className="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black px-3.5 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5 shadow-sm border border-amber-500/30"
+                title="Accéder au panneau de contrôle administrateur"
+              >
+                <Shield className="w-3.5 h-3.5 fill-slate-950" />
+                <span>Portail Admin</span>
+              </Link>
               <Link
                 href="/tableau-de-bord"
                 className="btn-3d-gold !py-2 !px-4 text-xs font-bold inline-flex items-center gap-1.5"

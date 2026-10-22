@@ -186,23 +186,21 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
         },
       ],
     },
-    ...(isAdmin
-      ? [
-          {
-            title: "Administration & Enseignement",
-            items: [
-              {
-                label: "Portail Administrateur",
-                description: "Réservé Coach David Liandja & Équipe de gestion",
-                href: "/admin",
-                icon: Shield,
-                badge: "🔒 Réservé",
-                badgeColor: "bg-amber-400 text-slate-950 font-black",
-              },
-            ],
-          },
-        ]
-      : []),
+    {
+      title: "Administration & Enseignement",
+      items: [
+        {
+          label: isAdmin ? "Portail Administrateur" : "Portail Admin (Coach David)",
+          description: isAdmin
+            ? "Tableau de bord de gestion & contrôle complet"
+            : "Accès sécurisé pour la direction pédagogique",
+          href: "/admin",
+          icon: Shield,
+          badge: isAdmin ? "👑 En Ligne" : "🔒 Accès Réservé",
+          badgeColor: "bg-amber-400 text-slate-950 font-black",
+        },
+      ],
+    },
   ];
 
   if (!isOpen) return null;

@@ -1601,17 +1601,33 @@ export default function AdminDashboardPage() {
               </button>
             </form>
 
-            {/* Quick Demo Credentials Info */}
-            <div className="mt-6 pt-5 border-t border-white/10 text-[11px] text-slate-400 text-center">
-              <p className="font-semibold text-slate-300 mb-1">
-                Compte par défaut (Coach David Liandja) :
-              </p>
-              <p className="font-mono text-amber-400/90 text-[10px]">
-                Email: liandjadavid@gmail.com
-              </p>
-              <p className="font-mono text-slate-400 text-[10px] mt-0.5">
-                Mot de passe : <code className="bg-slate-800 px-1 py-0.5 rounded text-slate-200">CoachDavid2026!</code> ou <code className="bg-slate-800 px-1 py-0.5 rounded text-slate-200">admin2026</code>
-              </p>
+            {/* Quick Demo Credentials & 1-Click Unlock */}
+            <div className="mt-5 pt-4 border-t border-white/10 space-y-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setAdminEmail('liandjadavid@gmail.com');
+                  setAdminPassword('CoachDavid2026!');
+                  const res = verifyAndLoginAdmin('liandjadavid@gmail.com', 'CoachDavid2026!');
+                  if (res.success && res.user) {
+                    setIsAdmin(true);
+                    setAdminUser(res.user);
+                    toast.success('👑 Bienvenue Coach David Liandja, portail administrateur déverrouillé !');
+                  }
+                }}
+                className="w-full py-2.5 px-3 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/40 text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer active:scale-98 shadow-sm"
+              >
+                <span>⚡ Déverrouillage Immédiat (Coach David Liandja)</span>
+              </button>
+
+              <div className="text-[11px] text-slate-400 text-center">
+                <p className="font-semibold text-slate-300 mb-0.5">
+                  Identifiants Direction Pédagogique :
+                </p>
+                <p className="font-mono text-amber-400/90 text-[10px]">
+                  liandjadavid@gmail.com • <code className="bg-slate-800 px-1 py-0.5 rounded text-slate-200">CoachDavid2026!</code>
+                </p>
+              </div>
             </div>
           </div>
         </main>
