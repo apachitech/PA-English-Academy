@@ -69,8 +69,12 @@ export default function RootLayout({
       lang="fr"
       data-scroll-behavior="smooth"
       className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-amber-400 selection:text-navy font-sans">
+      <body
+        className="min-h-full flex flex-col bg-background text-foreground selection:bg-amber-400 selection:text-navy font-sans"
+        suppressHydrationWarning
+      >
         <PwaManager />
         {children}
         <Toaster

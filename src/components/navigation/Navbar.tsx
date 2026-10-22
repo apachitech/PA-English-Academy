@@ -29,7 +29,10 @@ export function Navbar({
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
+      <header
+        className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs"
+        suppressHydrationWarning
+      >
         <div className="max-w-6xl mx-auto px-3 sm:px-4 h-15 sm:h-18 flex items-center justify-between gap-2 sm:gap-4">
           {/* Brand Logo - Left */}
           <div className="shrink-0 flex items-center min-w-0">
