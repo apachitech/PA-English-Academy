@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   X,
   Home,
@@ -20,6 +20,7 @@ import {
   Shield,
   User,
   LogIn,
+  LogOut,
   UserPlus,
   MessageCircle,
   ExternalLink,
@@ -27,7 +28,14 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { BRAND } from "@/lib/brand";
-import { isAdminAuthenticated } from "@/lib/auth-admin";
+import { isAdminAuthenticated, logoutAdmin } from "@/lib/auth-admin";
+import {
+  isLearnerAuthenticated,
+  getLearnerProfile,
+  logoutLearner,
+  LearnerProfile,
+} from "@/lib/auth-learner";
+import { toast } from "sonner";
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -49,13 +57,35 @@ interface NavSection {
 
 export function SideMenu({ isOpen, onClose }: SideMenuProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [learner, setLearner] = useState<LearnerProfile | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      setIsAdmin(isAdminAuthenticated());
+      const adminAuth = isAdminAuthenticated();
+      const learnerAuth = isLearnerAuthenticated();
+      setIsAdmin(adminAuth);
+      setIsLoggedIn(learnerAuth || adminAuth);
+      if (learnerAuth) {
+        setLearner(getLearnerProfile());
+      } else {
+        setLearner(null);
+      }
     }
   }, [isOpen]);
+
+  const handleLogout = () => {
+    logoutLearner();
+    logoutAdmin();
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    setLearner(null);
+    onClose();
+    toast.success("Vous avez été déconnecté avec succès.");
+    router.push("/connexion");
+  };
 
   // Close on Escape key press
   useEffect(() => {
@@ -211,6 +241,17 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
           <div className="p-3.5 sm:p-5 pt-[max(env(safe-area-inset-top),0.875rem)] border-b border-white/10 flex items-center justify-between bg-navy-dark/60 shrink-0">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <Logo size="sm" variant="dark" withSlogan={false} />
+              {isLoggedIn && (
+                <div className="flex flex-col min-w-0 pl-1 border-l border-white/15">
+                  <span className="text-[10px] uppercase font-black text-emerald-400 flex items-center gap-1 tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    En ligne
+                  </span>
+                  <span className="text-xs font-black text-white truncate max-w-[130px]">
+                    {learner?.name ? learner.name.split(" ")[0] : isAdmin ? "Admin" : "Apprenant"}
+                  </span>
+                </div>
+              )}
             </div>
 
             <button
@@ -224,23 +265,46 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
           {/* Quick User Actions / Auth Banner */}
           <div className="p-4 bg-white/5 border-b border-white/10 shrink-0 flex items-center justify-between gap-2">
-            <Link
-              href="/connexion"
-              onClick={onClose}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-white border border-white/10 transition"
-            >
-              <LogIn className="w-3.5 h-3.5 text-amber-400" />
-              <span>Connexion</span>
-            </Link>
+            {isLoggedIn ? (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-xs font-bold text-red-200 border border-red-500/30 transition cursor-pointer active:scale-95 shadow-2xs"
+                title="Se déconnecter de la plateforme PA³"
+              >
+                <LogOut className="w-3.5 h-3.5 text-red-400" />
+                <span>Déconnexion</span>
+              </button>
+            ) : (
+              <Link
+                href="/connexion"
+                onClick={onClose}
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold text-white border border-white/10 transition shadow-2xs"
+              >
+                <LogIn className="w-3.5 h-3.5 text-amber-400" />
+                <span>Connexion</span>
+              </Link>
+            )}
 
-            <Link
-              href="/test-de-niveau"
-              onClick={onClose}
-              className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-black text-slate-950 transition shadow-sm"
-            >
-              <Zap className="w-3.5 h-3.5 fill-slate-950" />
-              <span>Test Gratuit</span>
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                href="/tableau-de-bord"
+                onClick={onClose}
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-black text-slate-950 transition shadow-sm"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5 fill-slate-950" />
+                <span>Mon Espace</span>
+              </Link>
+            ) : (
+              <Link
+                href="/test-de-niveau"
+                onClick={onClose}
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-black text-slate-950 transition shadow-sm"
+              >
+                <Zap className="w-3.5 h-3.5 fill-slate-950" />
+                <span>Test Gratuit</span>
+              </Link>
+            )}
           </div>
 
           {/* Scrollable Navigation Body */}
@@ -309,6 +373,54 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                 </div>
               </div>
             ))}
+
+            {/* Admin Section (Only shown to authenticated admins) */}
+            {isAdmin && (
+              <div className="space-y-2 p-3 rounded-2xl bg-amber-500/10 border border-amber-400/30">
+                <h3 className="text-[11px] font-black uppercase tracking-wider text-amber-300 px-2 flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Portail Administrateur</span>
+                </h3>
+                <Link
+                  href="/admin"
+                  onClick={onClose}
+                  className="group flex items-center justify-between p-2.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/40 text-amber-200 hover:text-white transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-amber-400 text-slate-950 font-black">
+                      <Shield className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-sm font-black text-white">Gestion &amp; Administration</span>
+                      <p className="text-xs text-amber-200/80">Tableau de bord de Coach David</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-amber-400 group-hover:translate-x-0.5 transition-transform" />
+                </Link>
+              </div>
+            )}
+
+            {/* Explicit Déconnexion Action in Menu List (When logged in) */}
+            {isLoggedIn && (
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-red-500/15 text-red-300 hover:text-red-200 border border-red-500/25 transition cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-red-500/20 text-red-400 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                      <LogOut className="w-4 h-4" />
+                    </div>
+                    <div className="text-left">
+                      <span className="text-sm font-bold text-red-200">Déconnexion</span>
+                      <p className="text-xs text-red-300/70">Quitter votre session active</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-red-400 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              </div>
+            )}
 
             {/* Direct WhatsApp Coach Box */}
             <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-950/60 to-emerald-900/40 border border-emerald-500/30 text-white space-y-3">
