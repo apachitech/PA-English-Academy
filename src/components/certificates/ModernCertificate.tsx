@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { CertificateData } from "@/lib/domain/certificates";
 import { BRAND } from "@/lib/brand";
 import { isLearnerAuthenticated, getLearnerProfile } from "@/lib/auth-learner";
+import QRCode from "qrcode";
 
 interface ModernCertificateProps {
   initialCert: CertificateData;
@@ -38,6 +39,28 @@ export function ModernCertificate({
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState(learnerName);
   const [copied, setCopied] = useState(false);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
+
+  // Dynamically generate mathematically valid scannable QR Code
+  useEffect(() => {
+    const origin =
+      typeof window !== "undefined"
+        ? window.location.origin
+        : "https://pa-english-academy.vercel.app";
+    const verificationUrl = `${origin}/verify/${initialCert.code}?name=${encodeURIComponent(learnerName)}`;
+
+    QRCode.toDataURL(verificationUrl, {
+      width: 240,
+      margin: 1,
+      color: {
+        dark: "#0F172A",
+        light: "#FFFFFF",
+      },
+      errorCorrectionLevel: "M",
+    })
+      .then((url) => setQrCodeDataUrl(url))
+      .catch((err) => console.error("Error generating certificate QR code:", err));
+  }, [initialCert.code, learnerName]);
 
   // Sync with active logged-in learner profile on client if available
   useEffect(() => {
@@ -379,11 +402,22 @@ export function ModernCertificate({
               </span>
             </div>
 
-            {/* Signature 2: Academic Board & QR Code Verification */}
+            {/* Signature 2: Academic Board & Dynamic Scannable QR Code */}
             <div className="text-center sm:text-right space-y-1.5">
-              <div className="h-14 flex items-end justify-center sm:justify-end">
-                <div className="p-1 rounded-xl bg-slate-50 border border-slate-200 shadow-xs inline-block">
-                  <QrCode className="w-10 h-10 sm:w-12 sm:h-12 text-slate-800" />
+              <div className="h-16 flex items-end justify-center sm:justify-end">
+                <div className="p-1 rounded-xl bg-white border border-slate-300 shadow-sm inline-block">
+                  {qrCodeDataUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={qrCodeDataUrl}
+                      alt={`QR Code officiel de vérification - ${initialCert.code}`}
+                      className="w-14 h-14 sm:w-16 sm:h-16 object-contain rounded-lg block"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center bg-slate-100 rounded-lg">
+                      <QrCode className="w-8 h-8 text-slate-400 animate-pulse" />
+                    </div>
+                  )}
                 </div>
               </div>
               <p className="text-[10px] sm:text-xs font-mono font-bold text-slate-800">
