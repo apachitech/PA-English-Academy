@@ -25,11 +25,13 @@ import {
   Wifi,
   WifiOff,
   Zap,
+  User,
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Navbar } from "@/components/navigation/Navbar";
 import { BRAND } from "@/lib/brand";
 import { isAdminAuthenticated } from "@/lib/auth-admin";
+import { getLearnerProfile } from "@/lib/auth-learner";
 import { CefrLevel } from "@/lib/supabase/database.types";
 
 interface StoredStats {
@@ -44,6 +46,7 @@ interface StoredStats {
 
 export default function DashboardPage() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [learnerName, setLearnerName] = useState("Apprenant");
   const [stats, setStats] = useState<StoredStats>({
     level: "A1",
     xp: 60,
@@ -56,6 +59,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setIsAdmin(isAdminAuthenticated());
+    const learner = getLearnerProfile();
+    if (learner?.name) {
+      setLearnerName(learner.name);
+    }
     if (typeof window !== "undefined") {
       const storedLvl = (localStorage.getItem("pa3_current_level") as CefrLevel) || "A1";
       const storedDataSaver = localStorage.getItem("pa3_data_saver") === "true";
@@ -168,7 +175,7 @@ export default function DashboardPage() {
               </div>
 
               <h1 className="clamp-title font-black">
-                Mbote ! Prêt(e) pour votre leçon du jour ?
+                Mbote {learnerName.split(" ")[0]} ! Prêt(e) pour votre leçon du jour ?
               </h1>
 
               <p className="text-slate-300 text-xs sm:text-sm max-w-xl leading-relaxed">
@@ -551,6 +558,13 @@ export default function DashboardPage() {
             <span>Admin</span>
           </Link>
         )}
+        <Link
+          href="/profil"
+          className="flex flex-col items-center gap-1 text-slate-500 hover:text-primary text-[10px] font-bold"
+        >
+          <User className="w-5 h-5 text-slate-600" />
+          <span>Profil</span>
+        </Link>
         <a
           href={BRAND.coach.whatsappLink}
           target="_blank"

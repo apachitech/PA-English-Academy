@@ -18,6 +18,7 @@ import {
   Sparkles,
   UserCheck,
   Shield,
+  User,
   LogIn,
   UserPlus,
   MessageCircle,
@@ -102,6 +103,14 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
           icon: LayoutDashboard,
           badge: "Apprenant",
           badgeColor: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
+        },
+        {
+          label: "Mon Profil & Paramètres",
+          description: "Progression, avatar, mot de passe & SasPay",
+          href: "/profil",
+          icon: User,
+          badge: "Compte",
+          badgeColor: "bg-amber-400 text-slate-950 font-black",
         },
         {
           label: "Test de niveau",

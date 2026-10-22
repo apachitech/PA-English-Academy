@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, Zap, ArrowRight, Shield } from "lucide-react";
+import { Menu, Zap, ArrowRight, Shield, User } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { SideMenu } from "./SideMenu";
 import { isAdminAuthenticated } from "@/lib/auth-admin";
+import { isLearnerAuthenticated, getLearnerProfile, LearnerProfile } from "@/lib/auth-learner";
 
 interface NavbarProps {
   variant?: "home" | "app" | "minimal";
@@ -22,9 +23,13 @@ export function Navbar({
 }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [learner, setLearner] = useState<LearnerProfile | null>(null);
 
   useEffect(() => {
     setIsAdmin(isAdminAuthenticated());
+    if (isLearnerAuthenticated()) {
+      setLearner(getLearnerProfile());
+    }
   }, []);
 
   return (
@@ -51,6 +56,31 @@ export function Navbar({
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Custom injected element (e.g. stats, streaks, etc.) */}
             {customRightElement}
+
+            {/* Learner Profile Quick Access */}
+            {learner && (
+              <Link
+                href="/profil"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-100 hover:bg-amber-50 hover:border-amber-300 text-navy font-bold text-xs sm:text-sm border border-slate-200 transition active:scale-95 shadow-2xs"
+                title={`Profil de ${learner.name}`}
+              >
+                {learner.avatarUrl && learner.avatarUrl.startsWith("emoji:") ? (
+                  <span className="text-sm sm:text-base leading-none">{learner.avatarUrl.replace("emoji:", "")}</span>
+                ) : learner.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={learner.avatarUrl}
+                    alt={learner.name}
+                    className="w-5 h-5 rounded-full object-cover border border-amber-400"
+                  />
+                ) : (
+                  <div className="w-5 h-5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] flex items-center justify-center">
+                    {learner.name.slice(0, 1).toUpperCase()}
+                  </div>
+                )}
+                <span className="hidden sm:inline font-bold">{learner.name.split(" ")[0]}</span>
+              </Link>
+            )}
 
             {/* Admin Portal quick pill - only visible if an admin session is verified */}
             {showAdminBadge && isAdmin && (
