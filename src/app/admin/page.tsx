@@ -38,6 +38,10 @@ import {
   AdminUser,
 } from '@/lib/auth-admin';
 import { toast } from 'sonner';
+import {
+  getLearnerDetailedProgress,
+  LearnerDetailedProgress,
+} from '@/lib/domain/learner-progress';
 
 const TAB_TITLES: Record<AdminTabType, { label: string; sub: string; icon: string }> = {
   overview: { label: 'Vue d’ensemble', sub: 'Chiffres clés & Inscriptions', icon: '📊' },
@@ -353,6 +357,17 @@ export default function AdminDashboardPage() {
   const [upgradeTargetLevel, setUpgradeTargetLevel] = useState<CefrTargetLevel>('A2');
   const [upgradeBonusXp, setUpgradeBonusXp] = useState(500);
   const [upgradeReason, setUpgradeReason] = useState('Attribution directe par la direction pédagogique');
+  const [selectedLearnerForProgress, setSelectedLearnerForProgress] = useState<LearnerRecord | null>(null);
+  const [learnerDetailedProgress, setLearnerDetailedProgress] = useState<LearnerDetailedProgress | null>(null);
+
+  useEffect(() => {
+    if (selectedLearnerForProgress) {
+      const data = getLearnerDetailedProgress(selectedLearnerForProgress.email);
+      setLearnerDetailedProgress(data);
+    } else {
+      setLearnerDetailedProgress(null);
+    }
+  }, [selectedLearnerForProgress]);
 
   // Search & filters for lessons
   const [lessonSearch, setLessonSearch] = useState('');
@@ -2314,6 +2329,16 @@ export default function AdminDashboardPage() {
                                   <span>Niveau</span>
                                 </button>
 
+                                {/* PROGRESSION DETAILED VIEW */}
+                                <button
+                                  onClick={() => setSelectedLearnerForProgress(lrn)}
+                                  className="px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-800 border border-sky-300 font-extrabold text-[11px] transition flex items-center gap-1 cursor-pointer"
+                                  title="Consulter le relevé complet de progression, leçons et scores d'évaluation"
+                                >
+                                  <span>📊</span>
+                                  <span>Progression</span>
+                                </button>
+
                                 {/* WHATSAPP */}
                                 {lrn.phone && (
                                   <a
@@ -4185,6 +4210,277 @@ export default function AdminDashboardPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================= */}
+      {/* MODAL 5C: LEARNER DETAILED PROGRESSION & ASSESSMENT DOSSIER */}
+      {/* ================================================================= */}
+      {selectedLearnerForProgress && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="relative bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="p-5 border-b border-slate-100 bg-gradient-to-r from-navy via-navy-light to-navy text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-xl">
+                  📊
+                </div>
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-sky-300">
+                    Dossier Pédagogique Individuel
+                  </span>
+                  <h3 className="text-base sm:text-lg font-black text-white">
+                    Progression de {selectedLearnerForProgress.name}
+                  </h3>
+                  <p className="text-xs text-slate-300">
+                    {selectedLearnerForProgress.email} • {selectedLearnerForProgress.city || 'Kinshasa'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedLearnerForProgress(null)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white font-bold transition cursor-pointer"
+                aria-label="Fermer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Scrollable Body */}
+            <div className="p-5 sm:p-6 space-y-6 overflow-y-auto">
+              {/* Top Summary Metrics */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <div className="text-[11px] font-bold text-slate-500 uppercase">Niveau Actuel</div>
+                  <div className="text-lg font-black text-navy mt-1 flex items-center gap-1.5">
+                    <span className="px-2 py-0.5 rounded-lg bg-navy text-white text-xs">
+                      {learnerDetailedProgress?.currentLevel || selectedLearnerForProgress.level}
+                    </span>
+                    <span className="text-xs font-semibold text-slate-500">CECRL</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/60">
+                  <div className="text-[11px] font-bold text-amber-700 uppercase">Total XP</div>
+                  <div className="text-lg font-black text-amber-900 mt-1 flex items-center gap-1">
+                    <span>⚡</span>
+                    <span>{learnerDetailedProgress?.totalXp ?? selectedLearnerForProgress.totalXp} XP</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-orange-50/50 border border-orange-200/60">
+                  <div className="text-[11px] font-bold text-orange-700 uppercase">Série Active</div>
+                  <div className="text-lg font-black text-orange-900 mt-1 flex items-center gap-1">
+                    <span>🔥</span>
+                    <span>{learnerDetailedProgress?.streakDays ?? selectedLearnerForProgress.streakDays} jours</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-emerald-50/50 border border-emerald-200/60">
+                  <div className="text-[11px] font-bold text-emerald-700 uppercase">Leçons Validées</div>
+                  <div className="text-lg font-black text-emerald-900 mt-1 flex items-center gap-1">
+                    <span>📚</span>
+                    <span>{learnerDetailedProgress?.lessons?.filter((l) => l.passed).length ?? selectedLearnerForProgress.lessonsDone} / {Object.keys(SAMPLE_LESSONS).length}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Assessment / Test de Niveau Section */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🧭</span>
+                    <h4 className="text-sm font-black text-slate-900">
+                      Évaluation Diagnostique / Test de Niveau
+                    </h4>
+                  </div>
+                  {learnerDetailedProgress?.assessments && learnerDetailedProgress.assessments.length > 0 && (
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      Complété ({learnerDetailedProgress.assessments[0].scorePct}%)
+                    </span>
+                  )}
+                </div>
+
+                {learnerDetailedProgress?.assessments && learnerDetailedProgress.assessments.length > 0 ? (
+                  <div className="space-y-3">
+                    {learnerDetailedProgress.assessments.map((evalItem, idx) => (
+                      <div
+                        key={evalItem.id || idx}
+                        className="p-3.5 rounded-xl bg-white border border-slate-200 text-xs space-y-2 shadow-xs"
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="font-extrabold text-navy text-sm">
+                            Niveau Recommandé : <span className="text-gold-dark">{evalItem.recommendedLevel}</span>
+                          </div>
+                          <div className="text-slate-500 text-[11px]">
+                            {new Date(evalItem.completedAt).toLocaleDateString('fr-FR', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 text-slate-600">
+                          <div>Score Global : <strong className="text-slate-900">{evalItem.scorePct}%</strong></div>
+                          <div>Réponses correctes : <strong className="text-slate-900">{evalItem.correctAnswers} / {evalItem.totalQuestions}</strong></div>
+                        </div>
+
+                        {evalItem.skillScores && Object.keys(evalItem.skillScores).length > 0 && (
+                          <div className="pt-2 border-t border-slate-100">
+                            <div className="text-[11px] font-bold text-slate-500 mb-1.5 uppercase">
+                              Détail par Compétence :
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                              {Object.entries(evalItem.skillScores).map(([skill, score]) => (
+                                <div key={skill} className="p-2 rounded-lg bg-slate-50 border border-slate-150">
+                                  <div className="text-[10px] text-slate-500 capitalize">{skill}</div>
+                                  <div className="text-xs font-black text-navy">{score}%</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-xl bg-white border border-dashed border-slate-200 text-center text-xs text-slate-500 space-y-1">
+                    <p className="font-semibold text-slate-700">Aucun test de niveau officiel enregistré sous ce compte.</p>
+                    <p>L&apos;apprenant peut passer l&apos;évaluation diagnostique à tout moment sur la page <code className="text-navy font-bold">/test-de-niveau</code>.</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Completed Lessons Section */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">📖</span>
+                    <h4 className="text-sm font-black text-slate-900">
+                      Historique des Leçons Interactives (A1 à B2)
+                    </h4>
+                  </div>
+                  <span className="text-xs text-slate-500 font-semibold">
+                    {learnerDetailedProgress?.lessons?.length || 0} tentative(s)
+                  </span>
+                </div>
+
+                {learnerDetailedProgress?.lessons && learnerDetailedProgress.lessons.length > 0 ? (
+                  <div className="border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-150 bg-white">
+                    <div className="grid grid-cols-12 bg-slate-100 p-2.5 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                      <div className="col-span-2">Niveau</div>
+                      <div className="col-span-5">Titre de la Leçon</div>
+                      <div className="col-span-2 text-center">Score</div>
+                      <div className="col-span-3 text-right">Statut &amp; Date</div>
+                    </div>
+                    {learnerDetailedProgress.lessons.map((lsn, idx) => (
+                      <div key={idx} className="grid grid-cols-12 p-3 text-xs items-center hover:bg-slate-50/80 transition">
+                        <div className="col-span-2">
+                          <span className={`px-2 py-0.5 rounded-md font-black text-[11px] ${
+                            lsn.level === 'A1' ? 'bg-sky-100 text-sky-800' :
+                            lsn.level === 'A2' ? 'bg-indigo-100 text-indigo-800' :
+                            lsn.level === 'B1' ? 'bg-amber-100 text-amber-800' :
+                            'bg-emerald-100 text-emerald-800'
+                          }`}>
+                            {lsn.level}
+                          </span>
+                        </div>
+                        <div className="col-span-5">
+                          <div className="font-extrabold text-navy truncate" title={lsn.lessonTitle}>
+                            {lsn.lessonTitle}
+                          </div>
+                          <div className="text-[10px] text-slate-400 font-mono truncate">{lsn.slug}</div>
+                        </div>
+                        <div className="col-span-2 text-center">
+                          <span className={`font-black text-xs ${lsn.score >= 70 ? 'text-emerald-700' : 'text-rose-600'}`}>
+                            {lsn.score}%
+                          </span>
+                        </div>
+                        <div className="col-span-3 text-right">
+                          <div className="inline-flex items-center gap-1 font-bold text-[11px]">
+                            {lsn.passed ? (
+                              <span className="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                                ✅ +{lsn.xpEarned} XP
+                              </span>
+                            ) : (
+                              <span className="text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                                ⚠️ Reprendre
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[10px] text-slate-400 mt-0.5">
+                            {new Date(lsn.completedAt).toLocaleDateString('fr-FR', {
+                              day: 'numeric',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 rounded-2xl bg-slate-50 border border-dashed border-slate-200 text-center text-xs text-slate-500 space-y-1">
+                    <p className="font-bold text-slate-700">Aucune leçon validée enregistrée pour cet apprenant.</p>
+                    <p>Dès que cet utilisateur termine des exercices ou quiz sur le site, ses résultats et scores détaillés apparaîtront ici automatiquement.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div className="p-4 sm:p-5 border-t border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className="text-xs text-slate-500">
+                Identifiant : <span className="font-mono font-bold text-slate-700">{selectedLearnerForProgress.id}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleAwardBonusXp(selectedLearnerForProgress.id, 50);
+                    if (learnerDetailedProgress) {
+                      setLearnerDetailedProgress({
+                        ...learnerDetailedProgress,
+                        totalXp: learnerDetailedProgress.totalXp + 50,
+                      });
+                    }
+                  }}
+                  className="px-3 py-2 rounded-xl bg-gold/20 hover:bg-gold/30 text-gold-dark font-extrabold text-xs transition cursor-pointer flex items-center gap-1"
+                >
+                  <span>⚡</span> +50 XP Bonus
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const lrn = selectedLearnerForProgress;
+                    setSelectedLearnerForProgress(null);
+                    setSelectedLearnerForUpgrade(lrn);
+                    const nextMap: Record<string, CefrTargetLevel> = {
+                      A1: 'A2',
+                      A2: 'B1',
+                      B1: 'B2',
+                      B2: 'C1',
+                    };
+                    setUpgradeTargetLevel(nextMap[lrn.level.toUpperCase()] || 'B1');
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-xs transition cursor-pointer flex items-center gap-1"
+                >
+                  <span>🎟️</span> Promouvoir Palier
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedLearnerForProgress(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition cursor-pointer"
+                >
+                  Fermer
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

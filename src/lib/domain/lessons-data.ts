@@ -16,7 +16,7 @@ export interface CompleteLesson {
   }[];
 }
 
-export const SAMPLE_LESSONS: Record<string, CompleteLesson> = {
+const A1_LESSONS: Record<string, CompleteLesson> = {
   "a1-salutations": {
     lesson: {
       id: "20000000-0000-0000-0000-000000000111",
@@ -1212,5 +1212,184 @@ export const SAMPLE_LESSONS: Record<string, CompleteLesson> = {
       },
     ],
   },
+
+  "a1-heure-temps": {
+    lesson: {
+      id: "20000000-0000-0000-0000-000000000118",
+      unit_id: "10000000-0000-0000-0000-000000000104",
+      slug: "a1-heure-temps",
+      title_fr: "Quelle heure est-il ? & Routine",
+      title_en: "Telling the Time & Daily Routine",
+      objective_fr: "Demander et dire l'heure en anglais (o'clock, half past, quarter past/to), parler de son réveil et de ses trajets quotidiens.",
+      explanation_fr:
+        "Pour demander l'heure : « What time is it? ». Pour répondre : « It is seven o'clock » (7h00 pile), « It is half past seven » (7h30), « It is quarter past eight » (8h15). En anglais courant, on peut aussi simplement lire les chiffres : « It is seven thirty ».",
+      position: 7,
+      xp_reward: 20,
+      est_minutes: 8,
+      pass_mark: 70,
+      status: "published",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
+    video: {
+      id: "vid-a1-8",
+      lesson_id: "20000000-0000-0000-0000-000000000118",
+      provider: "mp4",
+      url: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      low_url: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      audio_url: null,
+      poster_url: "/images/posters/salutations.webp",
+      duration_s: 310,
+      captions: [],
+      transcript_fr:
+        "Coach David vous guide pas à pas pour donner l'heure avec assurance lors de vos rendez-vous et fixer des réunions sans confusion.",
+      position: 8,
+      created_at: new Date().toISOString(),
+    },
+    vocabulary: [
+      {
+        id: "v-time-1",
+        lesson_id: "20000000-0000-0000-0000-000000000118",
+        term_en: "What time is it?",
+        term_fr: "Quelle heure est-il ?",
+        example_en: "Excuse me, what time is it now?",
+        example_fr: "Excusez-moi, quelle heure est-il maintenant ?",
+        audio_url: null,
+        position: 1,
+      },
+      {
+        id: "v-time-2",
+        lesson_id: "20000000-0000-0000-0000-000000000118",
+        term_en: "It is eight o'clock",
+        term_fr: "Il est huit heures pile",
+        example_en: "The meeting starts at eight o'clock.",
+        example_fr: "La réunion commence à huit heures pile.",
+        audio_url: null,
+        position: 2,
+      },
+      {
+        id: "v-time-3",
+        lesson_id: "20000000-0000-0000-0000-000000000118",
+        term_en: "Half past seven",
+        term_fr: "Sept heures et demie (7h30)",
+        example_en: "I leave home at half past seven.",
+        example_fr: "Je quitte la maison à sept heures et demie.",
+        audio_url: null,
+        position: 3,
+      },
+      {
+        id: "v-time-4",
+        lesson_id: "20000000-0000-0000-0000-000000000118",
+        term_en: "I wake up at...",
+        term_fr: "Je me réveille à...",
+        example_en: "I wake up at six in the morning.",
+        example_fr: "Je me réveille à six heures du matin.",
+        audio_url: null,
+        position: 4,
+      },
+      {
+        id: "v-time-5",
+        lesson_id: "20000000-0000-0000-0000-000000000118",
+        term_en: "In the morning / afternoon / evening",
+        term_fr: "Le matin / l'après-midi / le soir",
+        example_en: "We will meet at three in the afternoon.",
+        example_fr: "Nous nous retrouverons à trois heures de l'après-midi (15h).",
+        audio_url: null,
+        position: 5,
+      },
+    ],
+    exercises: [
+      {
+        exercise: {
+          id: "ex-time-1",
+          lesson_id: "20000000-0000-0000-0000-000000000118",
+          exam_id: null,
+          type: "multiple_choice",
+          skill: "vocabulary",
+          prompt_fr: "Comment demande-t-on l'heure poliment en anglais ?",
+          prompt_en: null,
+          payload: { q: "Asking for time" },
+          audio_url: null,
+          explanation_fr: "« What time is it? » est l'expression consacrée.",
+          position: 1,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        options: [
+          { id: "ot-1", exercise_id: "ex-time-1", label: "What time is it, please?", is_correct: true, pair_key: null, side: null, position: 1 },
+          { id: "ot-2", exercise_id: "ex-time-1", label: "Which hour do we have?", is_correct: false, pair_key: null, side: null, position: 2 },
+          { id: "ot-3", exercise_id: "ex-time-1", label: "What clock is it?", is_correct: false, pair_key: null, side: null, position: 3 },
+        ],
+      },
+      {
+        exercise: {
+          id: "ex-time-2",
+          lesson_id: "20000000-0000-0000-0000-000000000118",
+          exam_id: null,
+          type: "word_order",
+          skill: "grammar",
+          prompt_fr: "Remettez les mots dans l'ordre pour dire qu'il est huit heures et demie.",
+          prompt_en: null,
+          payload: { tokens: ["It", "is", "half", "past", "eight", "."], answer: "It is half past eight ." },
+          audio_url: null,
+          explanation_fr: "« It is half past eight. » = Il est huit heures et demie.",
+          position: 2,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        options: [],
+      },
+      {
+        exercise: {
+          id: "ex-time-3",
+          lesson_id: "20000000-0000-0000-0000-000000000118",
+          exam_id: null,
+          type: "fill_blank",
+          skill: "vocabulary",
+          prompt_fr: "Complétez : « Il est sept heures pile. »",
+          prompt_en: null,
+          payload: { sentence: "It is seven ___ .", answers: ["o'clock"], hint_fr: "o'clock" },
+          audio_url: null,
+          explanation_fr: "On utilise « o'clock » uniquement pour les heures précises pile.",
+          position: 3,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        options: [],
+      },
+      {
+        exercise: {
+          id: "ex-time-4",
+          lesson_id: "20000000-0000-0000-0000-000000000118",
+          exam_id: null,
+          type: "speaking",
+          skill: "speaking",
+          prompt_fr: "À voix haute ! Dites à quelle heure vous commencez votre travail le matin.",
+          prompt_en: null,
+          payload: {
+            target_en: "I start work at eight o'clock in the morning.",
+            tip_fr: "Liez 'start work at' de manière fluide.",
+          },
+          audio_url: null,
+          explanation_fr: null,
+          position: 4,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        options: [],
+      },
+    ],
+  },
+};
+
+import { A2_LESSONS } from "./lessons-a2";
+import { B1_LESSONS } from "./lessons-b1";
+import { B2_LESSONS } from "./lessons-b2";
+
+export const SAMPLE_LESSONS: Record<string, CompleteLesson> = {
+  ...A1_LESSONS,
+  ...A2_LESSONS,
+  ...B1_LESSONS,
+  ...B2_LESSONS,
 };
 

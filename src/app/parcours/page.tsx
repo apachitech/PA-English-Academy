@@ -103,6 +103,91 @@ const A1_UNITS: UnitData[] = [
   },
 ];
 
+const A2_UNITS: UnitData[] = [
+  {
+    id: "u-a2-1",
+    position: 1,
+    titleFr: "Unité A2-1 : Quotidien, Restaurant & Ville",
+    descriptionFr: "Commander poliment au restaurant et s'orienter en ville à Kinshasa.",
+    lessons: [
+      { id: "l-a2-1", slug: "a2-au-restaurant", titleFr: "Au restaurant & Politesse", titleEn: "Ordering Food & Dining", xpReward: 25, estMinutes: 9, icon: "🍽️" },
+      { id: "l-a2-2", slug: "a2-directions-ville", titleFr: "Demander son chemin", titleEn: "Asking Directions", xpReward: 25, estMinutes: 8, icon: "🧭" },
+    ],
+    examTitle: "Test de l'unité A2-1 : Quotidien & Politesse",
+  },
+  {
+    id: "u-a2-2",
+    position: 2,
+    titleFr: "Unité A2-2 : Raconter, Projeter & Comparer",
+    descriptionFr: "Le passé régulier en -ED, les projets futurs et les comparatifs.",
+    lessons: [
+      { id: "l-a2-3", slug: "a2-passe-simple-regular", titleFr: "Passé & 3 sons du -ED", titleEn: "Past Simple Regular", xpReward: 25, estMinutes: 9, icon: "⏳" },
+      { id: "l-a2-4", slug: "a2-futur-projets", titleFr: "L'Avenir & Projets", titleEn: "Future Plans", xpReward: 25, estMinutes: 8, icon: "🚀" },
+      { id: "l-a2-5", slug: "a2-comparatifs-superlatifs", titleFr: "Comparer & Choisir", titleEn: "Comparatives", xpReward: 25, estMinutes: 8, icon: "⚖️" },
+    ],
+    examTitle: "Test de l'unité A2-2 : Narration & Comparaisons",
+  },
+];
+
+const B1_UNITS: UnitData[] = [
+  {
+    id: "u-b1-1",
+    position: 1,
+    titleFr: "Unité B1-1 : Recrutement & Écrits Professionnels",
+    descriptionFr: "Réussir son entretien d'embauche et rédiger des emails modernes.",
+    lessons: [
+      { id: "l-b1-1", slug: "b1-entretien-embauche", titleFr: "Entretien d'embauche (3P)", titleEn: "Job Interview Pitch", xpReward: 30, estMinutes: 10, icon: "💼" },
+      { id: "l-b1-2", slug: "b1-rediger-email-pro", titleFr: "Email professionnel moderne", titleEn: "Business Emails", xpReward: 30, estMinutes: 9, icon: "✉️" },
+    ],
+    examTitle: "Test de l'unité B1-1 : Communication Professionnelle",
+  },
+  {
+    id: "u-b1-2",
+    position: 2,
+    titleFr: "Unité B1-2 : Téléphone, Expérience & Opinions",
+    descriptionFr: "Appels sans stress, Present Perfect et expression d'opinions.",
+    lessons: [
+      { id: "l-b1-3", slug: "b1-telephoner-anglais", titleFr: "Téléphoner & Messages", titleEn: "Phone Calls", xpReward: 30, estMinutes: 8, icon: "📞" },
+      { id: "l-b1-4", slug: "b1-present-perfect-experience", titleFr: "Expériences de carrière", titleEn: "Present Perfect", xpReward: 30, estMinutes: 10, icon: "🏆" },
+      { id: "l-b1-5", slug: "b1-donner-son-opinion", titleFr: "Exprimer son opinion", titleEn: "Debating Opinions", xpReward: 30, estMinutes: 9, icon: "🗣️" },
+    ],
+    examTitle: "Test de l'unité B1-2 : Échanges & Argumentation",
+  },
+];
+
+const B2_UNITS: UnitData[] = [
+  {
+    id: "u-b2-1",
+    position: 1,
+    titleFr: "Unité B2-1 : Négociation & Leadership Exécutif",
+    descriptionFr: "Négocier des contrats win-win et animer des réunions internationales.",
+    lessons: [
+      { id: "l-b2-1", slug: "b2-negociation-affaires", titleFr: "Négociation & Contrats", titleEn: "Business Negotiations", xpReward: 35, estMinutes: 11, icon: "🤝" },
+      { id: "l-b2-2", slug: "b2-reunion-leadership", titleFr: "Animer une réunion", titleEn: "Chairing Meetings", xpReward: 35, estMinutes: 10, icon: "👑" },
+    ],
+    examTitle: "Test de l'unité B2-1 : Leadership & Négociation",
+  },
+  {
+    id: "u-b2-2",
+    position: 2,
+    titleFr: "Unité B2-2 : Rapports, ONGs & Rhétorique Avancée",
+    descriptionFr: "Notes de synthèse C-Level, jargon ONG/MONUSCO et force de persuasion.",
+    lessons: [
+      { id: "l-b2-3", slug: "b2-redaction-rapports", titleFr: "Notes de synthèse C-Level", titleEn: "Executive Summaries", xpReward: 35, estMinutes: 11, icon: "📊" },
+      { id: "l-b2-4", slug: "b2-anglais-ong-humanitaire", titleFr: "Anglais ONG & Bailleurs", titleEn: "NGO Proposals", xpReward: 35, estMinutes: 10, icon: "🌐" },
+      { id: "l-b2-5", slug: "b2-debat-argumentation", titleFr: "Rhétorique & Objections", titleEn: "Advanced Rhetoric", xpReward: 35, estMinutes: 10, icon: "⚡" },
+    ],
+    examTitle: "Test de l'unité B2-2 : Expertise Internationale & Épreuve Finale",
+  },
+];
+
+const UNITS_BY_LEVEL: Record<string, UnitData[]> = {
+  A1: A1_UNITS,
+  A2: A2_UNITS,
+  B1: B1_UNITS,
+  B2: B2_UNITS,
+};
+
 export default function ParcoursPage() {
   const [paliers, setPaliers] = useState<Palier[]>(INITIAL_PALIERS);
   const [selectedLevel, setSelectedLevel] = useState<string>("A1");
@@ -211,205 +296,168 @@ export default function ParcoursPage() {
           </div>
         </div>
 
-        {/* ================= DUOLINGO MAP NODES ================= */}
-        {selectedLevel === "A1" ? (
-          <div className="space-y-10 py-4">
-            {A1_UNITS.map((unit, unitIdx) => (
-              <div key={unit.id} className="space-y-6">
-                {/* Unit Header Card */}
-                <div className="bg-primary text-white p-4 sm:p-5 rounded-2xl shadow-sm flex items-center justify-between gap-4">
-                  <div className="space-y-0.5">
-                    <span className="text-[11px] font-black uppercase tracking-wider text-amber-300">
-                      Unité {unit.position}
-                    </span>
-                    <h2 className="text-base sm:text-lg font-black">
-                      {unit.titleFr}
-                    </h2>
-                    <p className="text-xs text-blue-100 max-w-md">
-                      {unit.descriptionFr}
-                    </p>
-                  </div>
-
-                  <span className="text-2xl p-2 rounded-xl bg-white/10 shrink-0">
-                    {unitIdx === 0 ? "🚀" : unitIdx === 1 ? "👨‍👩‍👧" : unitIdx === 2 ? "🛍️" : "⏰"}
-                  </span>
-                </div>
-
-                {/* Duolingo Visual Zig-Zag Stepper Path */}
-                <div className="flex flex-col items-center gap-6 py-4 relative">
-                  {unit.lessons.map((lesson, idx) => {
-                    const isCompleted = completedSlugs.includes(lesson.slug);
-                    const isNext =
-                      !isCompleted &&
-                      (idx === 0 || completedSlugs.includes(unit.lessons[idx - 1].slug));
-                    const isLocked = !isCompleted && !isNext;
-
-                    // Alternating slight left/right offset for Duolingo winding path feel
-                    const offsetClass =
-                      idx % 3 === 1
-                        ? "translate-x-8"
-                        : idx % 3 === 2
-                        ? "-translate-x-8"
-                        : "translate-x-0";
-
-                    return (
-                      <div
-                        key={lesson.id}
-                        className={`flex flex-col items-center text-center transition-transform ${offsetClass}`}
-                      >
-                        {/* Circle node */}
-                        {isLocked ? (
-                          <div
-                            className="w-16 h-16 rounded-full bg-slate-200 border-4 border-slate-300 text-slate-400 flex items-center justify-center text-xl shadow-xs cursor-not-allowed select-none"
-                            title="Complétez les leçons précédentes pour débloquer"
-                          >
-                            <Lock className="w-5 h-5 text-slate-400" />
-                          </div>
-                        ) : isCompleted ? (
-                          <Link
-                            href={`/lecon/${lesson.slug}`}
-                            className="w-16 h-16 rounded-full btn-3d-success flex items-center justify-center text-2xl shadow-md transform hover:scale-110 transition-transform relative group"
-                            title="Leçon complétée — Rejouer"
-                          >
-                            <span>{lesson.icon}</span>
-                            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow">
-                              <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-white" />
-                            </div>
-                          </Link>
-                        ) : (
-                          <Link
-                            href={`/lecon/${lesson.slug}`}
-                            className="w-18 h-18 rounded-full btn-3d-gold flex items-center justify-center text-2xl shadow-lg ring-4 ring-amber-400/30 transform hover:scale-110 transition-transform relative animate-bounce-subtle"
-                            title="Commencer cette leçon !"
-                          >
-                            <span>{lesson.icon}</span>
-                            <span className="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full">
-                              START
-                            </span>
-                          </Link>
-                        )}
-
-                        {/* Title label */}
-                        <div className="mt-2 max-w-32">
-                          <p
-                            className={`text-xs font-bold leading-tight ${
-                              isCompleted
-                                ? "text-slate-800"
-                                : isNext
-                                ? "text-primary font-black"
-                                : "text-slate-400"
-                            }`}
-                          >
-                            {lesson.titleFr}
-                          </p>
-                          <span className="text-[10px] text-slate-400">
-                            +{lesson.xpReward} XP
-                          </span>
-                        </div>
-
-                        {/* Vertical connector line */}
-                        {idx < unit.lessons.length - 1 && (
-                          <div
-                            className={`w-1 h-8 mt-2 rounded-full ${
-                              isCompleted ? "bg-emerald-500" : "bg-slate-200"
-                            }`}
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-
-                  {/* Unit Exam Trophy Node */}
-                  <div className="pt-4 flex flex-col items-center text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-200 border-2 border-slate-300 text-slate-400 flex items-center justify-center text-2xl shadow-xs">
-                      <Trophy className="w-7 h-7 text-slate-400" />
+        {/* ================= DUOLINGO MAP NODES (A1, A2, B1, B2) ================= */}
+        {(() => {
+          const currentUnits = UNITS_BY_LEVEL[selectedLevel] || A1_UNITS;
+          return (
+            <div className="space-y-10 py-4">
+              {currentUnits.map((unit, unitIdx) => (
+                <div key={unit.id} className="space-y-6">
+                  {/* Unit Header Card */}
+                  <div className="bg-primary text-white p-4 sm:p-5 rounded-2xl shadow-sm flex items-center justify-between gap-4">
+                    <div className="space-y-0.5">
+                      <span className="text-[11px] font-black uppercase tracking-wider text-amber-300">
+                        {unit.titleFr.split(":")[0]}
+                      </span>
+                      <h2 className="text-base sm:text-lg font-black">
+                        {unit.titleFr}
+                      </h2>
+                      <p className="text-xs text-blue-100 max-w-md">
+                        {unit.descriptionFr}
+                      </p>
                     </div>
-                    <p className="text-xs font-bold text-slate-500 mt-2 max-w-36">
-                      {unit.examTitle}
-                    </p>
-                    <span className="text-[10px] text-slate-400">
-                      Validation de l&apos;unité (≥ 70%)
+
+                    <span className="text-2xl p-2 rounded-xl bg-white/10 shrink-0">
+                      {unitIdx === 0 ? "🚀" : unitIdx === 1 ? "👨‍👩‍👧" : unitIdx === 2 ? "🛍️" : "⏰"}
                     </span>
                   </div>
+
+                  {/* Duolingo Visual Zig-Zag Stepper Path */}
+                  <div className="flex flex-col items-center gap-6 py-4 relative">
+                    {unit.lessons.map((lesson, idx) => {
+                      const isCompleted = completedSlugs.includes(lesson.slug);
+                      const isNext =
+                        !isCompleted &&
+                        (idx === 0 || completedSlugs.includes(unit.lessons[idx - 1].slug) || selectedLevel !== "A1");
+                      const isLocked = !isCompleted && !isNext;
+
+                      // Alternating slight left/right offset for Duolingo winding path feel
+                      const offsetClass =
+                        idx % 3 === 1
+                          ? "translate-x-8"
+                          : idx % 3 === 2
+                          ? "-translate-x-8"
+                          : "translate-x-0";
+
+                      return (
+                        <div
+                          key={lesson.id}
+                          className={`flex flex-col items-center text-center transition-transform ${offsetClass}`}
+                        >
+                          {/* Circle node */}
+                          {isLocked ? (
+                            <div
+                              className="w-16 h-16 rounded-full bg-slate-200 border-4 border-slate-300 text-slate-400 flex items-center justify-center text-xl shadow-xs cursor-not-allowed select-none"
+                              title="Complétez les leçons précédentes pour débloquer"
+                            >
+                              <Lock className="w-5 h-5 text-slate-400" />
+                            </div>
+                          ) : isCompleted ? (
+                            <Link
+                              href={`/lecon/${lesson.slug}`}
+                              className="w-16 h-16 rounded-full btn-3d-success flex items-center justify-center text-2xl shadow-md transform hover:scale-110 transition-transform relative group"
+                              title="Leçon complétée — Rejouer"
+                            >
+                              <span>{lesson.icon}</span>
+                              <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600 fill-white" />
+                              </div>
+                            </Link>
+                          ) : (
+                            <Link
+                              href={`/lecon/${lesson.slug}`}
+                              className="w-18 h-18 rounded-full btn-3d-gold flex items-center justify-center text-2xl shadow-lg ring-4 ring-amber-400/30 transform hover:scale-110 transition-transform relative animate-bounce-subtle"
+                              title="Commencer cette leçon !"
+                            >
+                              <span>{lesson.icon}</span>
+                              <span className="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full">
+                                START
+                              </span>
+                            </Link>
+                          )}
+
+                          {/* Title label */}
+                          <div className="mt-2 max-w-36">
+                            <p
+                              className={`text-xs font-bold leading-tight ${
+                                isCompleted
+                                  ? "text-slate-800"
+                                  : isNext
+                                  ? "text-primary font-black"
+                                  : "text-slate-400"
+                              }`}
+                            >
+                              {lesson.titleFr}
+                            </p>
+                            <span className="text-[10px] text-slate-400">
+                              +{lesson.xpReward} XP
+                            </span>
+                          </div>
+
+                          {/* Vertical connector line */}
+                          {idx < unit.lessons.length - 1 && (
+                            <div
+                              className={`w-1 h-8 mt-2 rounded-full ${
+                                isCompleted ? "bg-emerald-500" : "bg-slate-200"
+                              }`}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {/* Unit Exam Trophy Node */}
+                    <div className="pt-4 flex flex-col items-center text-center">
+                      <div className="w-16 h-16 rounded-2xl bg-slate-200 border-2 border-slate-300 text-slate-400 flex items-center justify-center text-2xl shadow-xs">
+                        <Trophy className="w-7 h-7 text-slate-400" />
+                      </div>
+                      <p className="text-xs font-bold text-slate-500 mt-2 max-w-36">
+                        {unit.examTitle}
+                      </p>
+                      <span className="text-[10px] text-slate-400">
+                        Validation de l&apos;unité (≥ 70%)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Final Level Exam & Certificate Milestone */}
+              <div className="bg-gradient-to-br from-amber-400 via-amber-300 to-amber-500 text-amber-950 p-6 sm:p-8 rounded-3xl shadow-xl text-center space-y-4 border-4 border-white">
+                <div className="w-20 h-20 mx-auto rounded-3xl bg-white text-amber-600 flex items-center justify-center shadow-md">
+                  <Award className="w-10 h-10" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs font-black uppercase tracking-wider bg-amber-950/10 px-3 py-1 rounded-full">
+                    Épreuve Finale Palier {selectedLevel}
+                  </span>
+                  <h3 className="text-2xl font-black">
+                    Examen Final Niveau {selectedLevel} & Certificat Officiel
+                  </h3>
+                  <p className="text-xs sm:text-sm max-w-md mx-auto text-amber-900 leading-relaxed">
+                    Validez toutes les unités du niveau {selectedLevel} pour passer l&apos;examen final (score ≥ 75%)
+                    et télécharger votre <strong>Certificat officiel CECRL {selectedLevel}</strong> signé avec QR Code vérifiable en ligne.
+                  </p>
+                </div>
+
+                <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+                  <Link
+                    href={`/test-de-niveau`}
+                    className="px-6 py-3 rounded-xl btn-3d-navy text-white font-bold text-xs shadow-md"
+                  >
+                    Passer le Test d&apos;Évaluation
+                  </Link>
+                  <Link
+                    href="/tarifs"
+                    className="px-6 py-3 rounded-xl bg-white hover:bg-slate-50 text-amber-950 border border-amber-950/20 font-bold text-xs shadow-xs"
+                  >
+                    Voir les Pass Membre →
+                  </Link>
                 </div>
               </div>
-            ))}
-
-            {/* Final Level A1 Exam & Certificate Milestone */}
-            <div className="bg-gradient-to-br from-amber-400 via-amber-300 to-amber-500 text-amber-950 p-6 sm:p-8 rounded-3xl shadow-xl text-center space-y-4 border-4 border-white">
-              <div className="w-20 h-20 mx-auto rounded-3xl bg-white text-amber-600 flex items-center justify-center shadow-md">
-                <Award className="w-10 h-10" />
-              </div>
-              <div className="space-y-1">
-                <span className="text-xs font-black uppercase tracking-wider bg-amber-950/10 px-3 py-1 rounded-full">
-                  Épreuve Finale
-                </span>
-                <h3 className="text-2xl font-black">
-                  Examen Final Niveau A1 & Certificat Officiel
-                </h3>
-                <p className="text-xs sm:text-sm max-w-md mx-auto text-amber-900 leading-relaxed">
-                  Validez les 4 unités pour passer l&apos;examen final (score ≥
-                  75%) et télécharger votre <strong>Certificat officiel PA³ English Academy</strong>{" "}
-                  signé avec QR Code de vérification publique.
-                </p>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="button"
-                  disabled
-                  className="px-6 py-3 rounded-xl bg-amber-950/20 text-amber-950 font-bold text-xs cursor-not-allowed"
-                >
-                  Débloqué après l&apos;Unité 4
-                </button>
-              </div>
             </div>
-          </div>
-        ) : (
-          /* Locked level banner with dynamic palier information */
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 text-center space-y-4 max-w-md mx-auto shadow-sm animate-in fade-in duration-200">
-            <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center mx-auto text-3xl shadow-inner">
-              {activePalier?.badgeIcon || "🔒"}
-            </div>
-            <h3 className="text-lg font-black text-slate-900">
-              {activePalier?.titleFr || `Niveau ${selectedLevel} réservé aux abonnés`}
-            </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              {activePalier?.descriptionFr ||
-                "Accessible avec le pass flexible payable par M-Pesa, Airtel Money et Orange Money."}
-            </p>
-            {activePalier?.requiredXp ? (
-              <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs font-bold text-amber-900 flex justify-between items-center">
-                <span>XP Requis pour validation :</span>
-                <span className="font-black text-navy text-sm">{activePalier.requiredXp} XP</span>
-              </div>
-            ) : null}
-            <div className="pt-2 flex flex-col gap-2">
-              <Link
-                href="/tarifs"
-                className="btn-duo !py-3 text-xs font-black inline-flex items-center justify-center gap-2 shadow"
-              >
-                <span>⚡ Débloquer l&apos;accès avec un Pass</span>
-              </Link>
-              <a
-                href={BRAND.coach.whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-3d-success py-3 px-4 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-2"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>Contacter le Coach sur WhatsApp</span>
-              </a>
-              <button
-                type="button"
-                onClick={() => setSelectedLevel("A1")}
-                className="text-xs font-bold text-slate-500 hover:text-slate-800 py-2"
-              >
-                ← Revenir au niveau A1 (Gratuit)
-              </button>
-            </div>
-          </div>
-        )}
+          );
+        })()}
       </main>
     </div>
   );

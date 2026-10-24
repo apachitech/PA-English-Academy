@@ -29,6 +29,7 @@ import {
   SKILL_LABELS_FR,
   CEFR_ORDER,
 } from "@/lib/domain/placement";
+import { recordAssessmentCompletion } from "@/lib/domain/learner-progress";
 
 type TestStep = "intro" | "quiz" | "result";
 
@@ -131,10 +132,15 @@ export default function PlacementTestPage() {
       setSelectedStartLevel(finalResult.recommendedStartingLevel);
       setStep("result");
 
-      // Save to localStorage for demo persistence
-      if (typeof window !== "undefined") {
-        localStorage.setItem("pa3_placement_result", JSON.stringify(finalResult));
-        localStorage.setItem("pa3_current_level", finalResult.recommendedStartingLevel);
+      // Save to centralized progress engine & sync with admin
+      try {
+        recordAssessmentCompletion(finalResult);
+      } catch {
+        // Fallback to direct storage
+        if (typeof window !== "undefined") {
+          localStorage.setItem("pa3_placement_result", JSON.stringify(finalResult));
+          localStorage.setItem("pa3_current_level", finalResult.recommendedStartingLevel);
+        }
       }
     }
   };

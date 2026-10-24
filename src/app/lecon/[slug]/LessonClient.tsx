@@ -23,6 +23,7 @@ import { Logo } from "@/components/brand/Logo";
 import { CompleteLesson } from "@/lib/domain/lessons-data";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { ExerciseRenderer } from "@/components/exercises/ExerciseRenderer";
+import { recordLessonCompletion } from "@/lib/domain/learner-progress";
 
 interface LessonClientProps {
   data: CompleteLesson;
@@ -69,19 +70,23 @@ export function LessonClient({ data }: LessonClientProps) {
       const totalScore = exerciseScores.reduce((acc, s) => acc + s, 0);
       const avgScore = Math.round(totalScore / exercises.length);
 
-      // Save progress to localStorage (for demo & offline)
-      if (typeof window !== "undefined" && avgScore >= lesson.pass_mark) {
-        const stored = JSON.parse(
-          localStorage.getItem("pa3_completed_lessons") || "[]",
-        );
-        if (!stored.includes(lesson.slug)) {
-          stored.push(lesson.slug);
-          localStorage.setItem("pa3_completed_lessons", JSON.stringify(stored));
-        }
+      // Save progress to centralized progress engine & sync with admin
+      try {
+        recordLessonCompletion(lesson.slug, avgScore, lesson.xp_reward);
+      } catch {
+        // fallback to direct localStorage
+        if (typeof window !== "undefined" && avgScore >= lesson.pass_mark) {
+          const stored = JSON.parse(
+            localStorage.getItem("pa3_completed_lessons") || "[]",
+          );
+          if (!stored.includes(lesson.slug)) {
+            stored.push(lesson.slug);
+            localStorage.setItem("pa3_completed_lessons", JSON.stringify(stored));
+          }
 
-        // Add XP
-        const currentXp = Number(localStorage.getItem("pa3_total_xp") || "60");
-        localStorage.setItem("pa3_total_xp", String(currentXp + lesson.xp_reward));
+          const currentXp = Number(localStorage.getItem("pa3_total_xp") || "60");
+          localStorage.setItem("pa3_total_xp", String(currentXp + lesson.xp_reward));
+        }
       }
     }
   };
