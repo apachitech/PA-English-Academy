@@ -195,18 +195,33 @@ export default function ParcoursPage() {
   const [totalXp, setTotalXp] = useState(60);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const loadedPaliers = getStoredPaliers();
-      setPaliers(loadedPaliers);
+    const loadRealtimeParcours = () => {
+      if (typeof window !== "undefined") {
+        const loadedPaliers = getStoredPaliers();
+        setPaliers(loadedPaliers);
 
-      const storedCompleted = JSON.parse(
-        localStorage.getItem("pa3_completed_lessons") || '["a1-salutations"]',
-      );
-      setCompletedSlugs(storedCompleted);
+        const storedCompleted = JSON.parse(
+          localStorage.getItem("pa3_completed_lessons") || '["a1-salutations"]',
+        );
+        setCompletedSlugs(storedCompleted);
 
-      const storedXp = Number(localStorage.getItem("pa3_total_xp") || "60");
-      setTotalXp(storedXp);
-    }
+        const storedXp = Number(localStorage.getItem("pa3_total_xp") || "60");
+        setTotalXp(storedXp);
+      }
+    };
+
+    loadRealtimeParcours();
+    window.addEventListener("storage", loadRealtimeParcours);
+    window.addEventListener("pa3_progress_updated", loadRealtimeParcours);
+    window.addEventListener("pa3_xp_updated", loadRealtimeParcours);
+    window.addEventListener("pa3_level_updated", loadRealtimeParcours);
+
+    return () => {
+      window.removeEventListener("storage", loadRealtimeParcours);
+      window.removeEventListener("pa3_progress_updated", loadRealtimeParcours);
+      window.removeEventListener("pa3_xp_updated", loadRealtimeParcours);
+      window.removeEventListener("pa3_level_updated", loadRealtimeParcours);
+    };
   }, []);
 
   const activePalier = paliers.find((p) => p.code === selectedLevel) || paliers[0];

@@ -491,6 +491,32 @@ export default function AdminDashboardPage() {
     } catch {
       // ignore
     }
+
+    const handleRealtimeSync = () => {
+      try {
+        const savedLearners = localStorage.getItem('pa3_admin_learners');
+        if (savedLearners) {
+          const parsedLearners = JSON.parse(savedLearners);
+          if (Array.isArray(parsedLearners) && parsedLearners.length > 0) {
+            setLearners(parsedLearners);
+          }
+        }
+        const currentSettings = getStoredPlatformSettings();
+        if (currentSettings?.usdToCdfRate) {
+          setExchangeRate(currentSettings.usdToCdfRate);
+        }
+      } catch {}
+    };
+
+    window.addEventListener('storage', handleRealtimeSync);
+    window.addEventListener('pa3_progress_updated', handleRealtimeSync);
+    window.addEventListener('pa3_platform_settings_updated', handleRealtimeSync);
+
+    return () => {
+      window.removeEventListener('storage', handleRealtimeSync);
+      window.removeEventListener('pa3_progress_updated', handleRealtimeSync);
+      window.removeEventListener('pa3_platform_settings_updated', handleRealtimeSync);
+    };
   }, []);
 
   // Helper to persist lessons

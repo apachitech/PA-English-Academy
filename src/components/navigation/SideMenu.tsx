@@ -63,7 +63,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
   const [learner, setLearner] = useState<LearnerProfile | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
+    const syncState = () => {
       const adminAuth = isAdminAuthenticated();
       const learnerAuth = isLearnerAuthenticated();
       setIsAdmin(adminAuth);
@@ -73,7 +73,15 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
       } else {
         setLearner(null);
       }
-    }
+    };
+
+    syncState();
+    window.addEventListener("storage", syncState);
+    window.addEventListener("pa3_auth_updated", syncState);
+    return () => {
+      window.removeEventListener("storage", syncState);
+      window.removeEventListener("pa3_auth_updated", syncState);
+    };
   }, [isOpen]);
 
   const handleLogout = () => {

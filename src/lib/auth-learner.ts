@@ -190,7 +190,7 @@ export function loginLearner(
     setItem(LEARNER_PLAN_KEY, 'Accès Gratuit A1');
   }
 
-  return {
+  const profile: LearnerProfile = {
     email: cleanEmail,
     name: cleanName,
     city: cleanCity,
@@ -199,6 +199,12 @@ export function loginLearner(
     dataSaver: getItem(LEARNER_DATA_SAVER_KEY) === 'true',
     activePlan: getItem(LEARNER_PLAN_KEY) || 'Accès Gratuit A1',
   };
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('pa3_auth_updated', { detail: profile }));
+  }
+
+  return profile;
 }
 
 /**
@@ -232,6 +238,9 @@ export function updateLearnerProfile(updates: Partial<LearnerProfile>): LearnerP
   const profile = getLearnerProfile();
   if (!profile) {
     throw new Error('Aucun profil apprenant actif.');
+  }
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('pa3_auth_updated', { detail: profile }));
   }
   return profile;
 }
@@ -302,6 +311,10 @@ export function logoutLearner(): void {
   removeItem(LEARNER_PHONE_KEY);
   removeItem(LEARNER_BIO_KEY);
   removeItem(LEARNER_PASSWORD_KEY);
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('pa3_auth_updated', { detail: null }));
+  }
 }
 
 export interface RegisteredUserRecord {

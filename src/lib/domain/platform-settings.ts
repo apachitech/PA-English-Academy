@@ -95,6 +95,9 @@ export function savePlatformSettings(settings: PlatformSettings): void {
     PLATFORM_SETTINGS_STORAGE_KEY,
     JSON.stringify({ ...settings, updatedAt: new Date().toISOString() })
   );
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('pa3_platform_settings_updated', { detail: settings }));
+  }
 }
 
 /**

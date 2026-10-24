@@ -294,6 +294,11 @@ export function recordLessonCompletion(
   // Synchronize to admin learners directory
   syncProgressToAdminRegistry(current);
 
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("pa3_progress_updated", { detail: current }));
+    window.dispatchEvent(new CustomEvent("pa3_xp_updated", { detail: current.totalXp }));
+  }
+
   return { success: true, progress: current };
 }
 
@@ -344,6 +349,12 @@ export function recordAssessmentCompletion(
 
   // Synchronize to admin learners directory
   syncProgressToAdminRegistry(current);
+
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("pa3_progress_updated", { detail: current }));
+    window.dispatchEvent(new CustomEvent("pa3_level_updated", { detail: result.recommendedStartingLevel }));
+    window.dispatchEvent(new CustomEvent("pa3_xp_updated", { detail: current.totalXp }));
+  }
 
   return { success: true, progress: current };
 }

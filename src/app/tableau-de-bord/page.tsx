@@ -58,20 +58,48 @@ export default function DashboardPage() {
   });
 
   useEffect(() => {
-    setIsAdmin(isAdminAuthenticated());
-    const learner = getLearnerProfile();
-    if (learner?.name) {
-      setLearnerName(learner.name);
-    }
-    if (typeof window !== "undefined") {
-      const storedLvl = (localStorage.getItem("pa3_current_level") as CefrLevel) || "A1";
-      const storedDataSaver = localStorage.getItem("pa3_data_saver") === "true";
-      setStats((prev) => ({
-        ...prev,
-        level: storedLvl,
-        dataSaver: storedDataSaver,
-      }));
-    }
+    const loadRealtimeStats = () => {
+      setIsAdmin(isAdminAuthenticated());
+      const learner = getLearnerProfile();
+      if (learner?.name) {
+        setLearnerName(learner.name);
+      }
+      if (typeof window !== "undefined") {
+        const storedLvl = (localStorage.getItem("pa3_current_level") as CefrLevel) || "A1";
+        const storedDataSaver = localStorage.getItem("pa3_data_saver") === "true";
+        const storedXp = Number(localStorage.getItem("pa3_total_xp") || "60");
+        const storedStreak = Number(localStorage.getItem("pa3_streak") || "3");
+        let completed: string[] = ["a1-salutations"];
+        try {
+          const raw = localStorage.getItem("pa3_completed_lessons");
+          if (raw) completed = JSON.parse(raw);
+        } catch {}
+
+        setStats((prev) => ({
+          ...prev,
+          level: storedLvl,
+          dataSaver: storedDataSaver,
+          xp: storedXp,
+          streak: storedStreak,
+          completedLessons: completed,
+        }));
+      }
+    };
+
+    loadRealtimeStats();
+    window.addEventListener("storage", loadRealtimeStats);
+    window.addEventListener("pa3_progress_updated", loadRealtimeStats);
+    window.addEventListener("pa3_xp_updated", loadRealtimeStats);
+    window.addEventListener("pa3_level_updated", loadRealtimeStats);
+    window.addEventListener("pa3_auth_updated", loadRealtimeStats);
+
+    return () => {
+      window.removeEventListener("storage", loadRealtimeStats);
+      window.removeEventListener("pa3_progress_updated", loadRealtimeStats);
+      window.removeEventListener("pa3_xp_updated", loadRealtimeStats);
+      window.removeEventListener("pa3_level_updated", loadRealtimeStats);
+      window.removeEventListener("pa3_auth_updated", loadRealtimeStats);
+    };
   }, []);
 
   const toggleDataSaver = () => {

@@ -26,10 +26,21 @@ export function Navbar({
   const [learner, setLearner] = useState<LearnerProfile | null>(null);
 
   useEffect(() => {
-    setIsAdmin(isAdminAuthenticated());
-    if (isLearnerAuthenticated()) {
-      setLearner(getLearnerProfile());
-    }
+    const syncAuth = () => {
+      setIsAdmin(isAdminAuthenticated());
+      if (isLearnerAuthenticated()) {
+        setLearner(getLearnerProfile());
+      } else {
+        setLearner(null);
+      }
+    };
+    syncAuth();
+    window.addEventListener("storage", syncAuth);
+    window.addEventListener("pa3_auth_updated", syncAuth);
+    return () => {
+      window.removeEventListener("storage", syncAuth);
+      window.removeEventListener("pa3_auth_updated", syncAuth);
+    };
   }, []);
 
   return (

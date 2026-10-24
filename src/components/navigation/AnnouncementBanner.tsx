@@ -10,8 +10,17 @@ export function AnnouncementBanner() {
   const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
-    const s = getStoredPlatformSettings();
-    setSettings(s);
+    const sync = () => {
+      const s = getStoredPlatformSettings();
+      setSettings(s);
+    };
+    sync();
+    window.addEventListener('storage', sync);
+    window.addEventListener('pa3_platform_settings_updated', sync);
+    return () => {
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('pa3_platform_settings_updated', sync);
+    };
   }, []);
 
   if (!settings || !settings.announcement?.enabled || isDismissed) {
