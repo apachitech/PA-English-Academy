@@ -238,6 +238,35 @@ export function AdminSidebar({
             </div>
           </div>
         ))}
+
+        {/* Dedicated Pedagogical Guide & Video Suggestions Link */}
+        <div className="pt-2 px-1">
+          <Link
+            href="/admin/suggestions"
+            onClick={() => setIsOpenMobile(false)}
+            className="w-full text-left px-3 py-2.5 rounded-xl transition-all flex items-center justify-between group bg-gradient-to-r from-amber-500/15 via-gold/10 to-transparent border border-gold/30 hover:border-gold/60 text-amber-200 hover:text-white shadow-sm"
+          >
+            <div className="flex items-center gap-2.5 min-w-0 pr-2">
+              <span className="text-base shrink-0 group-hover:scale-110 transition-transform">
+                💡
+              </span>
+              <div className="min-w-0">
+                <div className="text-xs font-bold truncate flex items-center gap-1.5">
+                  <span>Guide Vidéos & Scripts</span>
+                  <span className="text-[9px] bg-gold/20 text-gold px-1.5 py-0.2 rounded font-black">
+                    12 SCRIPTS
+                  </span>
+                </div>
+                <div className="text-[10px] text-amber-300/70 truncate">
+                  Suggestions & formule de tournage
+                </div>
+              </div>
+            </div>
+            <span className="text-xs text-amber-400 group-hover:translate-x-0.5 transition-transform">
+              →
+            </span>
+          </Link>
+        </div>
       </nav>
 
       {/* Bottom Profile & Actions Card */}
