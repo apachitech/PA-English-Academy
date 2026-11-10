@@ -26,6 +26,7 @@ import { VideoPlayer } from '@/components/video/VideoPlayer';
 import { PricingManagement } from '@/components/admin/PricingManagement';
 import { TokenManagement } from '@/components/admin/TokenManagement';
 import { PlatformSettingsControl } from '@/components/admin/PlatformSettingsControl';
+import { PdfDistributionCenter } from '@/components/admin/PdfDistributionCenter';
 import { AdminSidebar, AdminTabType } from '@/components/admin/AdminSidebar';
 import { getStoredPlatformSettings } from '@/lib/domain/platform-settings';
 import { grantLevelUpgradeDirectly, CefrTargetLevel } from '@/lib/domain/tokens';
@@ -46,6 +47,7 @@ import {
 const TAB_TITLES: Record<AdminTabType, { label: string; sub: string; icon: string }> = {
   overview: { label: 'Vue d’ensemble', sub: 'Chiffres clés & Inscriptions', icon: '📊' },
   lessons: { label: 'Gestion des Leçons', sub: 'Création & Publication de cours', icon: '📚' },
+  documents: { label: 'Distribution des PDFs', sub: 'Tous les livrets & partage sécurisé WhatsApp', icon: '📑' },
   learners: { label: 'Gestion des Apprenants', sub: 'Suivi des comptes, XP & Promotions', icon: '👥' },
   questions: { label: 'Test de Niveau', sub: 'Banque de questions d’évaluation', icon: '🧭' },
   paliers: { label: 'Paliers CECRL', sub: 'Niveaux A1 à B2 & Seuils de validation', icon: '🎯' },
@@ -3265,6 +3267,11 @@ export default function AdminDashboardPage() {
         {/* TAB 9: PLATFORM SETTINGS & EXCHANGE RATE */}
         {activeTab === 'settings' && (
           <PlatformSettingsControl />
+        )}
+
+        {/* TAB 10: PDF DISTRIBUTION CENTER */}
+        {activeTab === 'documents' && (
+          <PdfDistributionCenter />
         )}
       </main>
     </div>

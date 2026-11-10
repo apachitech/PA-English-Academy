@@ -556,6 +556,14 @@ export default function AdminSuggestionsPage() {
 
         <div className="flex items-center gap-3">
           <Link
+            href="/admin?tab=documents"
+            className="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 text-xs font-bold transition flex items-center gap-1.5"
+          >
+            <span>📑</span>
+            <span className="hidden sm:inline">Distribution des 3 PDFs</span>
+          </Link>
+
+          <Link
             href="/syllabus"
             className="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 text-xs font-bold transition flex items-center gap-1.5"
           >

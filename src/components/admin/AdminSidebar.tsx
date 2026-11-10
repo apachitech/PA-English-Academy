@@ -8,6 +8,7 @@ import { AdminUser } from '@/lib/auth-admin';
 export type AdminTabType =
   | 'overview'
   | 'lessons'
+  | 'documents'
   | 'learners'
   | 'questions'
   | 'paliers'
@@ -82,6 +83,15 @@ export function AdminSidebar({
           badge: counts.lessons,
           badgeColor: 'bg-gold/20 text-gold border-gold/40',
           description: 'Créer, éditer, ordonner et publier les cours',
+        },
+        {
+          id: 'documents',
+          label: 'Distribution des PDFs',
+          shortLabel: 'PDFs & Livrets',
+          icon: '📑',
+          badge: '3 PDFs',
+          badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+          description: 'Syllabus, cours A1-B2 & cahier interactif',
         },
         {
           id: 'paliers',
