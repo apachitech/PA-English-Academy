@@ -169,44 +169,6 @@ export default function ProfilePage() {
     toast.success("Connecté en mode apprenant (Grace Mwamba) !");
   };
 
-  // Quick Demo Login as Administrator (Coach David Liandja)
-  const handleAdminDemoLogin = () => {
-    localStorage.setItem("pa3_admin_authenticated", "true");
-    localStorage.setItem(
-      "pa3_admin_user",
-      JSON.stringify({
-        name: "Coach David Liandja",
-        email: "liandjadavid@gmail.com",
-        role: "admin",
-        avatar: "CD",
-        authenticatedAt: new Date().toISOString(),
-      })
-    );
-    localStorage.setItem("pa3_user_logged_in", "true");
-    localStorage.setItem("pa3_user_email", "liandjadavid@gmail.com");
-    localStorage.setItem("pa3_user_name", "Coach David Liandja");
-    localStorage.setItem("pa3_user_city", "Kinshasa (Gombe)");
-    localStorage.setItem(
-      "pa3_user_bio",
-      "Fondateur & Head Coach PA³ English Academy. Parler anglais avec assurance !"
-    );
-    localStorage.setItem("pa3_daily_goal", "20");
-    localStorage.setItem("pa3_user_plan", "Direction Pédagogique (Accès Total)");
-
-    setIsLoggedIn(true);
-    setIsAdmin(true);
-    const p = getLearnerProfile();
-    const s = getLearnerProgressStats();
-    if (p) {
-      setProfile(p);
-      setName(p.name);
-      setCity(p.city || "Kinshasa (Gombe)");
-      setBio(p.bio || "");
-    }
-    setStats(s);
-    toast.success("Connecté au profil Administrateur (Coach David Liandja) !");
-  };
-
   // Save Settings
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
@@ -353,13 +315,6 @@ export default function ProfilePage() {
               className="w-full py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 underline transition"
             >
               Tester profil apprenant (Grace Mwamba)
-            </button>
-            <button
-              onClick={handleAdminDemoLogin}
-              type="button"
-              className="w-full py-2 text-xs font-bold text-amber-700 hover:text-amber-900 underline transition flex items-center justify-center gap-1.5"
-            >
-              <span>👑 Tester profil administrateur (Coach David Liandja)</span>
             </button>
           </div>
         </main>

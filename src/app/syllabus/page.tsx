@@ -209,27 +209,16 @@ export default function SyllabusPage() {
                   </Link>
                 </>
               ) : (
-                <>
-                  <a
-                    href="https://wa.me/243897400379?text=Bonjour%20Coach%20David%20Liandja,%20je%20souhaite%20recevoir%20les%203%20livrets%20PDF%20officiels%20(Cahier%20interactif,%20Cours%20A1-B2,%20Syllabus%20illustr%C3%A9)%20de%20PA%C2%B3%20English%20Academy."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-black transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-emerald-600/20"
-                    title="Demander les 3 livrets PDF officiels au Coach David Liandja sur WhatsApp"
-                  >
-                    <MessageCircle className="w-4 h-4" />
-                    <span>Demander les 3 PDFs au Coach</span>
-                  </a>
-
-                  <Link
-                    href="/admin?tab=documents"
-                    className="px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-amber-300 border border-amber-400/30 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 active:scale-95"
-                    title="Connexion réservée à la Direction Pédagogique pour partager les liens de téléchargement"
-                  >
-                    <Lock className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Accès Admin (Partager)</span>
-                  </Link>
-                </>
+                <a
+                  href="https://wa.me/243897400379?text=Bonjour%20Coach%20David%20Liandja,%20je%20souhaite%20recevoir%20les%203%20livrets%20PDF%20officiels%20(Cahier%20interactif,%20Cours%20A1-B2,%20Syllabus%20illustr%C3%A9)%20de%20PA%C2%B3%20English%20Academy."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-black transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-emerald-600/20"
+                  title="Demander les 3 livrets PDF officiels au Coach David Liandja sur WhatsApp"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Demander les 3 PDFs au Coach</span>
+                </a>
               )}
 
               <button
@@ -306,18 +295,11 @@ export default function SyllabusPage() {
                     href="https://wa.me/243897400379?text=Bonjour%20Coach%20David%20Liandja,%20je%20souhaite%20recevoir%20les%203%20livrets%20PDF%20officiels%20de%20PA%C2%B3%20English%20Academy."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20"
+                    className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    <span>Demander mon Pack PDF</span>
+                    <span>Demander mon Pack PDF au Coach</span>
                   </a>
-                  <Link
-                    href="/admin?tab=documents"
-                    className="px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-amber-300 border border-amber-400/30 text-xs font-bold transition flex items-center justify-center gap-1.5"
-                    title="Connexion administrateur"
-                  >
-                    <span>🔐 Admin</span>
-                  </Link>
                 </div>
               </div>
             )}
@@ -446,16 +428,8 @@ export default function SyllabusPage() {
                   title="Demander les 3 livrets PDF officiels au Coach David Liandja sur WhatsApp"
                 >
                   <MessageCircle className="w-3 h-3 text-emerald-600" />
-                  <span>Demander au Coach</span>
+                  <span>Demander au Coach (WhatsApp)</span>
                 </a>
-                <Link
-                  href="/admin?tab=documents"
-                  className="text-slate-600 hover:text-amber-700 font-medium flex items-center gap-1 text-[11px]"
-                  title="Connexion réservée à la Direction Pédagogique pour distribuer les livrets"
-                >
-                  <Lock className="w-3 h-3 text-amber-500" />
-                  <span>Partage réservé Admin</span>
-                </Link>
               </div>
             )}
           </div>

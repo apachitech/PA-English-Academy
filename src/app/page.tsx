@@ -26,7 +26,7 @@ export default function HomePage() {
       <div className="flag-badge h-1 w-full" />
 
       {/* Clean, Spacious Navigation Header with Side Menu */}
-      <Navbar variant="home" showTestCta={true} showAdminBadge={true} />
+      <Navbar variant="home" showTestCta={true} showAdminBadge={false} />
 
       <main className="flex-1">
         {/* Hero Section */}
