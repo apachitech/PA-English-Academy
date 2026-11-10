@@ -28,6 +28,18 @@ function sanitizeText(str: string): string {
     .replace(/[^\x00-\xFF]/g, '');
 }
 
+function fitText(font: any, text: string, fontSize: number, maxWidth: number): string {
+  if (!text) return '';
+  if (font.widthOfTextAtSize(text, fontSize) <= maxWidth) {
+    return text;
+  }
+  let truncated = text;
+  while (truncated.length > 3 && font.widthOfTextAtSize(truncated + '...', fontSize) > maxWidth) {
+    truncated = truncated.slice(0, -1);
+  }
+  return truncated.trim() + '...';
+}
+
 async function buildCourseLessonsA1ToB2Pdf() {
   console.log('[START] Generating Course Lessons PDF (Levels A1 to B2)...');
   const pdfDoc = await PDFDocument.create();
@@ -578,27 +590,58 @@ async function buildCourseLessonsA1ToB2Pdf() {
         borderWidth: 0.5,
       });
 
-      currentPage.drawText(
-        sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr} ("${lesson.titleEn}")`),
-        {
-          x: MARGIN + 8,
-          y: curY - 13,
-          size: 8.5,
-          font: fontBold,
-          color: colorNavy,
-        }
-      );
+      // Right-hand metadata badge pill (clean, protected layer)
+      const badgeText = sanitizeText(`Unite ${lesson.unitNumber} | ${lesson.skillFocus.toUpperCase()} | ${lesson.durationMinutes} min | +${lesson.xpReward} XP`);
+      const badgeW = fontBold.widthOfTextAtSize(badgeText, 6.8);
+      const badgeBoxW = badgeW + 10;
+      const badgeBoxX = MARGIN + CONTENT_WIDTH - badgeBoxW - 5;
+      const badgeBoxY = curY - 16;
 
-      currentPage.drawText(
-        sanitizeText(`Unite ${lesson.unitNumber} | Focus : ${lesson.skillFocus.toUpperCase()} | ${lesson.durationMinutes} min | +${lesson.xpReward} XP`),
-        {
-          x: MARGIN + CONTENT_WIDTH - 220,
-          y: curY - 13,
-          size: 7.2,
-          font: fontBold,
-          color: lvlMeta.color,
+      currentPage.drawRectangle({
+        x: badgeBoxX,
+        y: badgeBoxY,
+        width: badgeBoxW,
+        height: 14,
+        color: colorWhite,
+        borderColor: lvlMeta.color,
+        borderWidth: 0.8,
+      });
+
+      currentPage.drawText(badgeText, {
+        x: badgeBoxX + 5,
+        y: curY - 12.5,
+        size: 6.8,
+        font: fontBold,
+        color: lvlMeta.color,
+      });
+
+      // Left-hand title (strictly bounded by maxTitleW so it NEVER obstructs the badge)
+      const maxTitleW = badgeBoxX - (MARGIN + 8) - 8;
+      const fullTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr} ("${lesson.titleEn}")`);
+      let titleToDraw = fullTitle;
+
+      if (fontBold.widthOfTextAtSize(fullTitle, 8.2) > maxTitleW) {
+        const frTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr}`);
+        if (fontBold.widthOfTextAtSize(frTitle, 8.2) <= maxTitleW) {
+          const remainingW = maxTitleW - fontBold.widthOfTextAtSize(frTitle, 8.2) - 6;
+          if (remainingW >= 45) {
+            const enSnippet = fitText(fontOblique, `("${lesson.titleEn}")`, 7.0, remainingW);
+            titleToDraw = `${frTitle} ${enSnippet}`;
+          } else {
+            titleToDraw = frTitle;
+          }
+        } else {
+          titleToDraw = fitText(fontBold, frTitle, 8.2, maxTitleW);
         }
-      );
+      }
+
+      currentPage.drawText(titleToDraw, {
+        x: MARGIN + 8,
+        y: curY - 12.5,
+        size: 8.2,
+        font: fontBold,
+        color: colorNavy,
+      });
 
       // 1. Objective
       currentPage.drawText(

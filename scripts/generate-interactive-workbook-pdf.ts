@@ -30,6 +30,18 @@ function sanitizeText(str: string): string {
     .replace(/[^\x00-\xFF]/g, '');
 }
 
+function fitText(font: any, text: string, fontSize: number, maxWidth: number): string {
+  if (!text) return '';
+  if (font.widthOfTextAtSize(text, fontSize) <= maxWidth) {
+    return text;
+  }
+  let truncated = text;
+  while (truncated.length > 3 && font.widthOfTextAtSize(truncated + '...', fontSize) > maxWidth) {
+    truncated = truncated.slice(0, -1);
+  }
+  return truncated.trim() + '...';
+}
+
 interface InteractiveLessonDetail {
   dialogueSpeakerA: string;
   dialogueSpeakerB: string;
@@ -698,27 +710,58 @@ async function buildInteractiveWorkbookPdf() {
         borderWidth: 0.5,
       });
 
-      activePage.drawText(
-        sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr.toUpperCase()} ("${lesson.titleEn}")`),
-        {
-          x: MARGIN + 8,
-          y: curY - 17,
-          size: 9,
-          font: fontBold,
-          color: colorNavy,
-        }
-      );
+      // Right-hand validation & XP badge pill (clean, protected layer)
+      const badgeText = sanitizeText(`${lesson.skillFocus.toUpperCase()} • ${lesson.durationMinutes} min • +${lesson.xpReward} XP • [ ] Valide`);
+      const badgeW = fontBold.widthOfTextAtSize(badgeText, 7.0);
+      const badgeBoxW = badgeW + 12;
+      const badgeBoxX = MARGIN + CONTENT_WIDTH - badgeBoxW - 6;
+      const badgeBoxY = curY - 20;
 
-      activePage.drawText(
-        sanitizeText(`Focus : ${lesson.skillFocus.toUpperCase()} | ${lesson.durationMinutes} min | +${lesson.xpReward} XP | [ ] Valide`),
-        {
-          x: MARGIN + CONTENT_WIDTH - 220,
-          y: curY - 17,
-          size: 7.2,
-          font: fontBold,
-          color: lvlMeta.color,
+      activePage.drawRectangle({
+        x: badgeBoxX,
+        y: badgeBoxY,
+        width: badgeBoxW,
+        height: 16,
+        color: colorWhite,
+        borderColor: lvlMeta.color,
+        borderWidth: 1,
+      });
+
+      activePage.drawText(badgeText, {
+        x: badgeBoxX + 6,
+        y: badgeBoxY + 4.5,
+        size: 7.0,
+        font: fontBold,
+        color: lvlMeta.color,
+      });
+
+      // Left-hand title (strictly bounded by maxTitleW so it NEVER obstructs the badge)
+      const maxTitleW = badgeBoxX - (MARGIN + 8) - 10;
+      const fullTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr} ("${lesson.titleEn}")`);
+      let titleToDraw = fullTitle;
+
+      if (fontBold.widthOfTextAtSize(fullTitle, 8.5) > maxTitleW) {
+        const frTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr}`);
+        if (fontBold.widthOfTextAtSize(frTitle, 8.5) <= maxTitleW) {
+          const remainingW = maxTitleW - fontBold.widthOfTextAtSize(frTitle, 8.5) - 6;
+          if (remainingW >= 50) {
+            const enSnippet = fitText(fontOblique, `("${lesson.titleEn}")`, 7.2, remainingW);
+            titleToDraw = `${frTitle} ${enSnippet}`;
+          } else {
+            titleToDraw = frTitle;
+          }
+        } else {
+          titleToDraw = fitText(fontBold, frTitle, 8.5, maxTitleW);
         }
-      );
+      }
+
+      activePage.drawText(titleToDraw, {
+        x: MARGIN + 8,
+        y: curY - 16,
+        size: 8.5,
+        font: fontBold,
+        color: colorNavy,
+      });
 
       // 1. Objective Bar
       activePage.drawText(
@@ -826,7 +869,8 @@ async function buildInteractiveWorkbookPdf() {
       });
 
       detail.quizOptions.forEach((opt, idx) => {
-        activePage.drawText(sanitizeText(`[  ] ${opt}`), {
+        const optionText = fitText(fontBold, sanitizeText(`[  ] ${opt}`), 6.8, 155);
+        activePage.drawText(optionText, {
           x: MARGIN + 14 + idx * 165,
           y: quizY + 12,
           size: 6.8,
