@@ -556,6 +556,14 @@ export default function AdminSuggestionsPage() {
 
         <div className="flex items-center gap-3">
           <Link
+            href="/syllabus"
+            className="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 text-xs font-bold transition flex items-center gap-1.5"
+          >
+            <span>📚</span>
+            <span className="hidden sm:inline">Syllabus Complet (64 Leçons)</span>
+          </Link>
+
+          <Link
             href="/admin?tab=vod"
             className="px-3 py-1.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 hover:bg-purple-500/30 text-xs font-bold transition flex items-center gap-1.5"
           >
@@ -639,6 +647,30 @@ export default function AdminSuggestionsPage() {
 
       {/* Main Content Area */}
       <main className="max-w-6xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full space-y-10">
+        {/* Full Colorful Syllabus Callout */}
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-indigo-500/15 border border-emerald-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-black uppercase tracking-wider">
+              ✨ Nouveau • Curriculum Académique Officiel
+            </div>
+            <h2 className="text-lg sm:text-xl font-black text-white">
+              Syllabus de Cours Exhaustif en Couleurs (A1 ➔ B2 + Modules Métiers)
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl">
+              64 leçons complètes (160h de formation), 5 niveaux colorés, objectifs opérationnels, grammaire, vocabulaire et mises en situation RDC. Consultable en ligne et exportable en PDF imprimable.
+            </p>
+          </div>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <Link
+              href="/syllabus"
+              className="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/20 transition flex items-center gap-2"
+            >
+              <span>Consulter le Syllabus Interactif</span>
+              <span>➔</span>
+            </Link>
+          </div>
+        </div>
+
         {/* Navigation Tabs Filter */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
           <div className="flex flex-wrap gap-1.5 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 text-xs">

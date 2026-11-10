@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
+  ArrowRight,
   Award,
   BookOpen,
   CheckCircle2,
@@ -309,6 +310,24 @@ export default function ParcoursPage() {
           <div className="w-16 h-16 rounded-2xl bg-amber-400 text-amber-950 font-black text-2xl flex items-center justify-center shrink-0 shadow-md">
             {activePalier?.code || selectedLevel}
           </div>
+        </div>
+
+        {/* Colorful Syllabus Link Callout */}
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-500/10 border border-amber-400/30 flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xl">📘</span>
+            <div>
+              <strong className="text-navy font-black block">Consulter le Syllabus Complet en Couleurs</strong>
+              <span className="text-slate-600">Découvrez l&apos;intégralité des 64 leçons du niveau A1 à B2 avec objectifs et lexique.</span>
+            </div>
+          </div>
+          <Link
+            href="/syllabus"
+            className="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition shrink-0 flex items-center gap-1 shadow-xs"
+          >
+            <span>Voir le Syllabus</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
 
         {/* ================= DUOLINGO MAP NODES (A1, A2, B1, B2) ================= */}

@@ -135,6 +135,14 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
           badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
         },
         {
+          label: "Syllabus des Cours",
+          description: "Programme complet A1 à B2 en couleurs",
+          href: "/syllabus",
+          icon: BookOpen,
+          badge: "Complet",
+          badgeColor: "bg-emerald-400 text-slate-950 font-black",
+        },
+        {
           label: "Tableau de bord",
           description: "Leçon du jour, XP et séries",
           href: "/tableau-de-bord",
