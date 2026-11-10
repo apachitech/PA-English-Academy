@@ -5,7 +5,33 @@
 > **Direction Pédagogique :** Coach David Liandja & Direction Académique PA³  
 > **Plateforme Numérique :** [https://pa-english-academy.vercel.app](https://pa-english-academy.vercel.app)  
 > **Consulter la version interactive en couleurs :** [https://pa-english-academy.vercel.app/syllabus](https://pa-english-academy.vercel.app/syllabus)  
+> **📥 Télécharger le Livret PDF Illustré (7 Pages A4) :** [PA3-ENGLISH-ACADEMY-SYLLABUS-ILLUSTRE.pdf](https://pa-english-academy.vercel.app/downloads/PA3-ENGLISH-ACADEMY-SYLLABUS-ILLUSTRE.pdf)  
 > **Contact Pédagogique WhatsApp :** [+27 74 293 2071](https://wa.me/27742932071) • Email : `liandjadavid@gmail.com`  
+
+---
+
+## 🎨 LE LIVRET VISUEL ILLUSTRÉ (NOUVEAU)
+Spécialement adapté aux étudiants francophones, congolais et africains, ce livret intègre 4 planches thématiques complètes :
+
+1. **🧘‍♂️ Planche 1 : Les 21 Parties du Corps Humain (*The Human Body*)**
+   - Head, Forehead, Eyes, Ears, Nose, Mouth (/maʊθ/), Teeth, Tongue, Neck, Throat (/θroʊt/), Shoulders, Chest, Stomach (/ˈstʌm.ək/ - son /k/), Arms, Elbow, Hands, Fingers & Thumb (/θʌm/ - "b" muet), Legs, Knee (/niː/ - "K" muet), Ankle, Feet.
+   - Correspondances en Lingala (Mótu, Míso, Monɔkɔ, Libumu, Mabɔ́kɔ, Makolo).
+   - Mises en situation clinique à Kinshasa (*"Doctor, I have a severe headache and my ankle hurts"*).
+2. **👄 Planche 2 : Le Grand Guide de Phonétique & Prononciation**
+   - Son /θ/ sourd (*Think, Three, Month*) : pointe de la langue entre les incisives sans vibration (ne plus dire "I sink" ni "I tink").
+   - Son /ð/ sonore (*This, That, Brother, Together*) : langue entre les dents avec vibration des cordes vocales.
+   - Son /h/ aspiré (*Hospital, Hotel, House, Hungry*) : souffle franc venant des poumons (différence entre *Hungry* [faim] et *Angry* [colère]).
+   - Voyelles courtes vs longues : la différence vitale entre *Ship* (/ɪ/) et *Sheep* (/iː/), *Sheet* et *Shit*, *Beach* et *Bitch*.
+   - Règle d'or de la terminaison en *-ED* (/t/, /d/, ou /ɪd/ uniquement après T et D).
+3. **👔👗 Planche 3 : La Garde-Robe, Mode Africaine & Vêtements**
+   - Business & Corporate : Business suit, Tie & Bowtie, Crisp white dress shirt, Pencil skirt, Leather oxford shoes.
+   - Patrimoine Africain & Congolité : African wax print fabric (Pagne), Dashiki / Grand Boubou brodé, African headwrap / Turban, Culture de la SAPE de Kinshasa (harmonie des couleurs et souliers de maître).
+   - Casual : T-shirt, Jeans, Sneakers / Trainers, Hoodie, Cap.
+   - Accessoires : Wristwatch, Leather belt, Handbag, Sunglasses.
+4. **📦 Planche 4 : Les Objets du Quotidien, de Bureau & Terrain RDC**
+   - Outils Tech & Bureau : Laptop, Smartphone, USB drive, ID badge & lanyard, Noise-canceling headphones.
+   - Vie Urbaine & Voyage : House keys, Leather wallet & USD cash, Passport & travel visa, Water bottle, Umbrella.
+   - Spécial RDC : Batterie externe portable (Power bank anti-délestage), Smartphone multi-cartes Mobile Money (M-Pesa, Airtel, Orange), Casque de chantier & bottes de sécurité (EPI minier pour Kolwezi et Lubumbashi).
 
 ---
 
@@ -584,3 +610,4 @@ La plateforme PA³ English Academy a été pensée pour être universellement ac
 > *Document rédigé et certifié conforme par la Direction Pédagogique PA³ English Academy.*  
 > *Kinshasa, République Démocratique du Congo 🇨🇩*  
 > *Consultez le syllabus interactif en ligne : [https://pa-english-academy.vercel.app/syllabus](https://pa-english-academy.vercel.app/syllabus)*
+

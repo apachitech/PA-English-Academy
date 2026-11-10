@@ -23,6 +23,10 @@ import {
   ShieldCheck,
   Flame,
   Layers,
+  Download,
+  Palette,
+  Eye,
+  Check,
 } from 'lucide-react';
 import { Navbar } from '@/components/navigation/Navbar';
 import {
@@ -31,9 +35,15 @@ import {
   SyllabusLevelId,
   SyllabusLesson,
 } from '@/lib/domain/syllabus-data';
+import { IllustratedAnatomyChart } from '@/components/syllabus/IllustratedAnatomyChart';
+import { IllustratedPronunciationGuide } from '@/components/syllabus/IllustratedPronunciationGuide';
+import { IllustratedClothingWardrobe } from '@/components/syllabus/IllustratedClothingWardrobe';
+import { IllustratedObjectsGrid } from '@/components/syllabus/IllustratedObjectsGrid';
 import { toast } from 'sonner';
 
 export default function SyllabusPage() {
+  const [activeMainTab, setActiveMainTab] = useState<'visual' | 'curriculum'>('visual');
+  const [activeVisualSubTab, setActiveVisualSubTab] = useState<'anatomy' | 'pronunciation' | 'clothes' | 'objects'>('anatomy');
   const [selectedLevel, setSelectedLevel] = useState<SyllabusLevelId | 'ALL'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSkill, setSelectedSkill] = useState<string>('ALL');
@@ -103,29 +113,27 @@ export default function SyllabusPage() {
         filteredLessons: matchingLessons,
       };
     });
-  }, [selectedLevel, searchQuery, selectedSkill]);
-
-  const totalFilteredLessons = filteredLevels.reduce((acc, lvl) => acc + lvl.filteredLessons.length, 0);
+  }, [selectedLevel, selectedSkill, searchQuery]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-amber-400 selection:text-navy">
-      {/* Flag Accent Stripe */}
-      <div className="flag-badge h-1.5 w-full print:hidden" />
-
-      {/* Main Navbar */}
-      <div className="print:hidden">
-        <Navbar variant="home" showTestCta={true} showAdminBadge={true} />
-      </div>
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col">
+      <Navbar />
 
       {/* Printable Academic Header */}
       <div className="hidden print:block p-6 border-b-2 border-navy text-center space-y-1">
-        <div className="text-xl font-black text-navy uppercase tracking-wider">PA³ English Academy • République Démocratique du Congo</div>
-        <div className="text-xs font-bold text-amber-700 uppercase">Syllabus Officiel &amp; Programme Académique Complet (CECRL A1 à B2)</div>
-        <div className="text-[10px] text-slate-500">Direction Pédagogique : Coach David Liandja • Kinshasa • https://pa-english-academy.vercel.app</div>
+        <div className="text-xl font-black text-navy uppercase tracking-wider">
+          PA³ English Academy • République Démocratique du Congo
+        </div>
+        <div className="text-xs font-bold text-amber-700 uppercase">
+          Syllabus Officiel &amp; Programme Académique Illustré (CECRL A1 à B2 + ESP)
+        </div>
+        <div className="text-[10px] text-slate-500">
+          Direction Pédagogique : Coach David Liandja • Kinshasa • https://pa-english-academy.vercel.app
+        </div>
       </div>
 
       {/* Hero Header Section */}
-      <section className="print:hidden relative overflow-hidden bg-gradient-to-br from-[#071328] via-navy to-[#0F294A] text-white pt-10 pb-16 px-4 border-b border-amber-400/20">
+      <section className="print:hidden relative overflow-hidden bg-gradient-to-br from-[#071328] via-navy to-[#0F294A] text-white pt-10 pb-14 px-4 border-b border-amber-400/20">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-10 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -133,44 +141,58 @@ export default function SyllabusPage() {
           {/* Top Badge */}
           <div className="inline-flex items-center gap-2 bg-amber-400/15 border border-amber-400/30 text-amber-300 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
             <GraduationCap className="w-4 h-4 text-amber-400" />
-            <span>Document Académique Officiel • Référentiel CECRL RDC</span>
+            <span>Document Académique &amp; Livret Illustré • Référentiel CECRL RDC</span>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-3 max-w-3xl">
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
-                Syllabus de Cours <span className="text-gold-gradient">Complet &amp; en Couleurs</span>
+                Syllabus Illustré &amp; <span className="text-gold-gradient">Catalogue en Couleurs</span>
               </h1>
               <p className="text-sm sm:text-base md:text-lg text-slate-200 leading-relaxed">
-                Le répertoire exhaustif de toutes les leçons de <strong className="text-white">PA³ English Academy</strong>, du niveau 
-                débutant (A1) jusqu’au leadership international (B2) et masterclasses professionnelles adaptées aux réalités de la RDC.
+                Le répertoire exhaustif de toutes les leçons et planches visuelles de{' '}
+                <strong className="text-white">PA³ English Academy</strong>. Spécialement adapté
+                aux étudiants francophones, congolais et africains : corps humain, phonétique appliquée,
+                habits, objets du quotidien et 64 leçons complètes.
               </p>
             </div>
 
-            {/* Print & Share Action Buttons */}
-            <div className="flex items-center gap-2.5 shrink-0">
+            {/* Action Buttons: Direct PDF Download, Print & Share */}
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <a
+                href="/downloads/PA3-ENGLISH-ACADEMY-SYLLABUS-ILLUSTRE.pdf"
+                download="PA3-ENGLISH-ACADEMY-SYLLABUS-ILLUSTRE.pdf"
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 text-xs sm:text-sm font-black transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-emerald-500/20"
+                title="Télécharger directement le Syllabus Illustré en PDF (7 pages A4)"
+              >
+                <Download className="w-4 h-4" />
+                <span>Télécharger le PDF</span>
+                <span className="text-[10px] bg-slate-950/20 px-1.5 py-0.5 rounded-md font-mono hidden sm:inline">
+                  7 Pages A4
+                </span>
+              </a>
+
               <button
                 onClick={handlePrint}
                 className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/25 text-xs sm:text-sm font-bold transition-all flex items-center gap-2 active:scale-95 shadow-sm cursor-pointer"
-                title="Imprimer ou enregistrer le syllabus en PDF couleur"
+                title="Imprimer ou enregistrer le syllabus en PDF couleur via le navigateur"
               >
                 <Printer className="w-4 h-4 text-amber-400" />
-                <span>Imprimer / PDF</span>
+                <span className="hidden sm:inline">Imprimer / Web PDF</span>
               </button>
 
               <button
                 onClick={handleShare}
-                className="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs sm:text-sm font-extrabold transition-all flex items-center gap-2 active:scale-95 shadow-md cursor-pointer"
+                className="p-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs transition-all active:scale-95 shadow-md cursor-pointer"
                 title="Partager le syllabus officiel"
               >
                 <Share2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Partager</span>
               </button>
             </div>
           </div>
 
           {/* Quick Metrics Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
               <div className="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
                 <Layers className="w-3.5 h-3.5" />
@@ -192,10 +214,10 @@ export default function SyllabusPage() {
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
               <div className="text-[11px] font-bold text-sky-400 uppercase tracking-wider flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Lexique &amp; Phrases</span>
+                <span>Planches Illustrées</span>
               </div>
-              <div className="text-2xl font-black text-white mt-1">2 500+ Mots</div>
-              <div className="text-[11px] text-slate-300">Contexte RDC &amp; Business</div>
+              <div className="text-2xl font-black text-white mt-1">4 Thématiques</div>
+              <div className="text-[11px] text-slate-300">Corps, Prononciation, Mode, Objets</div>
             </div>
 
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
@@ -212,408 +234,550 @@ export default function SyllabusPage() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
-        
-        {/* Controls, Filters & Search Bar */}
-        <section className="print:hidden bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-          <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-            {/* Search Input */}
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher une leçon, mot de vocabulaire, règle de grammaire, contexte RDC..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition-all"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-slate-600 px-1.5 py-0.5 rounded-full hover:bg-slate-200"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            {/* Expand / Collapse Controls */}
-            <div className="flex items-center gap-2 self-end md:self-auto text-xs">
-              <button
-                onClick={expandAll}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition flex items-center gap-1 cursor-pointer"
-              >
-                <ChevronDown className="w-3.5 h-3.5" />
-                <span>Tout ouvrir</span>
-              </button>
-              <button
-                onClick={collapseAll}
-                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition flex items-center gap-1 cursor-pointer"
-              >
-                <ChevronUp className="w-3.5 h-3.5" />
-                <span>Tout fermer</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Level Color Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto touch-scroll no-scrollbar pt-1">
+        {/* Top-Level Mode Selector Switcher */}
+        <section className="print:hidden bg-white p-2.5 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
-              onClick={() => setSelectedLevel('ALL')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 ${
-                selectedLevel === 'ALL'
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              onClick={() => setActiveMainTab('visual')}
+              className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                activeMainTab === 'visual'
+                  ? 'bg-navy text-white shadow-md'
+                  : 'text-slate-600 hover:text-navy hover:bg-slate-100'
               }`}
             >
-              🌈 Tous les Niveaux (64)
+              <Palette className="w-4 h-4 text-amber-400" />
+              <span>🎨 Livret Visuel Illustré</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black">
+                Nouveau
+              </span>
             </button>
 
             <button
-              onClick={() => setSelectedLevel('A1')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 ${
-                selectedLevel === 'A1'
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200'
+              onClick={() => setActiveMainTab('curriculum')}
+              className={`flex-1 sm:flex-initial px-5 py-3 rounded-2xl text-xs sm:text-sm font-black transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                activeMainTab === 'curriculum'
+                  ? 'bg-navy text-white shadow-md'
+                  : 'text-slate-600 hover:text-navy hover:bg-slate-100'
               }`}
             >
-              <span>🌱</span>
-              <span>Palier A1 (Débutant)</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 font-mono">12</span>
-            </button>
-
-            <button
-              onClick={() => setSelectedLevel('A2')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 ${
-                selectedLevel === 'A2'
-                  ? 'bg-sky-600 text-white shadow-md'
-                  : 'bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-200'
-              }`}
-            >
-              <span>🚀</span>
-              <span>Palier A2 (Élémentaire)</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 font-mono">14</span>
-            </button>
-
-            <button
-              onClick={() => setSelectedLevel('B1')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 ${
-                selectedLevel === 'B1'
-                  ? 'bg-amber-500 text-slate-950 shadow-md font-black'
-                  : 'bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200'
-              }`}
-            >
-              <span>💼</span>
-              <span>Palier B1 (Intermédiaire Pro)</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 font-mono">16</span>
-            </button>
-
-            <button
-              onClick={() => setSelectedLevel('B2')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 ${
-                selectedLevel === 'B2'
-                  ? 'bg-purple-600 text-white shadow-md'
-                  : 'bg-purple-50 text-purple-900 hover:bg-purple-100 border border-purple-200'
-              }`}
-            >
-              <span>🏆</span>
-              <span>Palier B2 (Avancé &amp; Affaires)</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 font-mono">14</span>
-            </button>
-
-            <button
-              onClick={() => setSelectedLevel('SPECIAL')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 ${
-                selectedLevel === 'SPECIAL'
-                  ? 'bg-rose-600 text-white shadow-md'
-                  : 'bg-rose-50 text-rose-900 hover:bg-rose-100 border border-rose-200'
-              }`}
-            >
-              <span>💎</span>
-              <span>Masterclasses Métiers (ESP)</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 font-mono">8</span>
+              <BookOpen className="w-4 h-4 text-emerald-400" />
+              <span>📚 Cursus des 64 Leçons (A1 ➔ B2 + ESP)</span>
             </button>
           </div>
 
-          {/* Skill Filter Pills */}
-          <div className="flex items-center gap-2 pt-2 border-t border-slate-100 text-xs">
-            <span className="text-slate-500 font-bold flex items-center gap-1 shrink-0">
-              <Filter className="w-3.5 h-3.5" /> Compétence :
-            </span>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {[
-                { id: 'ALL', label: 'Toutes' },
-                { id: 'speaking', label: '🗣️ Speaking (Expression Orale)' },
-                { id: 'listening', label: '👂 Listening (Compréhension Orale)' },
-                { id: 'grammar', label: '📐 Grammar & Structure' },
-                { id: 'vocabulary', label: '📚 Vocabulary & Lexique' },
-                { id: 'writing', label: '✍️ Writing (Écrits & Emails)' },
-                { id: 'business', label: '💼 Business & ONGs' },
-              ].map((skill) => (
-                <button
-                  key={skill.id}
-                  onClick={() => setSelectedSkill(skill.id)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
-                    selectedSkill === skill.id
-                      ? 'bg-navy text-white'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {skill.label}
-                </button>
-              ))}
-            </div>
+          <div className="text-xs text-slate-500 hidden md:flex items-center gap-2 pr-2">
+            <span>🇨🇩 Adapté RDC &amp; Afrique</span>
+            <span>•</span>
+            <a
+              href="/downloads/PA3-ENGLISH-ACADEMY-SYLLABUS-ILLUSTRE.pdf"
+              download
+              className="text-emerald-700 font-bold hover:underline flex items-center gap-1"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>PDF A4 (25 Ko)</span>
+            </a>
           </div>
         </section>
 
-        {/* Results Count & Quick Notice */}
-        <div className="print:hidden flex items-center justify-between text-xs text-slate-500 font-medium px-1">
-          <div>
-            Affichage de <strong className="text-navy font-bold">{totalFilteredLessons} leçons</strong> selon vos critères de recherche.
-          </div>
-          <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 font-bold">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Programme 100% conforme au Cadre Européen (CECRL)</span>
-          </div>
-        </div>
-
-        {/* Level Sections */}
-        <div className="space-y-10">
-          {filteredLevels.map((lvl) => {
-            const isExpanded = expandedLevel[lvl.id] ?? true;
-            if (lvl.filteredLessons.length === 0 && searchQuery) {
-              return null;
-            }
-
-            return (
-              <section
-                key={lvl.id}
-                id={`level-${lvl.id}`}
-                className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden transition-shadow hover:shadow-md page-break-after"
-              >
-                {/* Level Header Banner */}
-                <div
-                  className={`p-6 sm:p-7 bg-gradient-to-r ${lvl.colorScheme.gradientFrom} ${lvl.colorScheme.gradientTo} text-white relative overflow-hidden`}
+        {/* =========================================================================
+            VUE 1 : LIVRET VISUEL ILLUSTRE (ANATOMIE, PRONONCIATION, HABITS, OBJETS)
+            ========================================================================= */}
+        {activeMainTab === 'visual' && (
+          <section className="space-y-6">
+            {/* Visual Subtabs */}
+            <div className="print:hidden flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 text-xs">
+              <span className="font-bold text-slate-500 shrink-0">Planches thématiques :</span>
+              {[
+                { id: 'anatomy', label: '🧘‍♂️ 1. Corps Humain & Santé', count: '21 parties' },
+                { id: 'pronunciation', label: '👄 2. Phonétique & Prononciation', count: '5 sons clés' },
+                { id: 'clothes', label: '👔👗 3. Habits & Mode Africaine (Wax, Sape)', count: '16 tenues' },
+                { id: 'objects', label: '📦 4. Objets du Quotidien & Bureau', count: '13 essentiels' },
+              ].map((subTab) => (
+                <button
+                  key={subTab.id}
+                  onClick={() => setActiveVisualSubTab(subTab.id as any)}
+                  className={`px-4 py-2.5 rounded-2xl font-black whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 shrink-0 ${
+                    activeVisualSubTab === subTab.id
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-md'
+                      : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+                  }`}
                 >
-                  <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+                  <span>{subTab.label}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-black/10 font-mono">
+                    {subTab.count}
+                  </span>
+                </button>
+              ))}
+            </div>
 
-                  <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-black uppercase tracking-wider flex items-center gap-1.5 border border-white/30">
-                          <span>{lvl.colorScheme.iconEmoji}</span>
-                          <span>{lvl.code}</span>
-                        </span>
-                        <span className="text-xs font-bold text-white/90 bg-black/20 px-2.5 py-1 rounded-full">
-                          {lvl.hourlyVolume}
-                        </span>
-                        <span className="text-xs font-bold text-white/90 bg-black/20 px-2.5 py-1 rounded-full">
-                          {lvl.filteredLessons.length} leçons au catalogue
-                        </span>
-                      </div>
-
-                      <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                        {lvl.nameFr}
-                      </h2>
-                      <p className="text-sm text-white/90 font-medium max-w-2xl">
-                        {lvl.taglineFr}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
-                      <Link
-                        href={`/parcours`}
-                        className="px-4 py-2 rounded-xl bg-white text-slate-950 font-black text-xs hover:bg-white/90 shadow-sm transition active:scale-95 flex items-center gap-1.5 print:hidden"
-                      >
-                        <span>Accéder au Parcours</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-
-                      <button
-                        onClick={() => toggleLevelExpand(lvl.id)}
-                        className="p-2 rounded-xl bg-black/20 hover:bg-black/30 text-white transition cursor-pointer print:hidden"
-                        title={isExpanded ? 'Réduire ce niveau' : 'Déplier ce niveau'}
-                      >
-                        {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                      </button>
-                    </div>
+            {/* Tab 1: Human Body Anatomy */}
+            {activeVisualSubTab === 'anatomy' && (
+              <div className="space-y-4">
+                <div className="p-4 sm:p-5 rounded-3xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-black text-emerald-950">
+                      Planche 1 : Les Différentes Parties du Corps Humain &amp; la Santé
+                    </h3>
+                    <p className="text-xs text-emerald-800 mt-0.5">
+                      Vocabulaire anatomique complet, phonétique IPA, équivalents en lingala et simulations de consultation médicale à Kinshasa.
+                    </p>
                   </div>
-
-                  {/* Level Details Sub-row */}
-                  <div className="mt-5 pt-4 border-t border-white/20 text-xs text-white/90 grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div>
-                      <strong className="text-white block font-bold mb-0.5">🎯 Descriptif CECRL Officiel :</strong>
-                      <p className="text-[11px] leading-relaxed text-white/80">{lvl.cefrDescriptorFr}</p>
-                    </div>
-                    <div>
-                      <strong className="text-white block font-bold mb-0.5">🏆 Examen &amp; Seuil de Validation :</strong>
-                      <p className="text-[11px] leading-relaxed text-white/80">
-                        {lvl.examNameFr} • Seuil requis : <strong>{lvl.passMarkPct}%</strong> pour l’obtention du certificat sécurisé.
-                      </p>
-                    </div>
-                  </div>
+                  <span className="px-3 py-1 rounded-full bg-emerald-600 text-white text-xs font-black shrink-0">
+                    Niveau A1 - A2
+                  </span>
                 </div>
 
-                {/* Collapsible Lesson Cards Container */}
-                {isExpanded && (
-                  <div className="p-5 sm:p-6 space-y-6">
-                    {/* Level Exit Competencies Banner */}
-                    <div className={`p-4 rounded-2xl ${lvl.colorScheme.lightBg} border ${lvl.colorScheme.border} space-y-2`}>
-                      <span className={`text-xs font-black uppercase tracking-wider ${lvl.colorScheme.accentText} flex items-center gap-1.5`}>
-                        <ShieldCheck className="w-4 h-4" />
-                        <span>Compétences Opérationnelles Acquises à la fin du {lvl.nameFr} :</span>
-                      </span>
-                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
-                        {lvl.exitCompetenciesFr.map((comp, idx) => (
-                          <li key={idx} className="flex items-start gap-2">
-                            <CheckCircle2 className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${lvl.colorScheme.accentText}`} />
-                            <span>{comp}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                <IllustratedAnatomyChart />
+              </div>
+            )}
 
-                    {/* Lesson Grid */}
-                    <div className="space-y-4">
-                      {lvl.filteredLessons.map((lesson) => {
-                        return (
-                          <div
-                            key={lesson.id}
-                            className="p-5 rounded-2xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/70 transition-all space-y-3 shadow-xs"
-                          >
-                            {/* Card Header */}
-                            <div className="flex flex-wrap items-start justify-between gap-3">
-                              <div className="space-y-1">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span
-                                    className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${lvl.colorScheme.bgBadge} ${lvl.colorScheme.textBadge}`}
-                                  >
-                                    Leçon #{lesson.number} • {lesson.level}
-                                  </span>
-                                  <span className="text-[11px] font-semibold text-slate-500">
-                                    {lesson.unitTitleFr}
-                                  </span>
-                                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
-                                    Focus : {lesson.skillFocus.toUpperCase()}
-                                  </span>
-                                </div>
-                                <h3 className="text-base sm:text-lg font-black text-navy">
-                                  {lesson.titleFr}
-                                  <span className="block sm:inline sm:ml-2 text-xs sm:text-sm font-semibold text-slate-500">
-                                    ({lesson.titleEn})
-                                  </span>
-                                </h3>
-                              </div>
-
-                              <div className="flex items-center gap-2 shrink-0">
-                                <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-xl">
-                                  <Clock className="w-3.5 h-3.5 text-slate-400" />
-                                  <span>{lesson.durationMinutes} min</span>
-                                </span>
-                                <span className="inline-flex items-center gap-1 text-xs font-black text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-xl">
-                                  <Zap className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                                  <span>+{lesson.xpReward} XP</span>
-                                </span>
-
-                                {lesson.slug && lesson.isInteractiveOnSite ? (
-                                  <Link
-                                    href={`/lecon/${lesson.slug}`}
-                                    className="px-3 py-1 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition flex items-center gap-1 shadow-xs print:hidden"
-                                    title="S'entraîner sur cette leçon interactive en ligne"
-                                  >
-                                    <span>Pratiquer</span>
-                                    <ArrowRight className="w-3 h-3" />
-                                  </Link>
-                                ) : (
-                                  <span className="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-500 text-[11px] font-semibold print:hidden">
-                                    Module Cours
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Objective */}
-                            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-                              <strong>🎯 Objectif :</strong> {lesson.objectiveFr}
-                            </p>
-
-                            {/* Detailed Metadata Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs border-t border-slate-100">
-                              {/* Grammar Points */}
-                              <div className="p-3 rounded-xl bg-slate-50 border border-slate-150 space-y-1">
-                                <span className="text-[10px] font-black uppercase text-slate-500 block">
-                                  📐 Points de Grammaire &amp; Structure :
-                                </span>
-                                <ul className="space-y-0.5 text-slate-700 text-[11px]">
-                                  {lesson.grammarPoints.map((g, i) => (
-                                    <li key={i} className="flex items-start gap-1.5">
-                                      <span className="text-amber-500">•</span>
-                                      <span>{g}</span>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-
-                              {/* Key Vocabulary */}
-                              <div className="p-3 rounded-xl bg-slate-50 border border-slate-150 space-y-1">
-                                <span className="text-[10px] font-black uppercase text-slate-500 block">
-                                  🧠 Vocabulaire &amp; Expressions Cibles :
-                                </span>
-                                <div className="flex flex-wrap gap-1">
-                                  {lesson.keyVocabulary.map((v, i) => (
-                                    <span
-                                      key={i}
-                                      className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-navy font-bold text-[10px]"
-                                    >
-                                      {v}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-
-                              {/* RDC Real-Life Context */}
-                              <div className="p-3 rounded-xl bg-amber-50/40 border border-amber-200/60 space-y-1">
-                                <span className="text-[10px] font-black uppercase text-amber-800 flex items-center gap-1">
-                                  <span>🇨🇩</span> Contexte Réel RDC &amp; Carrière :
-                                </span>
-                                <p className="text-[11px] text-slate-700 leading-relaxed">
-                                  {lesson.rdcContext}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+            {/* Tab 2: Pronunciation Guide */}
+            {activeVisualSubTab === 'pronunciation' && (
+              <div className="space-y-4">
+                <div className="p-4 sm:p-5 rounded-3xl bg-sky-50 border border-sky-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-black text-sky-950">
+                      Planche 2 : Le Grand Guide Visuel de Prononciation &amp; Phonétique
+                    </h3>
+                    <p className="text-xs text-sky-800 mt-0.5">
+                      Schémas articulatoires de la bouche, sons /th/, /h/ aspiré, voyelles courtes vs longues et terminaisons du passé -ED.
+                    </p>
                   </div>
-                )}
-              </section>
-            );
-          })}
-        </div>
+                  <span className="px-3 py-1 rounded-full bg-sky-600 text-white text-xs font-black shrink-0">
+                    Tous Niveaux
+                  </span>
+                </div>
 
-        {/* Pedagogical Method & Guarantee Section */}
-        <section className="bg-gradient-to-br from-navy via-slate-900 to-navy-dark text-white rounded-3xl p-6 sm:p-8 md:p-10 border border-amber-400/30 shadow-xl space-y-6">
-          <div className="space-y-2">
-            <div className="inline-block bg-amber-400 text-amber-950 font-black text-xs uppercase px-3 py-1 rounded-full">
-              L’Approche Pédagogique PA³
+                <IllustratedPronunciationGuide />
+              </div>
+            )}
+
+            {/* Tab 3: Clothes & African Fashion */}
+            {activeVisualSubTab === 'clothes' && (
+              <div className="space-y-4">
+                <div className="p-4 sm:p-5 rounded-3xl bg-purple-50 border border-purple-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-black text-purple-950">
+                      Planche 3 : La Garde-Robe, Vêtements &amp; Mode Africaine
+                    </h3>
+                    <p className="text-xs text-purple-800 mt-0.5">
+                      Costumes corporate d&apos;affaires, tissus traditionnels africains (Wax/Pagne), Dashiki/Boubou et élégance de la SAPE.
+                    </p>
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-purple-700 text-white text-xs font-black shrink-0">
+                    A1 - B1 Pro
+                  </span>
+                </div>
+
+                <IllustratedClothingWardrobe />
+              </div>
+            )}
+
+            {/* Tab 4: Everyday & Office Objects */}
+            {activeVisualSubTab === 'objects' && (
+              <div className="space-y-4">
+                <div className="p-4 sm:p-5 rounded-3xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-lg font-black text-amber-950">
+                      Planche 4 : Les Objets du Quotidien, de Bureau &amp; Terrain RDC
+                    </h3>
+                    <p className="text-xs text-amber-800 mt-0.5">
+                      Équipements informatiques, téléphones Mobile Money, batteries externes anti-délestage et kits de terrain minier.
+                    </p>
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-amber-600 text-slate-950 text-xs font-black shrink-0">
+                    A1 - A2 Pratique
+                  </span>
+                </div>
+
+                <IllustratedObjectsGrid />
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* =========================================================================
+            VUE 2 : CURSUS ACADEMIQUE DES 64 LECONS (A1, A2, B1, B2, ESP)
+            ========================================================================= */}
+        {activeMainTab === 'curriculum' && (
+          <div className="space-y-8">
+            {/* Controls, Filters & Search Bar */}
+            <section className="print:hidden bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+              <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+                {/* Search Input */}
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Rechercher une leçon, mot de vocabulaire, règle de grammaire, contexte RDC..."
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white transition-all"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-slate-600 px-1.5 py-0.5 rounded-full hover:bg-slate-200"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Expand / Collapse Controls */}
+                <div className="flex items-center gap-2 self-end md:self-auto text-xs">
+                  <button
+                    onClick={expandAll}
+                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition flex items-center gap-1 cursor-pointer"
+                  >
+                    <ChevronDown className="w-3.5 h-3.5" />
+                    <span>Tout ouvrir</span>
+                  </button>
+                  <button
+                    onClick={collapseAll}
+                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition flex items-center gap-1 cursor-pointer"
+                  >
+                    <ChevronUp className="w-3.5 h-3.5" />
+                    <span>Tout fermer</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Level Filter Tabs with Colorful Badges */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 scrollbar-none">
+                <button
+                  onClick={() => setSelectedLevel('ALL')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 ${
+                    selectedLevel === 'ALL'
+                      ? 'bg-navy text-white shadow-md'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Tous les Paliers (64)
+                </button>
+
+                <button
+                  onClick={() => setSelectedLevel('A1')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                    selectedLevel === 'A1'
+                      ? 'bg-emerald-600 text-white shadow-md'
+                      : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200'
+                  }`}
+                >
+                  <span>🌱</span>
+                  <span>Palier A1 (Débutant)</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 font-mono">12</span>
+                </button>
+
+                <button
+                  onClick={() => setSelectedLevel('A2')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                    selectedLevel === 'A2'
+                      ? 'bg-sky-600 text-white shadow-md'
+                      : 'bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-200'
+                  }`}
+                >
+                  <span>🚀</span>
+                  <span>Palier A2 (Élémentaire)</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 font-mono">14</span>
+                </button>
+
+                <button
+                  onClick={() => setSelectedLevel('B1')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                    selectedLevel === 'B1'
+                      ? 'bg-amber-500 text-slate-950 shadow-md font-black'
+                      : 'bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200'
+                  }`}
+                >
+                  <span>💼</span>
+                  <span>Palier B1 (Intermédiaire Pro)</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 font-mono">16</span>
+                </button>
+
+                <button
+                  onClick={() => setSelectedLevel('B2')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                    selectedLevel === 'B2'
+                      ? 'bg-purple-600 text-white shadow-md'
+                      : 'bg-purple-50 text-purple-900 hover:bg-purple-100 border border-purple-200'
+                  }`}
+                >
+                  <span>🏆</span>
+                  <span>Palier B2 (Avancé &amp; Affaires)</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 font-mono">14</span>
+                </button>
+
+                <button
+                  onClick={() => setSelectedLevel('SPECIAL')}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-black transition-all whitespace-nowrap cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                    selectedLevel === 'SPECIAL'
+                      ? 'bg-rose-600 text-white shadow-md'
+                      : 'bg-rose-50 text-rose-900 hover:bg-rose-100 border border-rose-200'
+                  }`}
+                >
+                  <span>💎</span>
+                  <span>Masterclasses Métiers (ESP)</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/15 font-mono">8</span>
+                </button>
+              </div>
+
+              {/* Skill Filter Pills */}
+              <div className="flex items-center gap-2 pt-2 border-t border-slate-100 text-xs">
+                <span className="text-slate-500 font-bold flex items-center gap-1 shrink-0">
+                  <Filter className="w-3.5 h-3.5" /> Compétence :
+                </span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {[
+                    { id: 'ALL', label: 'Toutes' },
+                    { id: 'speaking', label: '🗣️ Speaking (Expression Orale)' },
+                    { id: 'listening', label: '👂 Listening (Compréhension Orale)' },
+                    { id: 'grammar', label: '📐 Grammar & Structure' },
+                    { id: 'vocabulary', label: '📚 Vocabulary & Lexique' },
+                    { id: 'writing', label: '✍️ Writing (Écrits & Emails)' },
+                    { id: 'business', label: '💼 Business & ONGs' },
+                  ].map((skill) => (
+                    <button
+                      key={skill.id}
+                      onClick={() => setSelectedSkill(skill.id)}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
+                        selectedSkill === skill.id
+                          ? 'bg-navy text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {skill.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Curriculum Level Blocks */}
+            <section className="space-y-8">
+              {filteredLevels.map((lvl) => {
+                const isExpanded = expandedLevel[lvl.id] ?? true;
+                const lessonCount = lvl.filteredLessons.length;
+
+                if (lessonCount === 0 && searchQuery) {
+                  return null;
+                }
+
+                return (
+                  <div
+                    key={lvl.id}
+                    className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden transition-all"
+                  >
+                    {/* Header Strip with Color Gradient */}
+                    <div
+                      className={`p-5 sm:p-6 text-white bg-gradient-to-r ${lvl.colorScheme.gradientFrom} ${lvl.colorScheme.gradientTo} cursor-pointer select-none`}
+                      onClick={() => toggleLevelExpand(lvl.id)}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2.5 flex-wrap">
+                            <span className="text-2xl">{lvl.colorScheme.iconEmoji}</span>
+                            <span className="px-3 py-1 rounded-full bg-black/20 text-white font-black text-xs uppercase tracking-wider backdrop-blur-xs">
+                              {lvl.code}
+                            </span>
+                            <span className="text-xs font-bold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-xs">
+                              {lvl.hourlyVolume}
+                            </span>
+                            <span className="text-xs font-bold bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-xs">
+                              {lvl.totalLessons} Leçons
+                            </span>
+                          </div>
+
+                          <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight">
+                            {lvl.nameFr}
+                            <span className="block sm:inline sm:ml-3 text-sm sm:text-base font-semibold opacity-90">
+                              ({lvl.nameEn})
+                            </span>
+                          </h2>
+
+                          <p className="text-xs sm:text-sm text-white/90 max-w-3xl leading-relaxed">
+                            {lvl.taglineFr} • <em>{lvl.targetProfileFr}</em>
+                          </p>
+                        </div>
+
+                        <button
+                          className="p-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white transition shrink-0"
+                          title={isExpanded ? 'Réduire ce niveau' : 'Ouvrir ce niveau'}
+                        >
+                          {isExpanded ? (
+                            <ChevronUp className="w-5 h-5" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Collapsible Lesson Cards Container */}
+                    {isExpanded && (
+                      <div className="p-5 sm:p-6 space-y-6">
+                        {/* Level Exit Competencies Banner */}
+                        <div
+                          className={`p-4 rounded-2xl ${lvl.colorScheme.lightBg} border ${lvl.colorScheme.border} space-y-2`}
+                        >
+                          <span
+                            className={`text-xs font-black uppercase tracking-wider ${lvl.colorScheme.accentText} flex items-center gap-1.5`}
+                          >
+                            <ShieldCheck className="w-4 h-4" />
+                            <span>Compétences Opérationnelles Acquises à la fin du {lvl.nameFr} :</span>
+                          </span>
+                          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700">
+                            {lvl.exitCompetenciesFr.map((comp, idx) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <CheckCircle2
+                                  className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${lvl.colorScheme.accentText}`}
+                                />
+                                <span>{comp}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* Lesson Grid */}
+                        <div className="space-y-4">
+                          {lvl.filteredLessons.map((lesson) => {
+                            return (
+                              <div
+                                key={lesson.id}
+                                className="p-5 rounded-2xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/70 transition-all space-y-3 shadow-xs"
+                              >
+                                {/* Card Header */}
+                                <div className="flex flex-wrap items-start justify-between gap-3">
+                                  <div className="space-y-1">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <span
+                                        className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${lvl.colorScheme.bgBadge} ${lvl.colorScheme.textBadge}`}
+                                      >
+                                        Leçon #{lesson.number} • {lesson.level}
+                                      </span>
+                                      <span className="text-[11px] font-semibold text-slate-500">
+                                        {lesson.unitTitleFr}
+                                      </span>
+                                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">
+                                        Focus : {lesson.skillFocus.toUpperCase()}
+                                      </span>
+                                    </div>
+                                    <h3 className="text-base sm:text-lg font-black text-navy">
+                                      {lesson.titleFr}
+                                      <span className="block sm:inline sm:ml-2 text-xs sm:text-sm font-semibold text-slate-500">
+                                        &ldquo;{lesson.titleEn}&rdquo;
+                                      </span>
+                                    </h3>
+                                  </div>
+
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-lg">
+                                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                      <span>{lesson.durationMinutes} min</span>
+                                    </span>
+                                    <span className="text-[11px] font-bold text-amber-700 flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg border border-amber-200">
+                                      <Zap className="w-3.5 h-3.5 text-amber-500" />
+                                      <span>+{lesson.xpReward} XP</span>
+                                    </span>
+                                    {lesson.isInteractiveOnSite && lesson.slug ? (
+                                      <Link
+                                        href={`/lecon/${lesson.slug}`}
+                                        className="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition flex items-center gap-1 shadow-xs"
+                                      >
+                                        <span>Suivre</span>
+                                        <ArrowRight className="w-3 h-3" />
+                                      </Link>
+                                    ) : null}
+                                  </div>
+                                </div>
+
+                                {/* Objective */}
+                                <div className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                                  <strong className="text-navy font-bold">Objectif opérationnel : </strong>
+                                  {lesson.objectiveFr}
+                                </div>
+
+                                {/* Details Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs border-t border-slate-100">
+                                  {/* Grammar */}
+                                  <div className="space-y-1">
+                                    <span className="font-bold text-slate-500 flex items-center gap-1 text-[11px] uppercase tracking-wider">
+                                      <span>📐</span> Grammaire &amp; Structure
+                                    </span>
+                                    <div className="flex flex-wrap gap-1">
+                                      {lesson.grammarPoints.map((gp, i) => (
+                                        <span
+                                          key={i}
+                                          className="px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-medium text-[11px]"
+                                        >
+                                          {gp}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  {/* Vocabulary */}
+                                  <div className="space-y-1">
+                                    <span className="font-bold text-slate-500 flex items-center gap-1 text-[11px] uppercase tracking-wider">
+                                      <span>💬</span> Lexique Clé
+                                    </span>
+                                    <div className="flex flex-wrap gap-1">
+                                      {lesson.keyVocabulary.map((kv, i) => (
+                                        <span
+                                          key={i}
+                                          className="px-2 py-0.5 rounded bg-amber-50 text-amber-900 border border-amber-200/60 font-medium text-[11px]"
+                                        >
+                                          {kv}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  {/* RDC Real-World Context */}
+                                  <div className="space-y-1">
+                                    <span className="font-bold text-slate-500 flex items-center gap-1 text-[11px] uppercase tracking-wider">
+                                      <span>🇨🇩</span> Contexte RDC &amp; Afrique
+                                    </span>
+                                    <p className="text-[11px] text-slate-600 leading-snug">
+                                      {lesson.rdcContext}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </section>
+          </div>
+        )}
+
+        {/* Global Pedagogical Methodology Callout */}
+        <section className="print:hidden p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-navy via-slate-900 to-navy text-white space-y-6 shadow-xl border border-amber-400/20">
+          <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-bold uppercase tracking-wider">
+              ✨ La Formule PA³
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black">
-              Pourquoi le Syllabus PA³ garantit votre fluidité en anglais
-            </h2>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-3xl leading-relaxed">
-              Contrairement aux cours scolaires traditionnels axés sur la mémorisation passive de listes de verbes, 
-              le syllabus PA³ est conçu pour <strong className="text-white">débloquer l’expression orale spontanée</strong> dès le premier jour.
+            <h3 className="text-2xl sm:text-3xl font-black text-white">
+              Une Méthode Conçue Pour les Réalités d&apos;Afrique Francophone
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+              La plupart des manuels d&apos;anglais traditionnels échouent parce qu&apos;ils ignorent les interférences entre le français, le lingala, le swahili et l&apos;anglais. Notre méthode combine micro-apprentissage et décomplexion orale totale.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
               <div className="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center font-black text-lg">
                 1
               </div>
-              <h4 className="font-black text-sm text-white">Micro-Learning Quotidien</h4>
+              <h4 className="font-black text-sm text-white">Zéro Blocage Psychologique</h4>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Leçons calibrées de 10 à 15 minutes, faciles à intégrer dans votre journée à Kinshasa, Lubumbashi ou Goma.
+                Adieu la peur de faire des fautes ! Vous apprenez à parler avec assurance dès la première séance.
               </p>
             </div>
 
@@ -654,7 +818,7 @@ export default function SyllabusPage() {
               Besoin d’un parcours sur-mesure pour votre entreprise ou d’un coaching VIP en présentiel ?
             </div>
             <a
-              href="https://wa.me/27742932071?text=Bonjour%20Coach%20David%2C%20je%20consulte%20le%20syllabus%20officiel%20et%20je%20souhaite%20m%27inscrire%20!"
+              href="https://wa.me/27742932071?text=Bonjour%20Coach%20David%2C%20je%20consulte%20le%20syllabus%20illustré%20et%20je%20souhaite%20m%27inscrire%20!"
               target="_blank"
               rel="noopener noreferrer"
               className="px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition shadow-md flex items-center gap-2 cursor-pointer"
