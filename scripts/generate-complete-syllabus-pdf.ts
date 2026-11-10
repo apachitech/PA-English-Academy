@@ -1343,3 +1343,4 @@ buildMasterSyllabusPdf().catch((err) => {
   console.error('[ERROR] Failed to generate Master Syllabus PDF:', err);
   process.exit(1);
 });
+
