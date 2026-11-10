@@ -1523,3 +1523,4 @@ generateSyllabusPdf().catch((err) => {
   console.error('[ERROR] Failed to generate PDF:', err);
   process.exit(1);
 });
+

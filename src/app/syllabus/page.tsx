@@ -163,12 +163,12 @@ export default function SyllabusPage() {
                 href="/downloads/PA3-ENGLISH-ACADEMY-SYLLABUS-ILLUSTRE.pdf"
                 download="PA3-ENGLISH-ACADEMY-SYLLABUS-ILLUSTRE.pdf"
                 className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 text-xs sm:text-sm font-black transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-emerald-500/20"
-                title="Télécharger directement le Syllabus Illustré en PDF (7 pages A4)"
+                title="Télécharger directement le Grand Syllabus Complet & Illustré en PDF (15 pages A4 - 64 leçons)"
               >
                 <Download className="w-4 h-4" />
-                <span>Télécharger le PDF</span>
+                <span>Télécharger le PDF Complet</span>
                 <span className="text-[10px] bg-slate-950/20 px-1.5 py-0.5 rounded-md font-mono hidden sm:inline">
-                  7 Pages A4
+                  15 Pages • 64 Leçons
                 </span>
               </a>
 
@@ -274,7 +274,7 @@ export default function SyllabusPage() {
               className="text-emerald-700 font-bold hover:underline flex items-center gap-1"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>PDF A4 (25 Ko)</span>
+              <span>PDF A4 Complet (15 Pages • 62 Ko)</span>
             </a>
           </div>
         </section>
