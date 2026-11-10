@@ -160,15 +160,28 @@ export default function SyllabusPage() {
             {/* Action Buttons: Direct PDF Downloads, Print & Share */}
             <div className="flex flex-wrap items-center gap-2.5 shrink-0">
               <a
+                href="/downloads/PA3-CAHIER-INTERACTIF-EXERCICES-A1-A-B2.pdf"
+                download="PA3-CAHIER-INTERACTIF-EXERCICES-A1-A-B2.pdf"
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs sm:text-sm font-black transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-sky-500/20"
+                title="Télécharger le Cahier d'Exercices Interactifs & Exemples Multipliés de A1 à B2 (30 pages A4)"
+              >
+                <Download className="w-4 h-4" />
+                <span>Cahier d&apos;Exercices Interactif</span>
+                <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-md font-mono hidden sm:inline">
+                  30 P.
+                </span>
+              </a>
+
+              <a
                 href="/downloads/PA3-ENGLISH-COURSE-LESSONS-A1-TO-B2.pdf"
                 download="PA3-ENGLISH-COURSE-LESSONS-A1-TO-B2.pdf"
-                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs sm:text-sm font-black transition-all flex items-center gap-2 active:scale-95 shadow-lg shadow-amber-400/20"
+                className="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs sm:text-sm font-black transition-all flex items-center gap-2 active:scale-95 shadow-md shadow-amber-400/20"
                 title="Télécharger exclusivement le Cursus des Cours de A1 à B2 (11 pages A4 - 56 leçons)"
               >
                 <Download className="w-4 h-4" />
-                <span>PDF Cours A1 ➔ B2</span>
+                <span>Cours A1 ➔ B2</span>
                 <span className="text-[10px] bg-slate-950/20 px-1.5 py-0.5 rounded-md font-mono hidden sm:inline">
-                  11 Pages
+                  11 P.
                 </span>
               </a>
 
@@ -179,7 +192,7 @@ export default function SyllabusPage() {
                 title="Télécharger le Grand Syllabus Complet & Illustré (15 pages A4 - 64 leçons + Planches visuelles)"
               >
                 <Download className="w-4 h-4" />
-                <span className="hidden sm:inline">PDF Livret Illustré</span>
+                <span className="hidden sm:inline">Livret Illustré</span>
                 <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-md font-mono">
                   15 P.
                 </span>
@@ -280,6 +293,15 @@ export default function SyllabusPage() {
 
           <div className="text-xs text-slate-500 hidden md:flex items-center gap-2 pr-2">
             <span>🇨🇩 PDF :</span>
+            <a
+              href="/downloads/PA3-CAHIER-INTERACTIF-EXERCICES-A1-A-B2.pdf"
+              download
+              className="text-sky-800 font-bold hover:underline flex items-center gap-1 bg-sky-50 px-2 py-0.5 rounded-lg border border-sky-200"
+              title="Cahier d'Exercices Interactif avec exemples multipliés (30 pages A4)"
+            >
+              <Download className="w-3 h-3 text-sky-600" />
+              <span>Exercices (30 P.)</span>
+            </a>
             <a
               href="/downloads/PA3-ENGLISH-COURSE-LESSONS-A1-TO-B2.pdf"
               download

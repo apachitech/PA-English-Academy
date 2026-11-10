@@ -5,6 +5,7 @@
 > **Direction Pédagogique :** Coach David Liandja & Direction Académique PA³  
 > **Plateforme Numérique :** [https://pa-english-academy.vercel.app](https://pa-english-academy.vercel.app)  
 > **Consulter la version interactive en couleurs :** [https://pa-english-academy.vercel.app/syllabus](https://pa-english-academy.vercel.app/syllabus)  
+> **📥 Télécharger le Cahier d'Exercices Interactifs & Exemples Multipliés A1 à B2 (30 Pages A4) :** [PA3-CAHIER-INTERACTIF-EXERCICES-A1-A-B2.pdf](https://pa-english-academy.vercel.app/downloads/PA3-CAHIER-INTERACTIF-EXERCICES-A1-A-B2.pdf)  
 > **📥 Télécharger le Cursus Dédié aux Cours A1 à B2 (11 Pages A4 • 56 Leçons de Cours) :** [PA3-ENGLISH-COURSE-LESSONS-A1-TO-B2.pdf](https://pa-english-academy.vercel.app/downloads/PA3-ENGLISH-COURSE-LESSONS-A1-TO-B2.pdf)  
 > **📥 Télécharger le Grand Syllabus Complet & Illustré (15 Pages A4 • 64 Leçons + 4 Planches) :** [PA3-ENGLISH-ACADEMY-SYLLABUS-ILLUSTRE.pdf](https://pa-english-academy.vercel.app/downloads/PA3-ENGLISH-ACADEMY-SYLLABUS-ILLUSTRE.pdf)  
 > **Contact Pédagogique WhatsApp :** [+27 74 293 2071](https://wa.me/27742932071) • Email : `liandjadavid@gmail.com`  

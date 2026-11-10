@@ -944,3 +944,4 @@ buildCourseLessonsA1ToB2Pdf().catch((err) => {
   console.error('[ERROR] Failed to generate Course Lessons PDF:', err);
   process.exit(1);
 });
+
