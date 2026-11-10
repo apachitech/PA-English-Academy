@@ -10,6 +10,8 @@ import {
   isEmailRegistered,
   registerNewLearner,
   clearRegisteredUsersForTesting,
+  loginLearnerWithGoogle,
+  initiateGoogleSignIn,
 } from '../../src/lib/auth-learner';
 
 describe('Learner Authentication & Profile Helper', () => {
@@ -131,6 +133,32 @@ describe('Learner Authentication & Profile Helper', () => {
 
     expect(secondReg.success).toBe(false);
     expect(secondReg.error).toContain('est déjà enregistrée dans le système');
+  });
+
+  it('authenticates and synchronizes learner using Google account details', () => {
+    const profile = loginLearnerWithGoogle({
+      email: 'serge.kasongo@gmail.com',
+      name: 'Serge Kasongo',
+      avatarUrl: 'https://lh3.googleusercontent.com/a/mock-photo-url',
+      city: 'Lubumbashi',
+    });
+
+    expect(profile.email).toBe('serge.kasongo@gmail.com');
+    expect(profile.name).toBe('Serge Kasongo');
+    expect(profile.avatarUrl).toBe('https://lh3.googleusercontent.com/a/mock-photo-url');
+    expect(profile.city).toBe('Lubumbashi');
+    expect(isLearnerAuthenticated()).toBe(true);
+    expect(isEmailRegistered('serge.kasongo@gmail.com')).toBe(true);
+
+    const saved = getLearnerProfile();
+    expect(saved?.avatarUrl).toBe('https://lh3.googleusercontent.com/a/mock-photo-url');
+    expect(saved?.name).toBe('Serge Kasongo');
+  });
+
+  it('provides demo mode initiation when running in mock environment', async () => {
+    const res = await initiateGoogleSignIn('/tableau-de-bord');
+    expect(res.success).toBe(true);
+    expect(res.mode).toBe('demo');
   });
 });
 

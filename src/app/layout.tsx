@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { PwaManager } from "@/components/pwa/PwaManager";
 import { AnnouncementBanner } from "@/components/navigation/AnnouncementBanner";
+import { AuthSyncManager } from "@/components/auth/AuthSyncManager";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -78,6 +79,7 @@ export default function RootLayout({
       >
         <PwaManager />
         <AnnouncementBanner />
+        <AuthSyncManager />
         {children}
         <Toaster
           position="top-center"

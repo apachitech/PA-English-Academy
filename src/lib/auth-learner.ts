@@ -3,6 +3,9 @@
  * Manages learner login status, profile details, settings, and password updates in session/localStorage
  */
 
+import { isSupabaseConfigured, env } from './env';
+import { createClient } from './supabase/client';
+
 const LEARNER_LOGGED_IN_KEY = 'pa3_user_logged_in';
 const LEARNER_EMAIL_KEY = 'pa3_user_email';
 const LEARNER_NAME_KEY = 'pa3_user_name';
@@ -430,5 +433,82 @@ export function registerNewLearner(data: {
  */
 export function clearRegisteredUsersForTesting(): void {
   removeItem(REGISTERED_USERS_KEY);
+}
+
+/**
+ * Initiates Google OAuth login via Supabase (or demo simulation in local mock environment)
+ */
+export async function initiateGoogleSignIn(redirectTo: string = '/tableau-de-bord'): Promise<{
+  success: boolean;
+  mode: 'oauth' | 'demo';
+  error?: string;
+}> {
+  // If running in browser and Supabase is configured with real non-demo credentials
+  if (
+    typeof window !== 'undefined' &&
+    isSupabaseConfigured &&
+    env.NEXT_PUBLIC_SUPABASE_URL &&
+    !env.NEXT_PUBLIC_SUPABASE_URL.includes('demo-pa3')
+  ) {
+    try {
+      const supabase = createClient();
+      const origin = window.location.origin;
+      const callbackUrl = `${origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`;
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: callbackUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'select_account',
+          },
+        },
+      });
+
+      if (error) {
+        return { success: false, mode: 'oauth', error: error.message };
+      }
+
+      // Supabase redirects automatically
+      return { success: true, mode: 'oauth' };
+    } catch (err: any) {
+      return { success: false, mode: 'oauth', error: err?.message || 'Erreur OAuth Google' };
+    }
+  }
+
+  // Fallback: Demo / Local Development Simulation
+  return { success: true, mode: 'demo' };
+}
+
+/**
+ * Synchronizes and registers/logs in a learner using Google account details
+ */
+export function loginLearnerWithGoogle(googleUser: {
+  email: string;
+  name?: string;
+  avatarUrl?: string;
+  city?: string;
+}): LearnerProfile {
+  const cleanEmail = googleUser.email.trim().toLowerCase();
+  const cleanName = googleUser.name?.trim() || cleanEmail.split('@')[0] || 'Apprenant Google';
+  const cleanCity = googleUser.city || 'Kinshasa';
+
+  // Ensure user is in the registered users registry
+  const users = getRegisteredUsers();
+  const existing = users.find((u) => u.email.toLowerCase() === cleanEmail);
+  if (!existing) {
+    users.push({
+      email: cleanEmail,
+      name: cleanName,
+      city: cleanCity,
+      registeredAt: new Date().toISOString(),
+    });
+    setItem(REGISTERED_USERS_KEY, JSON.stringify(users));
+  }
+
+  // Log in user and establish session
+  const profile = loginLearner(cleanEmail, cleanName, cleanCity, googleUser.avatarUrl);
+  return profile;
 }
 
