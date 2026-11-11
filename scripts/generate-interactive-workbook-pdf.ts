@@ -184,11 +184,15 @@ async function buildInteractiveWorkbookPdf() {
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const fontOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
 
-  // Load Official 3D PA3 Logo
-  const logoPath = path.join(__dirname, '../public/images/pa3-3d-logo.jpg');
+  // Load Official 3D PA3 Logo with background removed (transparent PNG)
+  const logoPngPath = path.join(__dirname, '../public/images/pa3-3d-logo.png');
+  const logoJpgPath = path.join(__dirname, '../public/images/pa3-3d-logo.jpg');
   let logoImage: any = null;
-  if (fs.existsSync(logoPath)) {
-    const logoBytes = fs.readFileSync(logoPath);
+  if (fs.existsSync(logoPngPath)) {
+    const logoBytes = fs.readFileSync(logoPngPath);
+    logoImage = await pdfDoc.embedPng(logoBytes);
+  } else if (fs.existsSync(logoJpgPath)) {
+    const logoBytes = fs.readFileSync(logoJpgPath);
     logoImage = await pdfDoc.embedJpg(logoBytes);
   }
 
@@ -281,9 +285,9 @@ async function buildInteractiveWorkbookPdf() {
       color: colorGold,
     });
 
-    // Embed 3D Logo or fallback
-    const logoW = 135;
-    const logoH = 75.3;
+    // Embed 3D Logo (transparent PNG without background)
+    const logoW = 120;
+    const logoH = 71.6;
     if (logoImage) {
       page.drawImage(logoImage, {
         x: MARGIN,
@@ -308,11 +312,11 @@ async function buildInteractiveWorkbookPdf() {
       });
     }
 
-    const headerTextX = MARGIN + logoW + 15;
+    const headerTextX = MARGIN + logoW + 16;
     page.drawText('PA3 ENGLISH ACADEMY', {
       x: headerTextX,
-      y: PAGE_HEIGHT - 52,
-      size: 13,
+      y: PAGE_HEIGHT - 50,
+      size: 15,
       font: fontBold,
       color: colorGoldLight,
     });
@@ -320,23 +324,23 @@ async function buildInteractiveWorkbookPdf() {
     page.drawText('REPUBLIQUE DEMOCRATIQUE DU CONGO', {
       x: headerTextX,
       y: PAGE_HEIGHT - 67,
-      size: 8.5,
+      size: 9.5,
       font: fontBold,
       color: colorWhite,
     });
 
     page.drawText('Cahier d Exercices Pratiques & Interactivite A1 a B2', {
       x: headerTextX,
-      y: PAGE_HEIGHT - 80,
-      size: 8,
+      y: PAGE_HEIGHT - 82,
+      size: 9,
       font: fontRegular,
       color: rgb(219 / 255, 234 / 255, 254 / 255),
     });
 
     page.drawText('Exemples Multiplies * Dialogues RDC * QCM * Defis Oraux', {
       x: headerTextX,
-      y: PAGE_HEIGHT - 93,
-      size: 7.5,
+      y: PAGE_HEIGHT - 96,
+      size: 8.5,
       font: fontRegular,
       color: rgb(191 / 255, 219 / 255, 254 / 255),
     });
@@ -345,15 +349,15 @@ async function buildInteractiveWorkbookPdf() {
     page.drawText('CAHIER D INTERACTIVITE', {
       x: MARGIN,
       y: PAGE_HEIGHT - 160,
-      size: 28,
+      size: 30,
       font: fontBold,
       color: colorWhite,
     });
 
     page.drawText('DES 56 LECONS (A1 A B2)', {
       x: MARGIN,
-      y: PAGE_HEIGHT - 195,
-      size: 22,
+      y: PAGE_HEIGHT - 198,
+      size: 23,
       font: fontBold,
       color: colorGoldLight,
     });
@@ -362,13 +366,13 @@ async function buildInteractiveWorkbookPdf() {
       fitText(
         fontRegular,
         sanitizeText("Chaque lecon de A1 a B2 enrichie de multiples exemples bilingues, mini-dialogues,"),
-        10.5,
+        11,
         CONTENT_WIDTH
       ),
       {
         x: MARGIN,
-        y: PAGE_HEIGHT - 225,
-        size: 10.5,
+        y: PAGE_HEIGHT - 228,
+        size: 11,
         font: fontRegular,
         color: rgb(226 / 255, 232 / 255, 240 / 255),
       }
@@ -377,25 +381,25 @@ async function buildInteractiveWorkbookPdf() {
       fitText(
         fontRegular,
         sanitizeText("exercices d'application a cocher, reconstitutions syntaxiques et defis d'expression orale."),
-        10.5,
+        11,
         CONTENT_WIDTH
       ),
       {
         x: MARGIN,
-        y: PAGE_HEIGHT - 240,
-        size: 10.5,
+        y: PAGE_HEIGHT - 245,
+        size: 11,
         font: fontRegular,
         color: rgb(226 / 255, 232 / 255, 240 / 255),
       }
     );
 
     // Feature highlights Box
-    const featY = PAGE_HEIGHT - 395;
+    const featY = PAGE_HEIGHT - 400;
     page.drawRectangle({
       x: MARGIN,
       y: featY,
       width: CONTENT_WIDTH,
-      height: 135,
+      height: 142,
       color: colorDeepBlue,
       borderColor: rgb(59 / 255, 130 / 255, 246 / 255),
       borderWidth: 1,
@@ -403,15 +407,15 @@ async function buildInteractiveWorkbookPdf() {
 
     page.drawText(sanitizeText('CONTENU INTERACTIF DE CHAQUE FICHE DE LECON :'), {
       x: MARGIN + 14,
-      y: featY + 114,
-      size: 9.5,
+      y: featY + 120,
+      size: 10,
       font: fontBold,
       color: colorGoldLight,
     });
 
     const feats = [
       '[1] MULTIPLICATION D EXEMPLES BILINGUES : 3 a 4 phrases modeles par lecon ancrees en RDC.',
-      '[2] MINI-DIALOGUE VIVANT : Echange oral natural entre Speaker A et Speaker B avec traduction.',
+      '[2] MINI-DIALOGUE VIVANT : Echange oral naturel entre Speaker A et Speaker B avec traduction.',
       '[3] TEST INTERACTIF QCM [ ] : Questions a choix multiple avec cases a cocher pour verifier vos acquis.',
       '[4] PUZZLE DE PHRASE (SENTENCE ORDERING) : Remettre les mots dans le bon ordre syntaxique.',
       '[5] DEFI D EXPRESSION ORALE (SPEAK UP !) : Phrase a prononcer a voix haute avec phonetique cible.',
@@ -419,11 +423,11 @@ async function buildInteractiveWorkbookPdf() {
     ];
 
     feats.forEach((ft, idx) => {
-      const lineText = fitText(fontRegular, sanitizeText(ft), 7.5, CONTENT_WIDTH - 28);
+      const lineText = fitText(fontRegular, sanitizeText(ft), 8.2, CONTENT_WIDTH - 28);
       page.drawText(lineText, {
         x: MARGIN + 14,
-        y: featY + 94 - idx * 16,
-        size: 7.5,
+        y: featY + 98 - idx * 17,
+        size: 8.2,
         font: fontRegular,
         color: colorWhite,
       });
@@ -436,8 +440,8 @@ async function buildInteractiveWorkbookPdf() {
     const stats = [
       { num: '56', label: 'Fiches Interactives', sub: 'A1 a B2 Completes', color: colorEmerald },
       { num: '200+', label: 'Exemples Concrets', sub: 'Contextualises RDC', color: colorSky },
-      { num: '56', label: 'Mini-Dialogues', sub: 'Situations Réelles', color: colorAmber },
-      { num: '56', label: 'Défis Vocaux', sub: 'Pratique Orale 70%', color: colorPurple },
+      { num: '56', label: 'Mini-Dialogues', sub: 'Situations Reelles', color: colorAmber },
+      { num: '56', label: 'Defis Vocaux', sub: 'Pratique Orale 70%', color: colorPurple },
     ];
 
     stats.forEach((st, idx) => {
@@ -455,7 +459,7 @@ async function buildInteractiveWorkbookPdf() {
       page.drawText(st.num, {
         x: boxX + 10,
         y: statsY + 38,
-        size: 16,
+        size: 17,
         font: fontBold,
         color: st.color,
       });
@@ -463,7 +467,7 @@ async function buildInteractiveWorkbookPdf() {
       page.drawText(sanitizeText(st.label), {
         x: boxX + 10,
         y: statsY + 22,
-        size: 8,
+        size: 8.5,
         font: fontBold,
         color: colorDark,
       });
@@ -471,7 +475,7 @@ async function buildInteractiveWorkbookPdf() {
       page.drawText(sanitizeText(st.sub), {
         x: boxX + 10,
         y: statsY + 10,
-        size: 6.8,
+        size: 7.2,
         font: fontRegular,
         color: colorMuted,
       });
@@ -581,7 +585,7 @@ async function buildInteractiveWorkbookPdf() {
       page.drawText(sanitizeText(ms.step), {
         x: bX + 8,
         y: stepsY + 112,
-        size: 7.5,
+        size: 8.0,
         font: fontBold,
         color: colorWhite,
       });
@@ -589,17 +593,17 @@ async function buildInteractiveWorkbookPdf() {
       page.drawText(sanitizeText(ms.title), {
         x: bX + 8,
         y: stepsY + 103,
-        size: 6.8,
+        size: 7.2,
         font: fontRegular,
         color: colorWhite,
       });
 
-      const descLines = wrapText(fontRegular, ms.desc, 7.0, colW - 16);
+      const descLines = wrapText(fontRegular, ms.desc, 7.5, colW - 16);
       descLines.slice(0, 7).forEach((dLine, dIdx) => {
         page.drawText(dLine, {
           x: bX + 8,
-          y: stepsY + 85 - dIdx * 10.5,
-          size: 7.0,
+          y: stepsY + 85 - dIdx * 11,
+          size: 7.5,
           font: fontRegular,
           color: colorDark,
         });
@@ -629,7 +633,7 @@ async function buildInteractiveWorkbookPdf() {
     page.drawText(sanitizeText('LE PARCOURS D APPRENTISSAGE EN 4 PALIERS CERTIFIANTS'), {
       x: MARGIN + 12,
       y: progY + 139,
-      size: 9,
+      size: 9.5,
       font: fontBold,
       color: colorGoldLight,
     });
@@ -646,23 +650,23 @@ async function buildInteractiveWorkbookPdf() {
       page.drawRectangle({
         x: MARGIN + 12,
         y: rY - 2,
-        width: 100,
-        height: 16,
+        width: 105,
+        height: 18,
         color: r.col,
       });
 
       page.drawText(sanitizeText(r.code), {
         x: MARGIN + 16,
-        y: rY + 3,
-        size: 7.5,
+        y: rY + 3.5,
+        size: 8.0,
         font: fontBold,
         color: colorWhite,
       });
 
-      page.drawText(sanitizeText(r.desc), {
-        x: MARGIN + 120,
-        y: rY + 3,
-        size: 7.5,
+      page.drawText(fitText(fontRegular, sanitizeText(r.desc), 8.0, CONTENT_WIDTH - 130), {
+        x: MARGIN + 125,
+        y: rY + 3.5,
+        size: 8.0,
         font: fontRegular,
         color: colorDark,
       });
@@ -682,24 +686,27 @@ async function buildInteractiveWorkbookPdf() {
 
     page.drawText(sanitizeText('CONSEIL DE COACH DAVID LIANDJA :'), {
       x: MARGIN + 10,
-      y: cAdviceY + 46,
-      size: 8,
+      y: cAdviceY + 45,
+      size: 8.5,
       font: fontBold,
       color: colorGold,
     });
 
-    page.drawText(
-      sanitizeText(
-        "\"Ce cahier n'est pas un manuel a lire passivement dans son lit. C'est un terrain d'entrainement ! Prenez votre stylo, cochez les cases, surlignez les mots nouveaux et parlez a voix haute. La confiance se construit par la repetition physique des cordes vocales.\""
-      ),
-      {
+    const adviceLines = wrapText(
+      fontOblique,
+      "\"Ce cahier n'est pas un manuel a lire passivement dans son lit. C'est un terrain d'entrainement ! Prenez votre stylo, cochez les cases, surlignez les mots nouveaux et parlez a voix haute. La confiance se construit par la repetition physique des cordes vocales.\"",
+      8.0,
+      CONTENT_WIDTH - 20
+    );
+    adviceLines.slice(0, 3).forEach((line, aIdx) => {
+      page.drawText(line, {
         x: MARGIN + 10,
-        y: cAdviceY + 28,
-        size: 7.5,
+        y: cAdviceY + 29 - aIdx * 11,
+        size: 8.0,
         font: fontOblique,
         color: colorDark,
-      }
-    );
+      });
+    });
   }
 
   /* =========================================================================
@@ -779,25 +786,25 @@ async function buildInteractiveWorkbookPdf() {
 
       // Right-hand validation & XP badge pill (clean, protected layer)
       const badgeText = sanitizeText(`U${lesson.unitNumber} • ${lesson.durationMinutes} min • +${lesson.xpReward} XP • [ ] Fait`);
-      const badgeW = fontBold.widthOfTextAtSize(badgeText, 7.0);
-      const badgeBoxW = badgeW + 12;
+      const badgeW = fontBold.widthOfTextAtSize(badgeText, 7.8);
+      const badgeBoxW = badgeW + 14;
       const badgeBoxX = MARGIN + CONTENT_WIDTH - badgeBoxW - 6;
-      const badgeBoxY = curY - 20;
+      const badgeBoxY = curY - 21;
 
       activePage.drawRectangle({
         x: badgeBoxX,
         y: badgeBoxY,
         width: badgeBoxW,
-        height: 16,
+        height: 18,
         color: colorWhite,
         borderColor: lvlMeta.color,
         borderWidth: 1,
       });
 
       activePage.drawText(badgeText, {
-        x: badgeBoxX + 6,
-        y: badgeBoxY + 4.5,
-        size: 7.0,
+        x: badgeBoxX + 7,
+        y: badgeBoxY + 5,
+        size: 7.8,
         font: fontBold,
         color: lvlMeta.color,
       });
@@ -805,12 +812,12 @@ async function buildInteractiveWorkbookPdf() {
       // Left-hand title (strictly bounded by maxTitleW so it NEVER obstructs the badge)
       const maxTitleW = badgeBoxX - (MARGIN + 8) - 10;
       const fullTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr} ("${lesson.titleEn}")`);
-      const titleToDraw = fitText(fontBold, fullTitle, 8.5, maxTitleW);
+      const titleToDraw = fitText(fontBold, fullTitle, 9.2, maxTitleW);
 
       activePage.drawText(titleToDraw, {
         x: MARGIN + 8,
         y: curY - 16,
-        size: 8.5,
+        size: 9.2,
         font: fontBold,
         color: colorNavy,
       });
@@ -818,22 +825,22 @@ async function buildInteractiveWorkbookPdf() {
       const maxBoxInnerW = CONTENT_WIDTH - 30;
 
       // 1. Objective Bar
-      const objLine = fitText(fontRegular, sanitizeText(`🎯 Objectif : ${lesson.objectiveFr}`), 7.2, CONTENT_WIDTH - 20);
+      const objLine = fitText(fontRegular, sanitizeText(`🎯 Objectif : ${lesson.objectiveFr}`), 8.0, CONTENT_WIDTH - 20);
       activePage.drawText(objLine, {
         x: MARGIN + 8,
         y: curY - 37,
-        size: 7.2,
+        size: 8.0,
         font: fontRegular,
         color: colorDark,
       });
 
       // 2. Mini-Dialogue Box (Speech Bubbles visual)
-      const dialY = curY - 82;
+      const dialY = curY - 84;
       activePage.drawRectangle({
         x: MARGIN + 8,
         y: dialY,
         width: CONTENT_WIDTH - 16,
-        height: 40,
+        height: 42,
         color: rgb(240 / 255, 249 / 255, 255 / 255),
         borderColor: rgb(186 / 255, 230 / 255, 253 / 255),
         borderWidth: 0.8,
@@ -841,68 +848,68 @@ async function buildInteractiveWorkbookPdf() {
 
       activePage.drawText(sanitizeText(`🗣️ Dialogue Vivant en Situation :`), {
         x: MARGIN + 14,
-        y: dialY + 28,
-        size: 7,
+        y: dialY + 29,
+        size: 7.8,
         font: fontBold,
         color: colorSky,
       });
 
-      const spkALine = fitText(fontBold, sanitizeText(`* A : "${detail.dialogueSpeakerA}"`), 6.8, maxBoxInnerW);
+      const spkALine = fitText(fontBold, sanitizeText(`* A : "${detail.dialogueSpeakerA}"`), 7.6, maxBoxInnerW);
       activePage.drawText(spkALine, {
         x: MARGIN + 14,
-        y: dialY + 16,
-        size: 6.8,
+        y: dialY + 17,
+        size: 7.6,
         font: fontBold,
         color: colorNavy,
       });
 
-      const spkBLine = fitText(fontRegular, sanitizeText(`* B : "${detail.dialogueSpeakerB}"`), 6.8, maxBoxInnerW);
+      const spkBLine = fitText(fontRegular, sanitizeText(`* B : "${detail.dialogueSpeakerB}"`), 7.6, maxBoxInnerW);
       activePage.drawText(spkBLine, {
         x: MARGIN + 14,
         y: dialY + 5,
-        size: 6.8,
+        size: 7.6,
         font: fontRegular,
         color: colorDark,
       });
 
       // 3. Multiplied Examples (4 Examples)
-      const exStartY = dialY - 14;
+      const exStartY = dialY - 15;
       activePage.drawText(sanitizeText(`📚 Multiples Exemples Bilingues d'Application :`), {
         x: MARGIN + 8,
         y: exStartY,
-        size: 7.5,
+        size: 8.2,
         font: fontBold,
         color: colorNavy,
       });
 
       detail.examples.forEach((ex, idx) => {
-        const itemY = exStartY - 12 - idx * 16;
-        const exEnLine = fitText(fontBold, sanitizeText(`[Ex ${idx + 1}] "${ex.en}"`), 7.0, CONTENT_WIDTH - 24);
+        const itemY = exStartY - 13 - idx * 17;
+        const exEnLine = fitText(fontBold, sanitizeText(`[Ex ${idx + 1}] "${ex.en}"`), 7.8, CONTENT_WIDTH - 24);
         activePage.drawText(exEnLine, {
           x: MARGIN + 14,
           y: itemY,
-          size: 7,
+          size: 7.8,
           font: fontBold,
           color: colorDark,
         });
 
-        const exFrLine = fitText(fontOblique, sanitizeText(`      👉 FR : ${ex.fr}`), 6.5, CONTENT_WIDTH - 24);
+        const exFrLine = fitText(fontOblique, sanitizeText(`      👉 FR : ${ex.fr}`), 7.2, CONTENT_WIDTH - 24);
         activePage.drawText(exFrLine, {
           x: MARGIN + 14,
-          y: itemY - 7,
-          size: 6.5,
+          y: itemY - 7.5,
+          size: 7.2,
           font: fontOblique,
           color: colorMuted,
         });
       });
 
       // 4. Interactive Quiz [ ]
-      const quizY = curY - 225;
+      const quizY = curY - 233;
       activePage.drawRectangle({
         x: MARGIN + 8,
         y: quizY,
         width: CONTENT_WIDTH - 16,
-        height: 52,
+        height: 54,
         color: rgb(254 / 255, 252 / 255, 232 / 255),
         borderColor: rgb(254 / 255, 240 / 255, 138 / 255),
         borderWidth: 0.8,
@@ -910,39 +917,39 @@ async function buildInteractiveWorkbookPdf() {
 
       activePage.drawText(sanitizeText(`📝 Exercice 1 : Test QCM Interactif (Cochez la bonne reponse)`), {
         x: MARGIN + 14,
-        y: quizY + 40,
-        size: 7.2,
+        y: quizY + 41,
+        size: 8.0,
         font: fontBold,
         color: colorAmber,
       });
 
-      const qLine = fitText(fontRegular, sanitizeText(`Question : ${detail.quizQuestion}`), 6.8, maxBoxInnerW);
+      const qLine = fitText(fontRegular, sanitizeText(`Question : ${detail.quizQuestion}`), 7.6, maxBoxInnerW);
       activePage.drawText(qLine, {
         x: MARGIN + 14,
-        y: quizY + 29,
-        size: 6.8,
+        y: quizY + 28,
+        size: 7.6,
         font: fontRegular,
         color: colorDark,
       });
 
       detail.quizOptions.forEach((opt, idx) => {
-        const optionText = fitText(fontBold, sanitizeText(`[  ] ${opt}`), 6.8, 155);
+        const optionText = fitText(fontBold, sanitizeText(`[  ] ${opt}`), 7.6, 155);
         activePage.drawText(optionText, {
           x: MARGIN + 14 + idx * 165,
-          y: quizY + 12,
-          size: 6.8,
+          y: quizY + 11,
+          size: 7.6,
           font: fontBold,
           color: colorNavy,
         });
       });
 
       // 5. Sentence Puzzle & Voice Challenge Bar
-      const bottomBoxY = quizY - 68;
+      const bottomBoxY = quizY - 67;
       activePage.drawRectangle({
         x: MARGIN + 8,
         y: bottomBoxY,
         width: CONTENT_WIDTH - 16,
-        height: 58,
+        height: 61,
         color: colorLightBg,
         borderColor: colorBorder,
         borderWidth: 0.8,
@@ -951,35 +958,35 @@ async function buildInteractiveWorkbookPdf() {
       // Sentence puzzle
       activePage.drawText(sanitizeText(`🧩 Exercice 2 : Puzzle Syntaxique (Remettre les mots dans l'ordre) :`), {
         x: MARGIN + 14,
-        y: bottomBoxY + 44,
-        size: 7,
+        y: bottomBoxY + 46,
+        size: 7.8,
         font: fontBold,
         color: colorNavy,
       });
 
-      const puzzleLine = fitText(fontOblique, sanitizeText(`Mots melanges : ${detail.sentencePuzzle.scrambled}`), 6.8, maxBoxInnerW);
+      const puzzleLine = fitText(fontOblique, sanitizeText(`Mots melanges : ${detail.sentencePuzzle.scrambled}`), 7.5, maxBoxInnerW);
       activePage.drawText(puzzleLine, {
         x: MARGIN + 14,
-        y: bottomBoxY + 32,
-        size: 6.8,
+        y: bottomBoxY + 33,
+        size: 7.5,
         font: fontOblique,
         color: colorMuted,
       });
 
       activePage.drawText(sanitizeText(`Votre reponse ecrite : ___________________________________________________________`), {
         x: MARGIN + 14,
-        y: bottomBoxY + 20,
-        size: 6.5,
+        y: bottomBoxY + 21,
+        size: 7.2,
         font: fontRegular,
         color: colorDark,
       });
 
       // Voice challenge
-      const voiceLine = fitText(fontBold, sanitizeText(`🎙️ Defi Oral Speak Up ! : ${detail.voiceChallengePrompt}`), 6.8, maxBoxInnerW);
+      const voiceLine = fitText(fontBold, sanitizeText(`🎙️ Defi Oral Speak Up ! : ${detail.voiceChallengePrompt}`), 7.8, maxBoxInnerW);
       activePage.drawText(voiceLine, {
         x: MARGIN + 14,
-        y: bottomBoxY + 7,
-        size: 6.8,
+        y: bottomBoxY + 7.5,
+        size: 7.8,
         font: fontBold,
         color: colorEmerald,
       });
