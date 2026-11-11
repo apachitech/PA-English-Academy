@@ -46,6 +46,29 @@ function fitText(font: any, text: string, fontSize: number, maxWidth: number): s
   return truncated.trim() + '...';
 }
 
+function wrapText(font: any, text: string, fontSize: number, maxWidth: number): string[] {
+  const sanitized = sanitizeText(text);
+  const words = sanitized.split(' ');
+  const lines: string[] = [];
+  let currentLine = '';
+
+  for (const word of words) {
+    const candidate = currentLine ? `${currentLine} ${word}` : word;
+    if (font.widthOfTextAtSize(candidate, fontSize) <= maxWidth) {
+      currentLine = candidate;
+    } else {
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+      currentLine = word;
+    }
+  }
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+  return lines;
+}
+
 async function buildMasterSyllabusPdf() {
   console.log('[START] Generating Complete Master Syllabus PDF with all 64 lessons & illustrated plates...');
   const pdfDoc = await PDFDocument.create();
@@ -54,9 +77,19 @@ async function buildMasterSyllabusPdf() {
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const fontOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
 
-  // Brand Palette
-  const colorNavy = rgb(15 / 255, 23 / 255, 42 / 255);
-  const colorDeepBlue = rgb(30 / 255, 41 / 255, 59 / 255);
+  // Load Official 3D PA3 Logo
+  const logoPath = path.join(__dirname, '../public/images/pa3-3d-logo.jpg');
+  let logoImage: any = null;
+  if (fs.existsSync(logoPath)) {
+    const logoBytes = fs.readFileSync(logoPath);
+    logoImage = await pdfDoc.embedJpg(logoBytes);
+  }
+
+  // Brand Palette - Official Royal Navy Blue background & Gold
+  const colorCoverBlue = rgb(11 / 255, 42 / 255, 110 / 255); // Rich Royal Academy Blue #0B2A6E
+  const colorCoverDark = rgb(7 / 255, 29 / 255, 78 / 255);
+  const colorNavy = rgb(11 / 255, 42 / 255, 110 / 255);
+  const colorDeepBlue = rgb(18 / 255, 58 / 255, 140 / 255);
   const colorGold = rgb(217 / 255, 119 / 255, 6 / 255);
   const colorGoldLight = rgb(251 / 255, 191 / 255, 36 / 255);
   const colorWhite = rgb(1, 1, 1);
@@ -116,12 +149,13 @@ async function buildMasterSyllabusPdf() {
   {
     const page = createTrackedPage('COUVERTURE OFFICIELLE');
 
+    // Official Royal Blue Upper Background
     page.drawRectangle({
       x: 0,
       y: PAGE_HEIGHT * 0.32,
       width: PAGE_WIDTH,
       height: PAGE_HEIGHT * 0.68,
-      color: colorNavy,
+      color: colorCoverBlue,
     });
 
     page.drawRectangle({
@@ -140,94 +174,123 @@ async function buildMasterSyllabusPdf() {
       color: colorGold,
     });
 
-    // Logo & Header
-    page.drawRectangle({
-      x: MARGIN,
-      y: PAGE_HEIGHT - 95,
-      width: 70,
-      height: 40,
-      color: colorGold,
-    });
+    // Embed 3D Logo or fallback
+    const logoW = 135;
+    const logoH = 75.3;
+    if (logoImage) {
+      page.drawImage(logoImage, {
+        x: MARGIN,
+        y: PAGE_HEIGHT - 105,
+        width: logoW,
+        height: logoH,
+      });
+    } else {
+      page.drawRectangle({
+        x: MARGIN,
+        y: PAGE_HEIGHT - 95,
+        width: 70,
+        height: 40,
+        color: colorGold,
+      });
+      page.drawText('PA3', {
+        x: MARGIN + 14,
+        y: PAGE_HEIGHT - 76,
+        size: 20,
+        font: fontBold,
+        color: colorNavy,
+      });
+    }
 
-    page.drawText('PA3', {
-      x: MARGIN + 14,
-      y: PAGE_HEIGHT - 76,
-      size: 20,
-      font: fontBold,
-      color: colorNavy,
-    });
-
-    page.drawText('ACADEMY', {
-      x: MARGIN + 12,
-      y: PAGE_HEIGHT - 90,
-      size: 8,
-      font: fontBold,
-      color: colorNavy,
-    });
-
-    page.drawText('REPUBLIQUE DEMOCRATIQUE DU CONGO  *  FORMATION BILINGUE ACCELEREE', {
-      x: MARGIN + 85,
-      y: PAGE_HEIGHT - 72,
-      size: 8,
+    const headerTextX = MARGIN + logoW + 15;
+    page.drawText('PA3 ENGLISH ACADEMY', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 52,
+      size: 13,
       font: fontBold,
       color: colorGoldLight,
     });
 
-    page.drawText('Kinshasa - Lubumbashi - Kolwezi - Goma - Afrique Francophone', {
-      x: MARGIN + 85,
-      y: PAGE_HEIGHT - 87,
-      size: 9,
+    page.drawText('REPUBLIQUE DEMOCRATIQUE DU CONGO', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 67,
+      size: 8.5,
+      font: fontBold,
+      color: colorWhite,
+    });
+
+    page.drawText('Formation Bilingue Acceleree & Professionnelle', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 80,
+      size: 8,
       font: fontRegular,
-      color: rgb(226 / 255, 232 / 255, 240 / 255),
+      color: rgb(219 / 255, 234 / 255, 254 / 255),
+    });
+
+    page.drawText('Kinshasa - Lubumbashi - Kolwezi - Goma - En Ligne', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 93,
+      size: 7.5,
+      font: fontRegular,
+      color: rgb(191 / 255, 219 / 255, 254 / 255),
     });
 
     // Titles
     page.drawText('GRAND SYLLABUS OFFICIEL', {
       x: MARGIN,
-      y: PAGE_HEIGHT - 160,
-      size: 30,
+      y: PAGE_HEIGHT - 155,
+      size: 28,
       font: fontBold,
       color: colorWhite,
     });
 
     page.drawText('& LIVRET VISUEL ILLUSTRE', {
       x: MARGIN,
-      y: PAGE_HEIGHT - 198,
-      size: 25,
+      y: PAGE_HEIGHT - 190,
+      size: 23,
       font: fontBold,
       color: colorGoldLight,
     });
 
     page.drawText(
-      sanitizeText("Catalogue exhaustif rassemblant l'integralite des 64 lecons (A1 a B2 + Modules Metiers)"),
+      fitText(
+        fontRegular,
+        sanitizeText("Catalogue exhaustif rassemblant l'integralite des 64 lecons (A1 a B2 + Modules Metiers)"),
+        10.5,
+        CONTENT_WIDTH
+      ),
       {
         x: MARGIN,
-        y: PAGE_HEIGHT - 230,
-        size: 11,
+        y: PAGE_HEIGHT - 220,
+        size: 10.5,
         font: fontRegular,
         color: rgb(226 / 255, 232 / 255, 240 / 255),
       }
     );
     page.drawText(
-      sanitizeText("ainsi que les 4 planches pedagogiques illustrees adaptees aux etudiants congolais et africains."),
+      fitText(
+        fontRegular,
+        sanitizeText("ainsi que les 4 planches pedagogiques illustrees adaptees aux etudiants congolais et africains."),
+        10.5,
+        CONTENT_WIDTH
+      ),
       {
         x: MARGIN,
-        y: PAGE_HEIGHT - 246,
-        size: 11,
+        y: PAGE_HEIGHT - 235,
+        size: 10.5,
         font: fontRegular,
         color: rgb(226 / 255, 232 / 255, 240 / 255),
       }
     );
 
     // Summary Box of Content
-    const sumY = PAGE_HEIGHT - 390;
+    const sumY = PAGE_HEIGHT - 385;
     page.drawRectangle({
       x: MARGIN,
       y: sumY,
       width: CONTENT_WIDTH,
       height: 125,
       color: colorDeepBlue,
-      borderColor: rgb(51 / 255, 65 / 255, 85 / 255),
+      borderColor: rgb(59 / 255, 130 / 255, 246 / 255),
       borderWidth: 1,
     });
 
@@ -252,7 +315,8 @@ async function buildMasterSyllabusPdf() {
     ];
 
     sumLines.forEach((sl, idx) => {
-      page.drawText(sanitizeText(sl), {
+      const textToDraw = fitText(fontRegular, sanitizeText(sl), 7.5, CONTENT_WIDTH - 28);
+      page.drawText(textToDraw, {
         x: MARGIN + 14,
         y: sumY + 86 - idx * 11,
         size: 7.5,
@@ -411,34 +475,42 @@ async function buildMasterSyllabusPdf() {
         });
 
         page.drawText(sanitizeText(`${it.phonetic}`), {
-          x: startX + 100,
+          x: startX + 90,
           y: currentY - 13,
           size: 7.5,
           font: fontOblique,
           color: colorEmerald,
         });
 
-        page.drawText(sanitizeText(`FR : ${it.nameFr} | Lingala : ${it.lingalaNote || '-'}`), {
+        const frLingalaText = fitText(
+          fontRegular,
+          sanitizeText(`FR : ${it.nameFr} | Lingala : ${it.lingalaNote || '-'}`),
+          7.2,
+          colWidth - 14
+        );
+        page.drawText(frLingalaText, {
           x: startX + 8,
           y: currentY - 25,
-          size: 7.5,
+          size: 7.2,
           font: fontRegular,
           color: colorDark,
         });
 
-        page.drawText(sanitizeText(`* Ex : "${it.sampleSentenceEn}"`), {
+        const exSentence = fitText(fontRegular, sanitizeText(`* Ex : "${it.sampleSentenceEn}"`), 6.7, colWidth - 14);
+        page.drawText(exSentence, {
           x: startX + 8,
           y: currentY - 37,
-          size: 6.8,
+          size: 6.7,
           font: fontRegular,
           color: colorMuted,
         });
 
         if (it.pitfallWarningFr) {
-          page.drawText(sanitizeText(`! ${it.pitfallWarningFr.substring(0, 60)}...`), {
+          const pitfallText = fitText(fontBold, sanitizeText(`! ${it.pitfallWarningFr}`), 6.4, colWidth - 14);
+          page.drawText(pitfallText, {
             x: startX + 8,
             y: currentY - 47,
-            size: 6.5,
+            size: 6.4,
             font: fontBold,
             color: colorRose,
           });
@@ -479,7 +551,8 @@ async function buildMasterSyllabusPdf() {
     ];
 
     clinicDialogue.forEach((dl, idx) => {
-      page.drawText(sanitizeText(dl), {
+      const lineText = fitText(fontRegular, sanitizeText(dl), 7.2, CONTENT_WIDTH - 20);
+      page.drawText(lineText, {
         x: MARGIN + 10,
         y: 80 - idx * 11,
         size: 7.2,
@@ -554,7 +627,7 @@ async function buildMasterSyllabusPdf() {
         color: colorWhite,
       });
 
-      page.drawText(sanitizeText(rule.titleFr), {
+      page.drawText(fitText(fontBold, sanitizeText(rule.titleFr), 9, CONTENT_WIDTH - 160), {
         x: MARGIN + 150,
         y: curY - 14,
         size: 9,
@@ -563,31 +636,40 @@ async function buildMasterSyllabusPdf() {
       });
 
       // Articulation & Pitfall
-      page.drawText(sanitizeText(`* Articulation : ${rule.mouthPositionFr}`), {
-        x: MARGIN + 10,
-        y: curY - 35,
-        size: 7.5,
-        font: fontRegular,
-        color: colorDark,
-      });
+      page.drawText(
+        fitText(fontRegular, sanitizeText(`* Articulation : ${rule.mouthPositionFr}`), 7.5, CONTENT_WIDTH - 20),
+        {
+          x: MARGIN + 10,
+          y: curY - 35,
+          size: 7.5,
+          font: fontRegular,
+          color: colorDark,
+        }
+      );
 
-      page.drawText(sanitizeText(`* Le Piege Africain : ${rule.africanPitfallFr}`), {
-        x: MARGIN + 10,
-        y: curY - 50,
-        size: 7.2,
-        font: fontBold,
-        color: colorRose,
-      });
+      page.drawText(
+        fitText(fontBold, sanitizeText(`* Le Piege Africain : ${rule.africanPitfallFr}`), 7.2, CONTENT_WIDTH - 20),
+        {
+          x: MARGIN + 10,
+          y: curY - 50,
+          size: 7.2,
+          font: fontBold,
+          color: colorRose,
+        }
+      );
 
       // Examples line
       const exStr = rule.goodExamples.map((g) => `${g.word} (${g.phonetic}) = ${g.translationFr}`).join(' | ');
-      page.drawText(sanitizeText(`* Exemples cles : ${exStr}`), {
-        x: MARGIN + 10,
-        y: curY - 68,
-        size: 7.2,
-        font: fontBold,
-        color: colorNavy,
-      });
+      page.drawText(
+        fitText(fontBold, sanitizeText(`* Exemples cles : ${exStr}`), 7.2, CONTENT_WIDTH - 20),
+        {
+          x: MARGIN + 10,
+          y: curY - 68,
+          size: 7.2,
+          font: fontBold,
+          color: colorNavy,
+        }
+      );
 
       // Coach Tip Box inside
       page.drawRectangle({
@@ -600,13 +682,16 @@ async function buildMasterSyllabusPdf() {
         borderWidth: 0.5,
       });
 
-      page.drawText(sanitizeText(`Astuce Coach : ${rule.coachTipFr}`), {
-        x: MARGIN + 12,
-        y: curY - 95,
-        size: 6.8,
-        font: fontOblique,
-        color: colorDark,
-      });
+      page.drawText(
+        fitText(fontOblique, sanitizeText(`Astuce Coach : ${rule.coachTipFr}`), 6.8, CONTENT_WIDTH - 30),
+        {
+          x: MARGIN + 12,
+          y: curY - 95,
+          size: 6.8,
+          font: fontOblique,
+          color: colorDark,
+        }
+      );
 
       curY -= cardHeight + 12;
     });
@@ -691,14 +776,15 @@ async function buildMasterSyllabusPdf() {
         });
 
         page.drawText(sanitizeText(`${it.phonetic}`), {
-          x: startX + 125,
+          x: startX + 115,
           y: currentY - 14,
           size: 7.5,
           font: fontOblique,
           color: colorPurple,
         });
 
-        page.drawText(sanitizeText(`FR : ${it.nameFr}`), {
+        const frClothes = fitText(fontRegular, sanitizeText(`FR : ${it.nameFr}`), 7.5, colWidth - 14);
+        page.drawText(frClothes, {
           x: startX + 8,
           y: currentY - 26,
           size: 7.5,
@@ -706,7 +792,8 @@ async function buildMasterSyllabusPdf() {
           color: colorDark,
         });
 
-        page.drawText(sanitizeText(`* Culture : ${it.culturalNoteFr}`), {
+        const cultureNote = fitText(fontRegular, sanitizeText(`* Culture : ${it.culturalNoteFr}`), 6.8, colWidth - 14);
+        page.drawText(cultureNote, {
           x: startX + 8,
           y: currentY - 38,
           size: 6.8,
@@ -714,7 +801,8 @@ async function buildMasterSyllabusPdf() {
           color: colorMuted,
         });
 
-        page.drawText(sanitizeText(`* Ex : "${it.sampleSentenceEn}"`), {
+        const sampleSentence = fitText(fontOblique, sanitizeText(`* Ex : "${it.sampleSentenceEn}"`), 6.5, colWidth - 14);
+        page.drawText(sampleSentence, {
           x: startX + 8,
           y: currentY - 49,
           size: 6.5,
@@ -756,7 +844,8 @@ async function buildMasterSyllabusPdf() {
     ];
 
     sapeurNotes.forEach((sn, idx) => {
-      page.drawText(sanitizeText(sn), {
+      const lineText = fitText(fontRegular, sanitizeText(sn), 7.2, CONTENT_WIDTH - 20);
+      page.drawText(lineText, {
         x: MARGIN + 10,
         y: 68 - idx * 11,
         size: 7.2,
@@ -845,14 +934,15 @@ async function buildMasterSyllabusPdf() {
         });
 
         page.drawText(sanitizeText(`${it.phonetic}`), {
-          x: startX + 130,
+          x: startX + 115,
           y: currentY - 14,
           size: 7.5,
           font: fontOblique,
           color: colorGold,
         });
 
-        page.drawText(sanitizeText(`FR : ${it.nameFr}`), {
+        const frObj = fitText(fontRegular, sanitizeText(`FR : ${it.nameFr}`), 7.5, colWidth - 14);
+        page.drawText(frObj, {
           x: startX + 8,
           y: currentY - 26,
           size: 7.5,
@@ -860,7 +950,8 @@ async function buildMasterSyllabusPdf() {
           color: colorDark,
         });
 
-        page.drawText(sanitizeText(`* Pratique : ${it.practicalContextFr}`), {
+        const practical = fitText(fontRegular, sanitizeText(`* Pratique : ${it.practicalContextFr}`), 6.8, colWidth - 14);
+        page.drawText(practical, {
           x: startX + 8,
           y: currentY - 38,
           size: 6.8,
@@ -868,7 +959,8 @@ async function buildMasterSyllabusPdf() {
           color: colorMuted,
         });
 
-        page.drawText(sanitizeText(`* Ex : "${it.sampleSentenceEn}"`), {
+        const sampleObj = fitText(fontOblique, sanitizeText(`* Ex : "${it.sampleSentenceEn}"`), 6.5, colWidth - 14);
+        page.drawText(sampleObj, {
           x: startX + 8,
           y: currentY - 50,
           size: 6.5,
@@ -910,7 +1002,8 @@ async function buildMasterSyllabusPdf() {
     ];
 
     objNotes.forEach((on, idx) => {
-      page.drawText(sanitizeText(on), {
+      const lineText = fitText(fontRegular, sanitizeText(on), 7.2, CONTENT_WIDTH - 20);
+      page.drawText(lineText, {
         x: MARGIN + 10,
         y: 68 - idx * 11,
         size: 7.2,
@@ -1001,10 +1094,10 @@ async function buildMasterSyllabusPdf() {
       });
 
       // Right-hand metadata badge pill (clean, protected layer)
-      const badgeText = sanitizeText(`Unite ${lesson.unitNumber} | ${lesson.skillFocus.toUpperCase()} | ${lesson.durationMinutes} min | +${lesson.xpReward} XP`);
-      const badgeW = fontBold.widthOfTextAtSize(badgeText, 6.8);
-      const badgeBoxW = badgeW + 10;
-      const badgeBoxX = MARGIN + CONTENT_WIDTH - badgeBoxW - 5;
+      const badgeText = sanitizeText(`U${lesson.unitNumber} • ${lesson.durationMinutes} min • +${lesson.xpReward} XP`);
+      const badgeW = fontBold.widthOfTextAtSize(badgeText, 7.0);
+      const badgeBoxW = badgeW + 12;
+      const badgeBoxX = MARGIN + CONTENT_WIDTH - badgeBoxW - 6;
       const badgeBoxY = curY - 16;
 
       currentPage.drawRectangle({
@@ -1018,32 +1111,17 @@ async function buildMasterSyllabusPdf() {
       });
 
       currentPage.drawText(badgeText, {
-        x: badgeBoxX + 5,
+        x: badgeBoxX + 6,
         y: curY - 12.5,
-        size: 6.8,
+        size: 7.0,
         font: fontBold,
         color: lvlMeta.color,
       });
 
       // Left-hand title (strictly bounded by maxTitleW so it NEVER obstructs the badge)
-      const maxTitleW = badgeBoxX - (MARGIN + 8) - 8;
+      const maxTitleW = badgeBoxX - (MARGIN + 8) - 10;
       const fullTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr} ("${lesson.titleEn}")`);
-      let titleToDraw = fullTitle;
-
-      if (fontBold.widthOfTextAtSize(fullTitle, 8.2) > maxTitleW) {
-        const frTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr}`);
-        if (fontBold.widthOfTextAtSize(frTitle, 8.2) <= maxTitleW) {
-          const remainingW = maxTitleW - fontBold.widthOfTextAtSize(frTitle, 8.2) - 6;
-          if (remainingW >= 45) {
-            const enSnippet = fitText(fontOblique, `("${lesson.titleEn}")`, 7.0, remainingW);
-            titleToDraw = `${frTitle} ${enSnippet}`;
-          } else {
-            titleToDraw = frTitle;
-          }
-        } else {
-          titleToDraw = fitText(fontBold, frTitle, 8.2, maxTitleW);
-        }
-      }
+      const titleToDraw = fitText(fontBold, fullTitle, 8.2, maxTitleW);
 
       currentPage.drawText(titleToDraw, {
         x: MARGIN + 8,
@@ -1053,54 +1131,48 @@ async function buildMasterSyllabusPdf() {
         color: colorNavy,
       });
 
+      const maxCardTextW = CONTENT_WIDTH - 16;
+
       // Objective
-      currentPage.drawText(
-        sanitizeText(`* Objectif Operationnel : ${lesson.objectiveFr.substring(0, 140)}`),
-        {
-          x: MARGIN + 8,
-          y: curY - 29,
-          size: 7.2,
-          font: fontRegular,
-          color: colorDark,
-        }
-      );
+      const objLine = fitText(fontRegular, sanitizeText(`* Objectif : ${lesson.objectiveFr}`), 7.2, maxCardTextW);
+      currentPage.drawText(objLine, {
+        x: MARGIN + 8,
+        y: curY - 29,
+        size: 7.2,
+        font: fontRegular,
+        color: colorDark,
+      });
 
       // Grammar & Vocabulary line
       const gramText = lesson.grammarPoints.join(', ');
       const vocabText = lesson.keyVocabulary.join(', ');
-      currentPage.drawText(
-        sanitizeText(`* Grammaire : ${gramText.substring(0, 75)}`),
-        {
-          x: MARGIN + 8,
-          y: curY - 43,
-          size: 7,
-          font: fontBold,
-          color: colorNavy,
-        }
-      );
+      const gramLine = fitText(fontBold, sanitizeText(`* Grammaire : ${gramText}`), 7.0, maxCardTextW);
+      currentPage.drawText(gramLine, {
+        x: MARGIN + 8,
+        y: curY - 43,
+        size: 7.0,
+        font: fontBold,
+        color: colorNavy,
+      });
 
-      currentPage.drawText(
-        sanitizeText(`* Vocabulaire : ${vocabText.substring(0, 85)}`),
-        {
-          x: MARGIN + 8,
-          y: curY - 56,
-          size: 7,
-          font: fontRegular,
-          color: colorEmerald,
-        }
-      );
+      const vocabLine = fitText(fontRegular, sanitizeText(`* Vocabulaire : ${vocabText}`), 7.0, maxCardTextW);
+      currentPage.drawText(vocabLine, {
+        x: MARGIN + 8,
+        y: curY - 56,
+        size: 7.0,
+        font: fontRegular,
+        color: colorEmerald,
+      });
 
       // DRC Context
-      currentPage.drawText(
-        sanitizeText(`* Contexte RDC : ${lesson.rdcContext.substring(0, 130)}`),
-        {
-          x: MARGIN + 8,
-          y: curY - 70,
-          size: 6.8,
-          font: fontOblique,
-          color: colorMuted,
-        }
-      );
+      const rdcLine = fitText(fontOblique, sanitizeText(`* Contexte RDC : ${lesson.rdcContext}`), 6.8, maxCardTextW);
+      currentPage.drawText(rdcLine, {
+        x: MARGIN + 8,
+        y: curY - 70,
+        size: 6.8,
+        font: fontOblique,
+        color: colorMuted,
+      });
 
       curY -= lessonCardHeight + 6;
     }
@@ -1201,12 +1273,15 @@ async function buildMasterSyllabusPdf() {
         color: colorWhite,
       });
 
-      page.drawText(sanitizeText(fp.desc), {
-        x: bX + 8,
-        y: fY + 75,
-        size: 7.2,
-        font: fontRegular,
-        color: colorDark,
+      const descLines = wrapText(fontRegular, fp.desc, 7.0, boxW - 16);
+      descLines.slice(0, 7).forEach((dLine, dIdx) => {
+        page.drawText(dLine, {
+          x: bX + 8,
+          y: fY + 85 - dIdx * 10.5,
+          size: 7.0,
+          font: fontRegular,
+          color: colorDark,
+        });
       });
     });
 
@@ -1246,7 +1321,8 @@ async function buildMasterSyllabusPdf() {
     ];
 
     certText.forEach((ct, idx) => {
-      page.drawText(sanitizeText(ct), {
+      const lineText = fitText(idx === 2 ? fontBold : fontRegular, sanitizeText(ct), 7.8, CONTENT_WIDTH - 24);
+      page.drawText(lineText, {
         x: MARGIN + 12,
         y: vY + 86 - idx * 16,
         size: 7.8,

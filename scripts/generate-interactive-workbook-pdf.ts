@@ -42,6 +42,29 @@ function fitText(font: any, text: string, fontSize: number, maxWidth: number): s
   return truncated.trim() + '...';
 }
 
+function wrapText(font: any, text: string, fontSize: number, maxWidth: number): string[] {
+  const sanitized = sanitizeText(text);
+  const words = sanitized.split(' ');
+  const lines: string[] = [];
+  let currentLine = '';
+
+  for (const word of words) {
+    const candidate = currentLine ? `${currentLine} ${word}` : word;
+    if (font.widthOfTextAtSize(candidate, fontSize) <= maxWidth) {
+      currentLine = candidate;
+    } else {
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+      currentLine = word;
+    }
+  }
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+  return lines;
+}
+
 interface InteractiveLessonDetail {
   dialogueSpeakerA: string;
   dialogueSpeakerB: string;
@@ -161,9 +184,19 @@ async function buildInteractiveWorkbookPdf() {
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const fontOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
 
-  // Brand Palette
-  const colorNavy = rgb(15 / 255, 23 / 255, 42 / 255);
-  const colorDeepBlue = rgb(30 / 255, 41 / 255, 59 / 255);
+  // Load Official 3D PA3 Logo
+  const logoPath = path.join(__dirname, '../public/images/pa3-3d-logo.jpg');
+  let logoImage: any = null;
+  if (fs.existsSync(logoPath)) {
+    const logoBytes = fs.readFileSync(logoPath);
+    logoImage = await pdfDoc.embedJpg(logoBytes);
+  }
+
+  // Brand Palette - Official Royal Navy Blue background & Gold
+  const colorCoverBlue = rgb(11 / 255, 42 / 255, 110 / 255); // Rich Royal Academy Blue #0B2A6E
+  const colorCoverDark = rgb(7 / 255, 29 / 255, 78 / 255);
+  const colorNavy = rgb(11 / 255, 42 / 255, 110 / 255);
+  const colorDeepBlue = rgb(18 / 255, 58 / 255, 140 / 255);
   const colorGold = rgb(217 / 255, 119 / 255, 6 / 255);
   const colorGoldLight = rgb(251 / 255, 191 / 255, 36 / 255);
   const colorWhite = rgb(1, 1, 1);
@@ -223,12 +256,13 @@ async function buildInteractiveWorkbookPdf() {
   {
     const page = createTrackedPage("CAHIER D'INTERACTIVITE & EXERCICES A1 A B2");
 
+    // Royal Blue Upper Half & Light Lower Half
     page.drawRectangle({
       x: 0,
       y: PAGE_HEIGHT * 0.35,
       width: PAGE_WIDTH,
       height: PAGE_HEIGHT * 0.65,
-      color: colorNavy,
+      color: colorCoverBlue,
     });
 
     page.drawRectangle({
@@ -247,94 +281,123 @@ async function buildInteractiveWorkbookPdf() {
       color: colorGold,
     });
 
-    // Logo
-    page.drawRectangle({
-      x: MARGIN,
-      y: PAGE_HEIGHT - 95,
-      width: 70,
-      height: 40,
-      color: colorGold,
-    });
+    // Embed 3D Logo or fallback
+    const logoW = 135;
+    const logoH = 75.3;
+    if (logoImage) {
+      page.drawImage(logoImage, {
+        x: MARGIN,
+        y: PAGE_HEIGHT - 105,
+        width: logoW,
+        height: logoH,
+      });
+    } else {
+      page.drawRectangle({
+        x: MARGIN,
+        y: PAGE_HEIGHT - 95,
+        width: 70,
+        height: 40,
+        color: colorGold,
+      });
+      page.drawText('PA3', {
+        x: MARGIN + 14,
+        y: PAGE_HEIGHT - 76,
+        size: 20,
+        font: fontBold,
+        color: colorNavy,
+      });
+    }
 
-    page.drawText('PA3', {
-      x: MARGIN + 14,
-      y: PAGE_HEIGHT - 76,
-      size: 20,
-      font: fontBold,
-      color: colorNavy,
-    });
-
-    page.drawText('ACADEMY', {
-      x: MARGIN + 12,
-      y: PAGE_HEIGHT - 90,
-      size: 8,
-      font: fontBold,
-      color: colorNavy,
-    });
-
-    page.drawText('LIVRET D INTERACTIVITE & CAHIER D EXERCICES PRATIQUES', {
-      x: MARGIN + 85,
-      y: PAGE_HEIGHT - 72,
-      size: 8,
+    const headerTextX = MARGIN + logoW + 15;
+    page.drawText('PA3 ENGLISH ACADEMY', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 52,
+      size: 13,
       font: fontBold,
       color: colorGoldLight,
     });
 
-    page.drawText('Exemples Multiplies * Dialogues RDC * QCM [ ] * Puzzles de Phrases * Defis Oraux', {
-      x: MARGIN + 85,
-      y: PAGE_HEIGHT - 87,
+    page.drawText('REPUBLIQUE DEMOCRATIQUE DU CONGO', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 67,
       size: 8.5,
+      font: fontBold,
+      color: colorWhite,
+    });
+
+    page.drawText('Cahier d Exercices Pratiques & Interactivite A1 a B2', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 80,
+      size: 8,
       font: fontRegular,
-      color: rgb(226 / 255, 232 / 255, 240 / 255),
+      color: rgb(219 / 255, 234 / 255, 254 / 255),
+    });
+
+    page.drawText('Exemples Multiplies * Dialogues RDC * QCM * Defis Oraux', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 93,
+      size: 7.5,
+      font: fontRegular,
+      color: rgb(191 / 255, 219 / 255, 254 / 255),
     });
 
     // Main Title
     page.drawText('CAHIER D INTERACTIVITE', {
       x: MARGIN,
-      y: PAGE_HEIGHT - 165,
-      size: 30,
+      y: PAGE_HEIGHT - 160,
+      size: 28,
       font: fontBold,
       color: colorWhite,
     });
 
     page.drawText('DES 56 LECONS (A1 A B2)', {
       x: MARGIN,
-      y: PAGE_HEIGHT - 202,
-      size: 24,
+      y: PAGE_HEIGHT - 195,
+      size: 22,
       font: fontBold,
       color: colorGoldLight,
     });
 
     page.drawText(
-      sanitizeText("Chaque lecon de A1 a B2 enrichie de multiples exemples bilingues, mini-dialogues,"),
+      fitText(
+        fontRegular,
+        sanitizeText("Chaque lecon de A1 a B2 enrichie de multiples exemples bilingues, mini-dialogues,"),
+        10.5,
+        CONTENT_WIDTH
+      ),
       {
         x: MARGIN,
-        y: PAGE_HEIGHT - 232,
-        size: 11,
+        y: PAGE_HEIGHT - 225,
+        size: 10.5,
         font: fontRegular,
         color: rgb(226 / 255, 232 / 255, 240 / 255),
       }
     );
     page.drawText(
-      sanitizeText("exercices d'application a cocher, reconstitutions syntaxiques et defis d'expression orale."),
+      fitText(
+        fontRegular,
+        sanitizeText("exercices d'application a cocher, reconstitutions syntaxiques et defis d'expression orale."),
+        10.5,
+        CONTENT_WIDTH
+      ),
       {
         x: MARGIN,
-        y: PAGE_HEIGHT - 248,
-        size: 11,
+        y: PAGE_HEIGHT - 240,
+        size: 10.5,
         font: fontRegular,
         color: rgb(226 / 255, 232 / 255, 240 / 255),
       }
     );
 
     // Feature highlights Box
-    const featY = PAGE_HEIGHT - 400;
+    const featY = PAGE_HEIGHT - 395;
     page.drawRectangle({
       x: MARGIN,
       y: featY,
       width: CONTENT_WIDTH,
       height: 135,
       color: colorDeepBlue,
-      borderColor: rgb(51 / 255, 65 / 255, 85 / 255),
+      borderColor: rgb(59 / 255, 130 / 255, 246 / 255),
       borderWidth: 1,
     });
 
@@ -356,7 +419,8 @@ async function buildInteractiveWorkbookPdf() {
     ];
 
     feats.forEach((ft, idx) => {
-      page.drawText(sanitizeText(ft), {
+      const lineText = fitText(fontRegular, sanitizeText(ft), 7.5, CONTENT_WIDTH - 28);
+      page.drawText(lineText, {
         x: MARGIN + 14,
         y: featY + 94 - idx * 16,
         size: 7.5,
@@ -530,12 +594,15 @@ async function buildInteractiveWorkbookPdf() {
         color: colorWhite,
       });
 
-      page.drawText(sanitizeText(ms.desc), {
-        x: bX + 8,
-        y: stepsY + 75,
-        size: 7.2,
-        font: fontRegular,
-        color: colorDark,
+      const descLines = wrapText(fontRegular, ms.desc, 7.0, colW - 16);
+      descLines.slice(0, 7).forEach((dLine, dIdx) => {
+        page.drawText(dLine, {
+          x: bX + 8,
+          y: stepsY + 85 - dIdx * 10.5,
+          size: 7.0,
+          font: fontRegular,
+          color: colorDark,
+        });
       });
     });
 
@@ -711,7 +778,7 @@ async function buildInteractiveWorkbookPdf() {
       });
 
       // Right-hand validation & XP badge pill (clean, protected layer)
-      const badgeText = sanitizeText(`${lesson.skillFocus.toUpperCase()} • ${lesson.durationMinutes} min • +${lesson.xpReward} XP • [ ] Valide`);
+      const badgeText = sanitizeText(`U${lesson.unitNumber} • ${lesson.durationMinutes} min • +${lesson.xpReward} XP • [ ] Fait`);
       const badgeW = fontBold.widthOfTextAtSize(badgeText, 7.0);
       const badgeBoxW = badgeW + 12;
       const badgeBoxX = MARGIN + CONTENT_WIDTH - badgeBoxW - 6;
@@ -738,22 +805,7 @@ async function buildInteractiveWorkbookPdf() {
       // Left-hand title (strictly bounded by maxTitleW so it NEVER obstructs the badge)
       const maxTitleW = badgeBoxX - (MARGIN + 8) - 10;
       const fullTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr} ("${lesson.titleEn}")`);
-      let titleToDraw = fullTitle;
-
-      if (fontBold.widthOfTextAtSize(fullTitle, 8.5) > maxTitleW) {
-        const frTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr}`);
-        if (fontBold.widthOfTextAtSize(frTitle, 8.5) <= maxTitleW) {
-          const remainingW = maxTitleW - fontBold.widthOfTextAtSize(frTitle, 8.5) - 6;
-          if (remainingW >= 50) {
-            const enSnippet = fitText(fontOblique, `("${lesson.titleEn}")`, 7.2, remainingW);
-            titleToDraw = `${frTitle} ${enSnippet}`;
-          } else {
-            titleToDraw = frTitle;
-          }
-        } else {
-          titleToDraw = fitText(fontBold, frTitle, 8.5, maxTitleW);
-        }
-      }
+      const titleToDraw = fitText(fontBold, fullTitle, 8.5, maxTitleW);
 
       activePage.drawText(titleToDraw, {
         x: MARGIN + 8,
@@ -763,17 +815,17 @@ async function buildInteractiveWorkbookPdf() {
         color: colorNavy,
       });
 
+      const maxBoxInnerW = CONTENT_WIDTH - 30;
+
       // 1. Objective Bar
-      activePage.drawText(
-        sanitizeText(`🎯 Objectif Operationnel : ${lesson.objectiveFr.substring(0, 130)}`),
-        {
-          x: MARGIN + 8,
-          y: curY - 37,
-          size: 7.5,
-          font: fontRegular,
-          color: colorDark,
-        }
-      );
+      const objLine = fitText(fontRegular, sanitizeText(`🎯 Objectif : ${lesson.objectiveFr}`), 7.2, CONTENT_WIDTH - 20);
+      activePage.drawText(objLine, {
+        x: MARGIN + 8,
+        y: curY - 37,
+        size: 7.2,
+        font: fontRegular,
+        color: colorDark,
+      });
 
       // 2. Mini-Dialogue Box (Speech Bubbles visual)
       const dialY = curY - 82;
@@ -795,7 +847,8 @@ async function buildInteractiveWorkbookPdf() {
         color: colorSky,
       });
 
-      activePage.drawText(sanitizeText(`* A : "${detail.dialogueSpeakerA}"`), {
+      const spkALine = fitText(fontBold, sanitizeText(`* A : "${detail.dialogueSpeakerA}"`), 6.8, maxBoxInnerW);
+      activePage.drawText(spkALine, {
         x: MARGIN + 14,
         y: dialY + 16,
         size: 6.8,
@@ -803,7 +856,8 @@ async function buildInteractiveWorkbookPdf() {
         color: colorNavy,
       });
 
-      activePage.drawText(sanitizeText(`* B : "${detail.dialogueSpeakerB}"`), {
+      const spkBLine = fitText(fontRegular, sanitizeText(`* B : "${detail.dialogueSpeakerB}"`), 6.8, maxBoxInnerW);
+      activePage.drawText(spkBLine, {
         x: MARGIN + 14,
         y: dialY + 5,
         size: 6.8,
@@ -823,7 +877,8 @@ async function buildInteractiveWorkbookPdf() {
 
       detail.examples.forEach((ex, idx) => {
         const itemY = exStartY - 12 - idx * 16;
-        activePage.drawText(sanitizeText(`[Ex ${idx + 1}] "${ex.en}"`), {
+        const exEnLine = fitText(fontBold, sanitizeText(`[Ex ${idx + 1}] "${ex.en}"`), 7.0, CONTENT_WIDTH - 24);
+        activePage.drawText(exEnLine, {
           x: MARGIN + 14,
           y: itemY,
           size: 7,
@@ -831,7 +886,8 @@ async function buildInteractiveWorkbookPdf() {
           color: colorDark,
         });
 
-        activePage.drawText(sanitizeText(`      👉 FR : ${ex.fr}`), {
+        const exFrLine = fitText(fontOblique, sanitizeText(`      👉 FR : ${ex.fr}`), 6.5, CONTENT_WIDTH - 24);
+        activePage.drawText(exFrLine, {
           x: MARGIN + 14,
           y: itemY - 7,
           size: 6.5,
@@ -860,7 +916,8 @@ async function buildInteractiveWorkbookPdf() {
         color: colorAmber,
       });
 
-      activePage.drawText(sanitizeText(`Question : ${detail.quizQuestion}`), {
+      const qLine = fitText(fontRegular, sanitizeText(`Question : ${detail.quizQuestion}`), 6.8, maxBoxInnerW);
+      activePage.drawText(qLine, {
         x: MARGIN + 14,
         y: quizY + 29,
         size: 6.8,
@@ -900,7 +957,8 @@ async function buildInteractiveWorkbookPdf() {
         color: colorNavy,
       });
 
-      activePage.drawText(sanitizeText(`Mots melanges : ${detail.sentencePuzzle.scrambled}`), {
+      const puzzleLine = fitText(fontOblique, sanitizeText(`Mots melanges : ${detail.sentencePuzzle.scrambled}`), 6.8, maxBoxInnerW);
+      activePage.drawText(puzzleLine, {
         x: MARGIN + 14,
         y: bottomBoxY + 32,
         size: 6.8,
@@ -917,16 +975,14 @@ async function buildInteractiveWorkbookPdf() {
       });
 
       // Voice challenge
-      activePage.drawText(
-        sanitizeText(`🎙️ Defi Oral Speak Up ! : ${detail.voiceChallengePrompt}`),
-        {
-          x: MARGIN + 14,
-          y: bottomBoxY + 7,
-          size: 6.8,
-          font: fontBold,
-          color: colorEmerald,
-        }
-      );
+      const voiceLine = fitText(fontBold, sanitizeText(`🎙️ Defi Oral Speak Up ! : ${detail.voiceChallengePrompt}`), 6.8, maxBoxInnerW);
+      activePage.drawText(voiceLine, {
+        x: MARGIN + 14,
+        y: bottomBoxY + 7,
+        size: 6.8,
+        font: fontBold,
+        color: colorEmerald,
+      });
 
       curY -= cardHeight + 8;
     }

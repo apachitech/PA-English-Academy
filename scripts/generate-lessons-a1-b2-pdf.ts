@@ -40,6 +40,29 @@ function fitText(font: any, text: string, fontSize: number, maxWidth: number): s
   return truncated.trim() + '...';
 }
 
+function wrapText(font: any, text: string, fontSize: number, maxWidth: number): string[] {
+  const sanitized = sanitizeText(text);
+  const words = sanitized.split(' ');
+  const lines: string[] = [];
+  let currentLine = '';
+
+  for (const word of words) {
+    const candidate = currentLine ? `${currentLine} ${word}` : word;
+    if (font.widthOfTextAtSize(candidate, fontSize) <= maxWidth) {
+      currentLine = candidate;
+    } else {
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+      currentLine = word;
+    }
+  }
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+  return lines;
+}
+
 async function buildCourseLessonsA1ToB2Pdf() {
   console.log('[START] Generating Course Lessons PDF (Levels A1 to B2)...');
   const pdfDoc = await PDFDocument.create();
@@ -48,9 +71,19 @@ async function buildCourseLessonsA1ToB2Pdf() {
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const fontOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
 
-  // Brand Palette
-  const colorNavy = rgb(15 / 255, 23 / 255, 42 / 255);
-  const colorDeepBlue = rgb(30 / 255, 41 / 255, 59 / 255);
+  // Load Official 3D PA3 Logo
+  const logoPath = path.join(__dirname, '../public/images/pa3-3d-logo.jpg');
+  let logoImage: any = null;
+  if (fs.existsSync(logoPath)) {
+    const logoBytes = fs.readFileSync(logoPath);
+    logoImage = await pdfDoc.embedJpg(logoBytes);
+  }
+
+  // Brand Palette - Official Royal Navy Blue background & Gold
+  const colorCoverBlue = rgb(11 / 255, 42 / 255, 110 / 255); // Rich Royal Academy Blue #0B2A6E
+  const colorCoverDark = rgb(7 / 255, 29 / 255, 78 / 255);
+  const colorNavy = rgb(11 / 255, 42 / 255, 110 / 255);
+  const colorDeepBlue = rgb(18 / 255, 58 / 255, 140 / 255);
   const colorGold = rgb(217 / 255, 119 / 255, 6 / 255);
   const colorGoldLight = rgb(251 / 255, 191 / 255, 36 / 255);
   const colorWhite = rgb(1, 1, 1);
@@ -110,13 +143,13 @@ async function buildCourseLessonsA1ToB2Pdf() {
   {
     const page = createTrackedPage('COUVERTURE DES COURS A1 A B2');
 
-    // Navy Upper Half & Light Lower Half
+    // Royal Blue Upper Half & Light Lower Half
     page.drawRectangle({
       x: 0,
       y: PAGE_HEIGHT * 0.35,
       width: PAGE_WIDTH,
       height: PAGE_HEIGHT * 0.65,
-      color: colorNavy,
+      color: colorCoverBlue,
     });
 
     page.drawRectangle({
@@ -136,94 +169,123 @@ async function buildCourseLessonsA1ToB2Pdf() {
       color: colorGold,
     });
 
-    // Logo
-    page.drawRectangle({
-      x: MARGIN,
-      y: PAGE_HEIGHT - 95,
-      width: 70,
-      height: 40,
-      color: colorGold,
-    });
+    // Embed 3D Logo or fallback
+    const logoW = 135;
+    const logoH = 75.3;
+    if (logoImage) {
+      page.drawImage(logoImage, {
+        x: MARGIN,
+        y: PAGE_HEIGHT - 105,
+        width: logoW,
+        height: logoH,
+      });
+    } else {
+      page.drawRectangle({
+        x: MARGIN,
+        y: PAGE_HEIGHT - 95,
+        width: 70,
+        height: 40,
+        color: colorGold,
+      });
+      page.drawText('PA3', {
+        x: MARGIN + 14,
+        y: PAGE_HEIGHT - 76,
+        size: 20,
+        font: fontBold,
+        color: colorNavy,
+      });
+    }
 
-    page.drawText('PA3', {
-      x: MARGIN + 14,
-      y: PAGE_HEIGHT - 76,
-      size: 20,
-      font: fontBold,
-      color: colorNavy,
-    });
-
-    page.drawText('ACADEMY', {
-      x: MARGIN + 12,
-      y: PAGE_HEIGHT - 90,
-      size: 8,
-      font: fontBold,
-      color: colorNavy,
-    });
-
-    page.drawText('REPUBLIQUE DEMOCRATIQUE DU CONGO  *  CURRICULUM OFFICIEL DES COURS', {
-      x: MARGIN + 85,
-      y: PAGE_HEIGHT - 72,
-      size: 8,
+    const headerTextX = MARGIN + logoW + 15;
+    page.drawText('PA3 ENGLISH ACADEMY', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 52,
+      size: 13,
       font: fontBold,
       color: colorGoldLight,
     });
 
-    page.drawText('Cadre Europeen Commun de Reference pour les Langues (CECRL : A1 a B2)', {
-      x: MARGIN + 85,
-      y: PAGE_HEIGHT - 87,
-      size: 9,
+    page.drawText('REPUBLIQUE DEMOCRATIQUE DU CONGO', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 67,
+      size: 8.5,
+      font: fontBold,
+      color: colorWhite,
+    });
+
+    page.drawText('Curriculum Officiel des Cours - CECRL (A1 a B2)', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 80,
+      size: 8,
       font: fontRegular,
-      color: rgb(226 / 255, 232 / 255, 240 / 255),
+      color: rgb(219 / 255, 234 / 255, 254 / 255),
+    });
+
+    page.drawText('Kinshasa - Lubumbashi - Kolwezi - Goma - En Ligne', {
+      x: headerTextX,
+      y: PAGE_HEIGHT - 93,
+      size: 7.5,
+      font: fontRegular,
+      color: rgb(191 / 255, 219 / 255, 254 / 255),
     });
 
     // Main Titles
     page.drawText('SYLLABUS DES COURS', {
       x: MARGIN,
-      y: PAGE_HEIGHT - 165,
-      size: 32,
+      y: PAGE_HEIGHT - 160,
+      size: 30,
       font: fontBold,
       color: colorWhite,
     });
 
     page.drawText('CURRICULUM COMPLET DE A1 A B2', {
       x: MARGIN,
-      y: PAGE_HEIGHT - 202,
-      size: 22,
+      y: PAGE_HEIGHT - 195,
+      size: 21,
       font: fontBold,
       color: colorGoldLight,
     });
 
     page.drawText(
-      sanitizeText("Catalogue exhaustif de l'ensemble des 56 lecons fondamentales et professionnelles,"),
+      fitText(
+        fontRegular,
+        sanitizeText("Catalogue exhaustif de l'ensemble des 56 lecons fondamentales et professionnelles,"),
+        10.5,
+        CONTENT_WIDTH
+      ),
       {
         x: MARGIN,
-        y: PAGE_HEIGHT - 232,
-        size: 11,
+        y: PAGE_HEIGHT - 225,
+        size: 10.5,
         font: fontRegular,
         color: rgb(226 / 255, 232 / 255, 240 / 255),
       }
     );
     page.drawText(
-      sanitizeText("avec objectifs operationnels, grammaire, lexique cible et mises en situation en RDC."),
+      fitText(
+        fontRegular,
+        sanitizeText("avec objectifs operationnels, grammaire, lexique cible et mises en situation en RDC."),
+        10.5,
+        CONTENT_WIDTH
+      ),
       {
         x: MARGIN,
-        y: PAGE_HEIGHT - 248,
-        size: 11,
+        y: PAGE_HEIGHT - 240,
+        size: 10.5,
         font: fontRegular,
         color: rgb(226 / 255, 232 / 255, 240 / 255),
       }
     );
 
     // 4 Levels Overview Card
-    const cardY = PAGE_HEIGHT - 400;
+    const cardY = PAGE_HEIGHT - 395;
     page.drawRectangle({
       x: MARGIN,
       y: cardY,
       width: CONTENT_WIDTH,
       height: 135,
       color: colorDeepBlue,
-      borderColor: rgb(51 / 255, 65 / 255, 85 / 255),
+      borderColor: rgb(59 / 255, 130 / 255, 246 / 255),
       borderWidth: 1,
     });
 
@@ -282,7 +344,7 @@ async function buildCourseLessonsA1ToB2Pdf() {
         color: colorWhite,
       });
 
-      page.drawText(sanitizeText(lr.title), {
+      page.drawText(fitText(fontBold, sanitizeText(lr.title), 8, CONTENT_WIDTH - 96), {
         x: MARGIN + 78,
         y: rowY + 2,
         size: 8,
@@ -290,7 +352,7 @@ async function buildCourseLessonsA1ToB2Pdf() {
         color: colorWhite,
       });
 
-      page.drawText(sanitizeText(`* ${lr.desc}`), {
+      page.drawText(fitText(fontRegular, sanitizeText(`* ${lr.desc}`), 7, CONTENT_WIDTH - 96), {
         x: MARGIN + 78,
         y: rowY - 8,
         size: 7,
@@ -591,10 +653,10 @@ async function buildCourseLessonsA1ToB2Pdf() {
       });
 
       // Right-hand metadata badge pill (clean, protected layer)
-      const badgeText = sanitizeText(`Unite ${lesson.unitNumber} | ${lesson.skillFocus.toUpperCase()} | ${lesson.durationMinutes} min | +${lesson.xpReward} XP`);
-      const badgeW = fontBold.widthOfTextAtSize(badgeText, 6.8);
-      const badgeBoxW = badgeW + 10;
-      const badgeBoxX = MARGIN + CONTENT_WIDTH - badgeBoxW - 5;
+      const badgeText = sanitizeText(`U${lesson.unitNumber} • ${lesson.durationMinutes} min • +${lesson.xpReward} XP`);
+      const badgeW = fontBold.widthOfTextAtSize(badgeText, 7.0);
+      const badgeBoxW = badgeW + 12;
+      const badgeBoxX = MARGIN + CONTENT_WIDTH - badgeBoxW - 6;
       const badgeBoxY = curY - 16;
 
       currentPage.drawRectangle({
@@ -608,32 +670,17 @@ async function buildCourseLessonsA1ToB2Pdf() {
       });
 
       currentPage.drawText(badgeText, {
-        x: badgeBoxX + 5,
+        x: badgeBoxX + 6,
         y: curY - 12.5,
-        size: 6.8,
+        size: 7.0,
         font: fontBold,
         color: lvlMeta.color,
       });
 
       // Left-hand title (strictly bounded by maxTitleW so it NEVER obstructs the badge)
-      const maxTitleW = badgeBoxX - (MARGIN + 8) - 8;
+      const maxTitleW = badgeBoxX - (MARGIN + 8) - 10;
       const fullTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr} ("${lesson.titleEn}")`);
-      let titleToDraw = fullTitle;
-
-      if (fontBold.widthOfTextAtSize(fullTitle, 8.2) > maxTitleW) {
-        const frTitle = sanitizeText(`LECON #${lesson.number} : ${lesson.titleFr}`);
-        if (fontBold.widthOfTextAtSize(frTitle, 8.2) <= maxTitleW) {
-          const remainingW = maxTitleW - fontBold.widthOfTextAtSize(frTitle, 8.2) - 6;
-          if (remainingW >= 45) {
-            const enSnippet = fitText(fontOblique, `("${lesson.titleEn}")`, 7.0, remainingW);
-            titleToDraw = `${frTitle} ${enSnippet}`;
-          } else {
-            titleToDraw = frTitle;
-          }
-        } else {
-          titleToDraw = fitText(fontBold, frTitle, 8.2, maxTitleW);
-        }
-      }
+      const titleToDraw = fitText(fontBold, fullTitle, 8.2, maxTitleW);
 
       currentPage.drawText(titleToDraw, {
         x: MARGIN + 8,
@@ -643,68 +690,60 @@ async function buildCourseLessonsA1ToB2Pdf() {
         color: colorNavy,
       });
 
+      const maxCardTextW = CONTENT_WIDTH - 16;
+
       // 1. Objective
-      currentPage.drawText(
-        sanitizeText(`* Objectif Operationnel : ${lesson.objectiveFr.substring(0, 140)}`),
-        {
-          x: MARGIN + 8,
-          y: curY - 29,
-          size: 7.2,
-          font: fontRegular,
-          color: colorDark,
-        }
-      );
+      const objLine = fitText(fontRegular, sanitizeText(`* Objectif : ${lesson.objectiveFr}`), 7.2, maxCardTextW);
+      currentPage.drawText(objLine, {
+        x: MARGIN + 8,
+        y: curY - 29,
+        size: 7.2,
+        font: fontRegular,
+        color: colorDark,
+      });
 
       // 2. Grammar points
       const gramStr = lesson.grammarPoints.join(', ');
-      currentPage.drawText(
-        sanitizeText(`* Grammaire & Structure : ${gramStr.substring(0, 85)}`),
-        {
-          x: MARGIN + 8,
-          y: curY - 42,
-          size: 7,
-          font: fontBold,
-          color: colorNavy,
-        }
-      );
+      const gramLine = fitText(fontBold, sanitizeText(`* Grammaire : ${gramStr}`), 7.0, maxCardTextW);
+      currentPage.drawText(gramLine, {
+        x: MARGIN + 8,
+        y: curY - 42,
+        size: 7.0,
+        font: fontBold,
+        color: colorNavy,
+      });
 
       // 3. Vocabulary
       const vocabStr = lesson.keyVocabulary.join(', ');
-      currentPage.drawText(
-        sanitizeText(`* Lexique & Vocabulaire : ${vocabStr.substring(0, 95)}`),
-        {
-          x: MARGIN + 8,
-          y: curY - 55,
-          size: 7,
-          font: fontRegular,
-          color: colorEmerald,
-        }
-      );
+      const vocabLine = fitText(fontRegular, sanitizeText(`* Vocabulaire : ${vocabStr}`), 7.0, maxCardTextW);
+      currentPage.drawText(vocabLine, {
+        x: MARGIN + 8,
+        y: curY - 55,
+        size: 7.0,
+        font: fontRegular,
+        color: colorEmerald,
+      });
 
       // 4. RDC Context
-      currentPage.drawText(
-        sanitizeText(`* Contexte RDC : ${lesson.rdcContext.substring(0, 130)}`),
-        {
-          x: MARGIN + 8,
-          y: curY - 68,
-          size: 6.8,
-          font: fontOblique,
-          color: colorDark,
-        }
-      );
+      const rdcLine = fitText(fontOblique, sanitizeText(`* Contexte RDC : ${lesson.rdcContext}`), 6.8, maxCardTextW);
+      currentPage.drawText(rdcLine, {
+        x: MARGIN + 8,
+        y: curY - 68,
+        size: 6.8,
+        font: fontOblique,
+        color: colorDark,
+      });
 
       // 5. Exercises line
       const exStr = lesson.exercises.join(' | ');
-      currentPage.drawText(
-        sanitizeText(`* Exercices d'application : ${exStr.substring(0, 110)}`),
-        {
-          x: MARGIN + 8,
-          y: curY - 79,
-          size: 6.5,
-          font: fontRegular,
-          color: colorMuted,
-        }
-      );
+      const exLine = fitText(fontRegular, sanitizeText(`* Exercices : ${exStr}`), 6.5, maxCardTextW);
+      currentPage.drawText(exLine, {
+        x: MARGIN + 8,
+        y: curY - 79,
+        size: 6.5,
+        font: fontRegular,
+        color: colorMuted,
+      });
 
       curY -= cardHeight + 6;
     }
@@ -805,12 +844,15 @@ async function buildCourseLessonsA1ToB2Pdf() {
         color: colorWhite,
       });
 
-      page.drawText(sanitizeText(st.desc), {
-        x: bX + 8,
-        y: stepY + 75,
-        size: 7.2,
-        font: fontRegular,
-        color: colorDark,
+      const descLines = wrapText(fontRegular, st.desc, 7.0, boxW - 16);
+      descLines.slice(0, 7).forEach((dLine, dIdx) => {
+        page.drawText(dLine, {
+          x: bX + 8,
+          y: stepY + 85 - dIdx * 10.5,
+          size: 7.0,
+          font: fontRegular,
+          color: colorDark,
+        });
       });
     });
 
@@ -850,7 +892,8 @@ async function buildCourseLessonsA1ToB2Pdf() {
     ];
 
     certDetails.forEach((cd, idx) => {
-      page.drawText(sanitizeText(cd), {
+      const lineText = fitText(idx === 2 ? fontBold : fontRegular, sanitizeText(cd), 7.8, CONTENT_WIDTH - 24);
+      page.drawText(lineText, {
         x: MARGIN + 12,
         y: vY + 86 - idx * 16,
         size: 7.8,
